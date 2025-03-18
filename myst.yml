@@ -1,0 +1,25 @@
+# See docs at: https://mystmd.org/guide/frontmatter
+version: 1
+project:
+  id: df5d6773-bcf5-448d-8539-f68afe476c7d
+  # title:
+  # description:
+  # keywords: []
+  authors:
+    - name: Anthony Ozerov
+      affiliations:
+        - University of California, Berkeley
+      orcid: 0000-0001-8500-3566
+      email: ozerov@berkeley.edu
+      url: https://aozerov.com
+      github: anthonyozerov
+  github: https://github.com/anthonyozerov/binomial
+  date: 2025-03-17
+  license: CC0-1.0
+  # To autogenerate a Table of Contents, run "myst init --write-toc"
+site:
+  template: article-theme
+  options:
+    favicon: favicon.ico
+    style: ./style.css
+  #   logo: site_logo.png

@@ -1,0 +1,4 @@
+/* make all text serif */
+body {
+    font-family: "Palatino", "Bookman", Times, serif;
+}
