@@ -174,7 +174,7 @@ Our assumptions and inference also do not at all involve the $\sigma_i$'s, makin
 
 Unlike most inferential methods for RE and BR, our inference does not involve a prior or any distributional approximations. Under Assumptions 1 and 2, inference will be exact for any value of $n$, and coverage which is at least at the target level is guaranteed.
 
-One caveat is that the Binomial distribution is discrete, so for finite $n$ the tail probabilities only take on a set of discrete values. So, without playing tricks like randomly shrinking or collapsing the interval, we cannot achieve exactly 0.6827 ($1\sigma$) coverage, but will always achieve coverage $\geq 0.6827$. See Table [](#table-n) for examples of values of $n$ and the smallest coverage level $\geq0.6827$ which can be achieved exactly---usually, it is not too much higher.
+One caveat is that the Binomial distribution is discrete, so for finite $n$ the tail probabilities only take on a set of discrete values. So, without playing tricks like randomly shrinking or collapsing the interval, we cannot achieve exactly 0.6827 ($1\sigma$) coverage, but will always achieve coverage $\geq 0.6827$. See [](#table-n) for examples of values of $n$ and the smallest coverage level $\geq0.6827$ which can be achieved exactly---usually, it is not too much higher.
 
 # Simulation study
 
@@ -325,7 +325,7 @@ Results of different aggregation methods for estimates of the Planck constant $h
 
 We get data from 11 experiments estimating the Planck constant $h$ from the 2010 CODATA adjustment [@mohr2012codata, Table 26].[^si]
 
-[^si] Since the 2019 SI unit redefinition, the SI units are defined, in part, based on the Planck constant, so there is no longer "uncertainty" in it in terms of SI units. But the dataset still offers an interesting case study.
+[^si]: Since the 2019 SI unit redefinition, the SI units are defined, in part, based on the Planck constant, so there is no longer "uncertainty" in it in terms of SI units. But the dataset still offers an interesting case study.
 
 Results are shown in [](#fig:h). Note that for $n=11$, the nominal coverage level of the Binomial interval is $0.7734$. The nominal coverages of the other intervals under their respective models are $0.6827$.
 
@@ -343,13 +343,15 @@ The Binomial method is strong because it:
 
 -   Is robust to outliers, because it only depends on the ranking of the $y_i$'s, not their relative magnitudes or residuals.
 
+-   Relies on fairly simple math, making its justification, implementation, and interpretation easy for non-statisticians.
+
 It is weak in that it:
 
 -   Cannot exactly achieve an arbitrary target coverage level for finite $n$ due to the discreteness of the Binomial distribution. (But it will be conservative, and anyway for any $n$ one can pick from a set of coverage levels which can be achieved exactly).
 
 -   Yields wider intervals than needed if we know more about the data-generating process---methods tailored to that DGP can achieve coverage with narrower intervals.
 
--   Does not take advantage of the information in the $\sigma_i$'s.
+-   Does not take advantage of the information present in the $\sigma_i$'s.
 
 # Targeting the same coverage level on real data
 
