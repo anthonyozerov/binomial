@@ -12,7 +12,7 @@ authors:
     email: ozerov@berkeley.edu
 license: CC0-1.0
 abstract: |
-    Many studies involve aggregating multiple estimates of a quantity. We introduce a new method, the "Binomial Method" (BM) for doing this, which only assumes that the estimates each independently overestimate or underestimate the target quantity with one-half probability. In simulations, confidence intervals generated under BM better achieve target coverage than existing methods like Random Effects and the Birge Ratio method. BM results for the gravitational constant and the Planck constant widen currently accepted uncertainties.
+    Many applied studies seek to aggregate multiple estimates of a target quantity $\theta$ from different experiments/methods, taking into account both systematic errors (or, generally, between-study heterogeneity) and within-study noise. Inference typically involves strong assumptions, such as a normal random-effects model. We introduce a simple method with a weaker assumption: that each study independently underestimates the true value $\theta$ with probability $1/2$. Producing exact confidence intervals for $\theta$ under this assumption is easy. Our simulations show that the resulting intervals are competitive with intervals from commonly-used procedures like DerSimonian & Laird and HKSJ. Our method is further invariant to monotone transformations, robust to outliers, and oddly does not require any information on the within-study noise. We think it might be useful in the physical sciences, and present retrospective case studies using historical estimates of physical constants.
 ---
 
 
@@ -36,7 +36,7 @@ Let's take a look at two existing statistical approaches used to deal with syste
 
 ## Random Effects
 
-The Random Effects model and method originated in the medical meta-analysis literature [@dersimonian1986meta]. It is now common meta-analyses in medicine and the social sciences, but appears to be uncommon in the physical sciences.
+The Random Effects model and method originated in the medical meta-analysis literature [@dersimonian1986meta]. It is now common in meta-analyses in medicine and the social sciences, but appears to be uncommon in the physical sciences.
 
 ### Assumptions
 
@@ -72,7 +72,7 @@ The Birge ratio originated as a way to measure the inconsistency of different es
 
 1.  $y_i\overset{\mathrm{ind}}{\sim}\mathcal{N}(\theta,c^2\sigma_i^2)$
 
-The idea is that the uncertainties reported in the different experiments are too small---as they only represent noise, and not systematic uncertainty. So we can just expand the uncertainties by a scaling factor.
+The idea is that the uncertainties reported in the different experiments are too small---as they only represent noise, and not systematic uncertainty. So we can just expand the uncertainties by a multiplicative scaling factor.
 
 ### Inference
 
@@ -93,12 +93,12 @@ We can call this method the "Binomial Method."
 Let's make the following assumptions:
 
 :::{important} Assumptions of the Binomial Method
-1.  $P(y_i>\theta)=0.5$
+1.  $P(y_i<\theta)=0.5$
 
-2.  The event $y_i>\theta$ is independent for each $i$.
+2.  The event $y_i<\theta$ is independent for each $i$.
 :::
 
-In words, Assumption 1 says that each experiment has a one-half chance of being an overestimate of the truth (and, correspondingly, a 1/2 chance of being an underestimate). We don't get much from this assumption alone, because we could have all the experiments be correlated. So we need the additional Assumption 2 that the experiments are independently overestimates or underestimates.
+In words, Assumption 1 says that each experiment has a one-half chance of being an underestimate of the truth (and, correspondingly, a 1/2 chance of being an overestimate). We don't get much from this assumption alone, because we could have all the experiments be correlated. So we need the additional Assumption 2 that the experiments are independently overestimates or underestimates.
 
 The $y_i$'s being independent for each $i$ is sufficient but not necessary to satisfy Assumption 2. A setting where Assumption 2 holds and the $y_i$'s are not independent would surely be very contrived, so for practical purposes we can consider Assumption 2 not satisfied when the $y_i$'s are not independent.
 
@@ -120,7 +120,7 @@ If $K=k$, we know that $y_{(k)}$ is an underestimate and therefore $y_{(k)}< \th
 In short, we have
 \begin{equation*}K\leq k\Longleftrightarrow \theta< y_{(k+1)},\end{equation*}
 from which we directly get
-\begin{equation*}P(\theta<y_{(k+1)})= P(K\leq k).\end{equation*}
+\begin{equation*}P(K\leq k)=P(\theta<y_{(k+1)}).\end{equation*}
 The uncertainty in the LHS is over $y_{(k+1)}$. $P(K\leq k)$ can be directly calculated from the Binomial CDF.
 
 How can we turn these nice facts into a $1-\alpha$ confidence interval? Say we want a symmetric interval. For our lower bound $l$, pick the smallest $j$ such that $P(K\leq j)\leq \alpha/2$, and let the lower bound be $l=y_{(j+1)}$. We will get that:
@@ -234,7 +234,7 @@ For a choice of $\alpha$, we use the corresponding $z_{\alpha/2}$ to expand the 
 
 -   $y_i\overset{\mathrm{ind}}{\sim}\mathcal{N}(0,\tau^2\sigma_i^2)$: the estimates (observed)
 
-**Random Effects with Outliers**
+**Random Effects with outliers**
 
 -   $\theta_i\overset{\mathrm{iid}}{\sim}\tau\cdot \mathrm{Cauchy}(0,1)$: the systematic errors
 
