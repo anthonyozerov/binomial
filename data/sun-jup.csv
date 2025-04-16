@@ -1,0 +1,33 @@
+# mass of sun / mass of jupiter
+# [1] https://shs.cairn.info/journal-l-annee-sociologique-2013-2-page-359?lang=en
+# [2] https://link.springer.com/chapter/10.1007/978-94-010-2873-8_41
+# [3] https://link.springer.com/content/pdf/10.1007/978-94-017-1327-6_51.pdf
+year,author,value,uncertainty,ref
+1841,Bessel,1047.71,0.348, [1]
+1873,Krüger,1047.538,0.192, [1]
+1895,Hill,1047.378,0.121, [1]
+1895,Newcomb,1047.355,0.065, [1]
+1908,DeSitter,1047.400,0.030, [1]
+1951,Eckert,1047.355,0.030, [1]
+1965,Clemence,1047.410,0.020, [1]
+1967,Klepczynski,1047.381,0.020, [2]
+1968,O'Handley,1047.387,0.004, [2]
+1968,Herget,1047.335,0.077, [2]
+1969,Bec,1047.386,0.041, [2]
+1969,Klepczynski,1047.372,0.006, [2]
+1969,Fiala,1047.367,0.004, [2]
+1969,Klepczynski,1047.359,0.010, [2]
+1969,Fiala,1047.356,0.004, [2]
+1969,Klepczynski,1047.351,0.006, [2]
+1969,Klepczynski,1047.350,0.004, [2]
+1969,Zielenbach,1047.340,0.024, [2]
+1969,Klepczynski,1047.337,0.027, [2]
+1969,Zielenbach,1047.333,0.024, [2]
+1970,Zielenbach,1047.348,0.013, [1]
+1971,Klepczynski,1047.366,0.007, [1]
+1972,Chernykh,1047.345,0.040, [2]
+1972,Chernykh,1047.326,0.033, [2]
+1972,Chernykh,1047.324,0.023, [2]
+1985,Campbell,1047.3486,0.0008, [3]
+1997,Pitjeva,1047.34830,0.00017, [3]
+2001,Kochetova+Cernetenko,1047.3488,0.0006, [3]
