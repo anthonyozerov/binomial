@@ -12,7 +12,7 @@ authors:
     email: ozerov@berkeley.edu
 license: CC0-1.0
 abstract: |
-    Many applied studies seek to aggregate multiple estimates of a target quantity $\theta$ from different experiments/methods, taking into account both systematic errors (or, generally, between-study heterogeneity) and within-study noise. Inference typically involves strong assumptions, such as a normal random-effects model. We introduce a simple method with a weaker assumption: that each study independently underestimates the true value $\theta$ with probability $1/2$. Producing exact confidence intervals for $\theta$ under this assumption is easy. Our simulations show that the resulting intervals are competitive with intervals from commonly-used procedures like DerSimonian & Laird and HKSJ. Our method is further invariant to monotone transformations, robust to outliers, and oddly does not require any information on the within-study noise. We think it might be useful in the physical sciences, and present retrospective case studies using historical estimates of physical constants.
+    Many applied studies seek to aggregate multiple estimates of a target quantity $\theta$ from different experiments/methods, taking into account both systematic errors (or, generally, between-study heterogeneity) and within-study noise. Inference typically involves strong assumptions, such as a normal random-effects model. We apply the sign test from nonparametric statistics, which uses weaker assumption: that each study independently underestimates the true value $\theta$ with probability $1/2$. Producing exact confidence intervals for $\theta$ under this assumption is easy. Our simulations show that the resulting intervals are competitive with intervals from commonly-used procedures like DerSimonian & Laird and HKSJ. The sign test is further invariant to monotone transformations, robust to outliers, and oddly does not require any information on the within-study noise. We think it might be useful in the physical sciences, and present retrospective case studies using historical estimates of physical constants.
 ---
 
 
@@ -22,6 +22,40 @@ Combining multiple estimates of a quantity into one is common across the science
 
 One key issue that arises is systematic uncertainty, where an estimate of a quantity may have some error not due to noise which can't be reduced by collecting a larger sample / running the experiment for longer. This error can be due to issues in the experiment like a non-randomly sampled population, or an instrument which is miscalibrated, or analysis issues like approximations and model imperfections. Empirically, this can be seen when results from different experiments/teams/methods are far outside of each other's error bars. Aggregating multiple estimates must therefore not only account for the noise, but also somehow model the systematic uncertainties in the different estimates. This leads to the counterintuitive fact that, sometimes, combining multiple estimates *increases* our uncertainty, rather than decreasing it---this is because the level of systematic error is not apparent in only one estimate, and becomes apparent when we see more.
 
+## Thought experiment
+
+Suppose you are given a jar containing a lot of jelly beans, and you want to get an idea of how many jelly beans it contains without counting. You ask five of your friends to try to figure it out, and they give you the following numbers:
+
+- Friend A: 540
+- Friend B: 535
+- Friend C: 556
+- Friend D: 543
+- Friend E: 637
+
+You want to make an interval that has a roughly 70% chance of containing the true number of jelly beans. What are some reasonable intervals?
+
+- [535, 637]\: You think Friends B and E are both smart people with reasonable estimates, and probably the true value is not outside the range of all the estimates.
+- [535, 556]\: You think Friend E is probably overestimating, as your other smart friends are all clustered together.
+- [100, 1000]\: Maybe all of your friends are way off! They could all be underestimating or overestimating the number together if they used a similar approach or suffer from the same bias.
+
+Here are some things you may consider when picking an interval:
+
+- Are all of the estimates good, reasonable estimates? Should we discard any? To help decide, you may want to interrogate the methods that your friends used. If Friend E's method looks good, should you do something to resolve the large discrepancy in results with the others?
+- How diverse were the methods used? If they all used the same, wrong method then they might all be very wrong. On the other hand, if they all used different methods and arrived at similar results, you may be more inclined to trust them.
+- Do the methods of each friend yield values which are centered around the truth?
+- Were there any social factors? For example, if Friend D publicly announced their result and is highly respected among the others, the others could have been disinclined to give highly discrepant results.
+
+Evidently, combining these five estimates into an interval is not a trivial matter. Indeed, without knowing a lot more details about how the estimates came about from the truth and are related to each other, it will not be possible to design a statistical method to yield a confidence interval or credible interval with the desired probability.
+
+Now, imagine each of your friends also gave a standard deviation associated with their estimate. This would, in fact, complicate the situation further, as we would need to ask the following questions:
+
+- What do the standard deviations mean?
+- Which distributions are they the standard deviation of?
+- Are the distributions frequentist sampling distributions or Bayesian posterior distributions?
+- Do the standard deviations account for just statistical noise involved in their method, or some or all parts of their systematic biases?
+
+If there is any heterogeneity among the Friends in the answers to these questions, our task will become even more complicated. What do we do if Friend A's standard deviation is for just statistical noise but Friend B's also tries to take into account systematic error?
+
 ## Setup
 
 Suppose we are given $n$ estimates $y_1,\ldots,y_n$ of a number $\theta$, from $n$ experiments/teams/methods. Each of these estimates has error from two sources: **systematic** and **statistical** (i.e. noise). (For instance, we can have a data-generating process where $y_i$ is actually a noisy estimate of $\theta_i$, which is what experiment $i$ would see if it had no noise; because of systematic error, in general $\theta_i\neq \theta$).
@@ -30,9 +64,9 @@ Suppose we are further given a standard deviation $\sigma_i$ for each $y_i$. Exp
 
 In this setting, how can we learn something about $\theta$? Without making any assumptions, we can't learn anything (for instance, we could have $\theta_i=\theta-a\ \forall i$, in which case we are unable to recover $\theta$ without knowing something about $a$).
 
-# Existing approaches
+# Possible assumptions and inference methods
 
-Let's take a look at two existing statistical approaches used to deal with systematic error.
+There are many statistical approaches that can be used to aggregate estimates.
 
 ## Random Effects
 
@@ -84,15 +118,15 @@ As with the Random Effects model, we can also do inference by placing informativ
 
 Just like the random effects model, the Birge ratio method can be extended to the case where there are correlations between experiments. The CODATA analyses often have correlated experiments, so they use this extension.
 
-# Proposed Method
+## Sign Test
 
-We can call this method the "Binomial Method."
+We can call this method the "Sign Test" (ST): it is in fact an inversion (to get a confidence interval) of a test for the median of a distribution. But for clarity we will present only as a method to get confidence intervals.
 
-## Assumptions
+### Assumptions
 
 Let's make the following assumptions:
 
-:::{important} Assumptions of the Binomial Method
+:::{important} Assumptions of the Sign Test
 1.  $P(y_i<\theta)=0.5$
 
 2.  The event $y_i<\theta$ is independent for each $i$.
@@ -105,7 +139,7 @@ The $y_i$'s being independent for each $i$ is sufficient but not necessary to sa
 Let $K$ be the number of experiments which yield an underestimate. From Assumptions 1 and 2, we get:
 \begin{equation*}K\sim\mathrm{Binomial}(n,0.5)\end{equation*}
 
-## Inference
+### Inference
 
 For simplicity, let's suppose $y_i\neq y_j$ for all $i\neq j$, and that $y_i\neq \theta$ for all $i$.
 
@@ -136,11 +170,11 @@ See [](#binomial-method) for a minimal Python implementation of this inference p
 
 ```{code} python
 :label: binomial-method
-:caption: Minimal Python code for the Binomial Method's inference. The main thing to be careful with in implementation is correct indexing.
+:caption: Minimal Python code for the Sign Test's inference. The main thing to be careful with in implementation is correct indexing.
 
 import numpy as np
 from scipy.stats import binom
-def binomial_method(values, p=0.5, target=0.15865):
+def signtest(values, p=0.5, target=0.15865):
     n = len(values)
     cdf = binom.cdf(np.arange(n+1), n, p)
 
@@ -150,9 +184,9 @@ def binomial_method(values, p=0.5, target=0.15865):
     return values[lower_idx], values[upper_idx]
 ```
 
-## Extensions
+### Extensions
 
-### Relaxing Assumption 1
+#### Relaxing Assumption 1
 
 Saying that the probability of an overestimate is exactly 0.5 could be a strong assumption---though it is still much weaker than the assumptions of the Random Effects or Birge ratio methods. Here are some ways to relax this:
 
@@ -162,13 +196,13 @@ Saying that the probability of an overestimate is exactly 0.5 could be a strong 
 
 Either method will yield a wider interval which takes into account our less-confident assumptions about $p$.
 
-### Relaxing Assumption 2
+#### Relaxing Assumption 2
 
 Saying that the events $y_i>\theta$ are independent could also be a strong assumption. For example, there may be a grouping effect among studies. To relax this, we can model $K$ as another known or derived probability distribution (e.g., again, a Beta-Binomial) or one estimated from simulations under a custom data-generating process. However, it does not seem easy to reason about what the relevant conditional probabilities might be, even for two estimates (this would be the probability $P(y_i>\theta|y_j>\theta),\ i\neq j$), without placing additional distributional assumptions on our setting.
 
-## Analysis
+### Analysis
 
-The assumptions of the Binomial Method are far weaker than the assumptions of the previous methods. In fact, the assumptions of RE and BR imply Assumptions 1 and 2. So a method using only Assumptions 1 and 2 should work well under data from either model, but not vice-versa.
+The assumptions of the Sign Test are far weaker than the assumptions of the previous methods. In fact, the assumptions of RE and BR imply Assumptions 1 and 2. So a method using only Assumptions 1 and 2 should work well under data from either model, but not vice-versa.
 
 Our assumptions and inference also do not at all involve the $\sigma_i$'s, making our method completely insensitive to their mis-specification.
 
@@ -176,9 +210,83 @@ Unlike most inferential methods for RE and BR, our inference does not involve a 
 
 One caveat is that the Binomial distribution is discrete, so for finite $n$ the tail probabilities only take on a set of discrete values. So, without playing tricks like randomly shrinking or collapsing the interval, we cannot achieve exactly 0.6827 ($1\sigma$) coverage, but will always achieve coverage $\geq 0.6827$. See [](#table-n) for examples of values of $n$ and the smallest coverage level $\geq0.6827$ which can be achieved exactly---usually, it is not too much higher.
 
+## Signed-Rank Test
+
+This approach is due to Wilcoxon, and we can refer to it as SRT. Our discussion will follow [@conover1999practical, Section 5.7].
+
+### Assumptions
+
+This approach will strengthen the assumptions of ST:
+
+1. The $y_i$'s are symmetrically distributed about $\theta$.
+
+2. The $y_i$'s are independent.
+
+Effectively, ST's Assumption 1 has been strengthened to a symmetry assumption, and Assumption 2 has been strengthened to independence of the $y_i$'s themselves, and not just the binary over/under-estimating event. In practice, these assumptions may not be much stronger than those of ST:
+
+- If we can argue convincingly that in a real-world problem $P(y_i<\theta)=0.5$, we should be able to argue that $y_i$ is symmetric about $\theta$ without much more effort ("the sizes of the errors look the same if you're over or under-estimating").
+- As mentioned above, a scenario where the events $y_i<\theta$ are independent but the $y_i$'s themselves are not would seem fairly contrived.
+
+### Inference
+
+Inference under these assumptions is far less trivial than for ST. We can take the $\alpha/2$ and $1-\alpha/2$ quantiles $L$, $U$ of the distribution of $\sum_{i=1}^n iB_i$, where the $B_i$'s are independent and each $-1$ or $1$ with equal probability. Then, if we compute the $n(n+1)/2$ averages of the form $(y_i+y_j)/2$, $i\leq j$ and order them in increasing order, the $L$th and $U$th averages will form our level $\geq 1-\alpha$ confidence interval.
+
+## t-Test
+
+Inspired by the Sign Test and Signed-Rank Test, which ignore the $\sigma_i$'s, why not try just a standard $t$-test confidence interval over the $y_i$'s?
+
+### Assumptions
+
+1. $y_i\overset{\mathrm{iid}}{\sim}\mathcal{N}(\theta,\tau^2)$.
+
+Where $\tau^2$ is unknown. Of course, this model will not be true, because the $y_i$'s should have different variances. But it might still work in practice, and it is a useful point of comparison against the Random Effects and Birge Ratio methods.
+
+### Inference
+
+We can use the standard confidence interval for the mean of a Normal distribution:
+%TODO
+
+# Evaluating the validity of assumptions
+
+We know that none of the sets of assumptions presented here will hold in the real world. Nonetheless, we can examine different sets of experiments and examine the following assumptions:
+
+- Normality of $y_i$ about $\theta$
+- Symmetry of $y_i$ about $\theta$
+- $P(y_i>\theta)=0.5$
+- Independence of $y_i$'s
+
+To examine independence, we will look at the autocorrelation of the time series of estimates and examine any author effects (if there are any dependencies, certainly they will appear when one author has made multiple estimates).
+
+Examining these assumptions in the real world will inform the sensitivity analysis in our later simulation study.
+
+## Historical studies
+
+Some quantities, like the density of the Earth $\rho_\oplus$ or the speed of light $c$, have two desirable qualities:
+
+- A long history of attempted estimates.
+- A modern value which is either exact or known much more exactly than before.
+
+This makes them interesting case studies to evaluate the different assumptions, and investigate the performance of the different methods in a real-world setting where the ground truth is known.
+
+Note that because many historical estimates do not come with an associated uncertainity, we will only be able to use the Sign Test on the complete datasets.
+
+### The speed of light
+
+Since the 1980's, the speed of light, $c$, is defined as an exact constant in meters per second---the measurements of it became so precise that bulk of the remaining uncertainity was in the imprecision in the definition of the meter, thus the meter itself was redefined in terms of $c$.
+
+The speed of light has been the subject of hundreds of experiments since the 1600's. We collated a dataset of 157 such experiments, spanning from 1676 to 1978. We relied on a three reports which collected many experiments to create our dataset [@birge1934velocity; @froome1971velocity; @raynaud2013determining], and added two of the final determinations [@evenson1972speed; @blaney1974measurement]. For some experiments which are duplicated between reports, we typically pulled the data from the report which offered the most significant digits. Note that our resulting dataset of experiments is intended to be largely illustrative, and we will avoid drawing any strong conclusions from it.
+
+### The density of the Earth
+
+The density of the Earth, $\rho_\oplus$, is now generally agreed to be about 5.513. Though there is uncertainity in further digits, it is sufficiently precise when compared with historical estimates to offer another good case study.
+
+We have collated a dataset of 37 experiments measuring $\rho_\oplus$, spanning 1687 to 1942, from three sources [@burgess1902value; @sagitov1970current; @hughes2006mean].
+
+## Fundamental particles
+
 # Simulation study
 
-Let's do some simulations to benchmark the Binomial method (BM) against RE and BR. In every simulation, we will have these parameters:
+Let's do some simulations to benchmark the Sign Test (ST) against RE and BR. In every simulation, we will have these parameters:
 
 
 -   $n$: how many estimates we get.
@@ -196,13 +304,13 @@ Let's do some simulations to benchmark the Binomial method (BM) against RE and B
 
 All of the methods in this study are location- and scale-invariant, so we don't lose anything of interest by fixing $\theta=0$ and the scale of the $\sigma_i^2$'s. The different experiments will vary $n$, the distribution of the systematic errors, and their scale relative to the $\sigma_i^2$'s.
 
-Because the Binomial distribution is discrete, for arbitrary choice of $(n,\alpha)$ the Binomial method we described will be conservative. Here are two ways to achieve exact or close coverage for arbitrary $\alpha$:
+Because the Binomial distribution is discrete, for arbitrary choice of $(n,\alpha)$ the Sign Test we described will be conservative. Here are two ways to achieve exact or close coverage for arbitrary $\alpha$:
 
 -   Trivially, we could randomly shrink or collapse the interval to make it exact, but that would be silly.
 
 -   We could make the interval not have symmetric tail probabilities. This would let us sometimes get closer to a $1-\alpha$ coverage, but the choice of which tail should be heaver in any given scenario is arbitrary.
 
-So let's stick with the Binomial method as described. To provide a reasonable assessment of the its exactness and interval lengths, we will pick $\alpha$ so that the BM we propose can provide exact $1-\alpha$ coverage. Because $1\sigma$ intervals are commonly used in the sciences, we will pick the smallest $\alpha$ such that $1-\alpha\geq 0.6827$ and the BM can be exact.
+So let's stick with the Sign Test as described. To provide a reasonable assessment of the its exactness and interval lengths, we will pick $\alpha$ so that the ST we propose can provide exact $1-\alpha$ coverage. Because $1\sigma$ intervals are commonly used in the sciences, we will pick the smallest $\alpha$ such that $1-\alpha\geq 0.6827$ and the ST can be exact.
 
 For $n=10$, for example, this means targeting a coverage of $0.891$ (narrower symmetric intervals could achieve $0.656$---just below our stated minimum of $0.6827$).
 
@@ -269,13 +377,13 @@ Simulation results under the three settings satisfying our assumptions. The dark
 
 We show results for the settings satisfying our assumptions (Random Effects, Birge, Random Effects with Outliers) in [](#sim-results). Since the target coverage level is varied across simulations, we report the difference in achieved coverage and target coverage. Here are some observations.
 
--   The Binomial method perfectly achieves target coverage in every single scenario. This is not surprising given its mathematical setup, and that every single scenario satisfies BM's assumptions.
+-   The Sign Test perfectly achieves target coverage in every single scenario. This is not surprising given its mathematical setup, and that every single scenario satisfies ST's assumptions.
 
 -   Under the Random Effects model, RE yields better coverage with smaller intervals when the systematic errors are small, but does not achieve coverage when systematic errors are comparable to or larger than noise. This is surprising until we remember that inference for the Random Effects model is approximate, not exact. BR performs very poorly, espeially for large $n$.
 
--   Under the Birge model, note that it is slightly unrealistic to have $\tau<1$, because that implies that the $\sigma_i$'s given to us are actually *overestimates* of the true standard deviation. Considering the case where $\tau\geq 1$, the BR method works well, as we would expect, though does it does not achieve target coverage when $n$ is small (as inference is approximate and not exact). BR also offers far narrower intervals than BM. RE works decently well; maintains at least target coverage, but offers larger intervals for large $n$ than Binomial and BR for roughly $\tau>3$. For context, in the gravitational constant data shown later [@tiesinga2021codata], we estimate $\tau\approx 3.6$ under the Birge model.
+-   Under the Birge model, note that it is slightly unrealistic to have $\tau<1$, because that implies that the $\sigma_i$'s given to us are actually *overestimates* of the true standard deviation. Considering the case where $\tau\geq 1$, the BR method works well, as we would expect, though does it does not achieve target coverage when $n$ is small (as inference is approximate and not exact). BR also offers far narrower intervals than ST. RE works decently well; maintains at least target coverage, but offers larger intervals for large $n$ than Binomial and BR for roughly $\tau>3$. For context, in the gravitational constant data shown later [@tiesinga2021codata], we estimate $\tau\approx 3.6$ under the Birge model.
 
--   Under Random Effects with Outliers, which satisfies the assumptions of neither RE nor BR, BR works poorly, while RE is fairly competitive with BM (though it yields intervals larger by orders of magnitude for large $n$ with $\tau>1$). This difficulty in this setting is outliers, especially at large $n$, which pull or greatly expand the RE and BR intervals. As expected, BM still achieves perfect coverage in this setting. In general, BM is robust to outliers as it only depends on the ranking of the experiments, not their relative magnitudes.
+-   Under Random Effects with Outliers, which satisfies the assumptions of neither RE nor BR, BR works poorly, while RE is fairly competitive with ST (though it yields intervals larger by orders of magnitude for large $n$ with $\tau>1$). This difficulty in this setting is outliers, especially at large $n$, which pull or greatly expand the RE and BR intervals. As expected, ST still achieves perfect coverage in this setting. In general, ST is robust to outliers as it only depends on the ranking of the experiments, not their relative magnitudes.
 
 :::{figure}
 :label: sim-results2
@@ -288,15 +396,25 @@ Simulation results under the two settings not satisfying our assumptions. The da
 [](#sim-results2) contains results for the settings not
 satisfying our assumptions (Adversarial and Correlated Random Effects).
 
--   As $\tau$ increases, the Binomial method maintains target coverage for longer than RE and BR for all values of $n$.
+-   As $\tau$ increases, the Sign Test maintains target coverage for longer than RE and BR for all values of $n$.
 
 -   For small $n$, all methods are less sensitive to the these particular assumption violations.
 
+## Simulation discussion
+
+The main message from the simulations is that, by using nonparametric methods which ignore the $\sigma_i$'s, much robustness is gained, and (usually) little precision lost. The primary exception to this is when systematic errors are quite small and the scales of the noise vary widely. Intuitively, this is the case when the $\sigma_i$'s are most informative, and the most can be gained from using them.
+
+But when systematic errors are large, or systematic errors are within the same order of magnitude of each other, it seems not much is gained by incorporating the $\sigma_i$ information.
+
+This parallels results from nonparametric statistics that show nonparametric methods like the Sign Test and Signed-Rank Test don't sacrifice much efficiency over methods like a $t$-test which make stronger assumptions [@conover1999practical].
+
 # Results on real data
+
+## CODATA: physical constants
 
 We ought to run a comparison on some real data. Let's see what happens with {abbr}`CODATA (Committee on Data of the International Science Council)` estimates of physical constants. Because physical constants aren't known exactly, we don't have a ground truth, but we can at least see the behavior of the different methods with real experimental data.
 
-## Gravitational constant
+### Gravitational constant
 
 :::{figure} ./figs/G0.pdf
 :label: fig:G
@@ -316,7 +434,7 @@ We see that the CODATA interval is slightly wider than that given by our applica
 
 The CODATA and BR intervals are pulled to the right by the small $\sigma_i$'s on many of the rightmost points. The RE interval is just about disjoint with the CODATA and BR intervals---this is because it models systematic errors additively, rather than multiplicatively. The Binomial interval is wider than any of the other intervals. Note how it is supported by the HUST-09 and UZur-06 points, and has 5 points outside it on its left, and 5 points outside on the right.
 
-## Planck constant
+### Planck constant
 
 :::{figure} ./figs/h0.pdf
 :label: fig:h
@@ -331,9 +449,22 @@ Results are shown in [](#fig:h). Note that for $n=11$, the nominal coverage leve
 
 We see again that the CODATA interval is wider than that given by our BR---this is because CODATA take into account some correlations between data points. In the Planck constant data, the BR interval is contained within RE, and RE is contained with the Binomial interval. We see that the Binomial interval is supported by points NMI-89 and IAC-11, with 3 points lying outside to either side.
 
+## Targeting the same coverage level on real data
+
+:::{figure}
+:label: fig:Gh-wider
+![](figs/G1.pdf)
+![](figs/h1.pdf)
+
+Since the Sign Test can target only a discrete set of coverages, for the $G$ data it will (under the assumptions) achieve coverage 79.0%, and 77.3% for the $h$ data. For comparison, in this figure the intervals from CODATA, RE, and BR are expanded to target these coverage levels. The CODATA, RE, and BR intervals from [](#fig:G),[](#fig:h) have been scaled them by the corresponding $z_{\alpha/2}$.
+
+# Case study: Fundamental particles
+
+# Case study: Ice sheet mass balance
+
 # Discussion
 
-The Binomial method is strong because it:
+The Sign Test is strong because it:
 
 -   Makes weaker assumptions which are implied by many existing common assumptions.
 
@@ -352,12 +483,3 @@ It is weak in that it:
 -   Yields wider intervals than needed if we know more about the data-generating process---methods tailored to that DGP can achieve coverage with narrower intervals.
 
 -   Does not take advantage of the information present in the $\sigma_i$'s.
-
-# Targeting the same coverage level on real data
-
-:::{figure}
-:label: fig:Gh-wider
-![](figs/G1.pdf)
-![](figs/h1.pdf)
-
-Since the Binomial method can target only a discrete set of coverages, for the $G$ data it will (under the assumptions) achieve coverage 79.0%, and 77.3% for the $h$ data. For comparison, in this figure the intervals from CODATA, RE, and BR are expanded to target these coverage levels. The CODATA, RE, and BR intervals from [](#fig:G),[](#fig:h) have been scaled them by the corresponding $z_{\alpha/2}$.
