@@ -2,7 +2,7 @@
 title: Aggregating experiments with weaker assumptions
 exports:
   - format: pdf
-    template: arxiv_two_column
+    template: lapreprint-typst
     output: exports/test.pdf
 authors:
   - name: Anthony Ozerov
@@ -21,6 +21,10 @@ abstract: |
 Combining multiple estimates of a quantity into one is common across the sciences. In medicine and the social sciences, meta-analyses find studies/experiments which estimate the same quantity (e.g. the treatment effect of a medicine) and combine them into one estimate, with associated uncertainties. In Earth science, "intercomparison" studies take models from different teams and study their differences, sometimes attempting to reconcile them and produce one better estimate. In physics, the values of fundamental constants obtained in different experiments must also be somehow reconciled.
 
 One key issue that arises is systematic uncertainty, where an estimate of a quantity may have some error not due to noise which can't be reduced by collecting a larger sample / running the experiment for longer. This error can be due to issues in the experiment like a non-randomly sampled population, or an instrument which is miscalibrated, or analysis issues like approximations and model imperfections. Empirically, this can be seen when results from different experiments/teams/methods are far outside of each other's error bars. Aggregating multiple estimates must therefore not only account for the noise, but also somehow model the systematic uncertainties in the different estimates. This leads to the counterintuitive fact that, sometimes, combining multiple estimates *increases* our uncertainty, rather than decreasing it---this is because the level of systematic error is not apparent in only one estimate, and becomes apparent when we see more.
+
+We will begin by discussing and setting up the general problem. Then, we will go through different sets of assumptions which can be used to do inference in this setting, and follow with an evaluation of the assumptions using real-world datasets. Next, we will perform a simulation study to evaluate the performance of different inference methods and their sensitive to violations of assumptions.
+
+We will present results on two toy examples---estimates of the gravitational constant and of the Planck constant---to illustrate how the different methods work when applied to real data. Finally, we will present two case studies: aggregating estimates of the properties of fundamental particles, and aggregating estimates of Antarctic ice sheet mass loss over time. This will illustrate how the methods presented and discussed here can be used in real scientific problems.
 
 ## Thought experiment
 
@@ -50,7 +54,7 @@ Evidently, combining these five estimates into an interval is not a trivial matt
 Now, imagine each of your friends also gave a standard deviation associated with their estimate. This would, in fact, complicate the situation further, as we would need to ask the following questions:
 
 - What do the standard deviations mean?
-- Which distributions are they the standard deviation of?
+- Which distributions are they the standard deviations of?
 - Are the distributions frequentist sampling distributions or Bayesian posterior distributions?
 - Do the standard deviations account for just statistical noise involved in their method, or some or all parts of their systematic biases?
 
@@ -84,13 +88,15 @@ $\tau^2$ is a new parameter introduced to model the spread of the systematically
 
 From these assumptions, we get $y_i\overset{\mathrm{ind}}{\sim}\mathcal{N}(\theta,\sigma_i^2+\tau^2)$. Effectively, the systematic uncertainty and noise are additive.
 
+These assumptions could make sense if we think that all of the studies suffer from random unaccounted-for systematic errors with the same standard deviation. Assumption 2 effectively says that when you go out to measure $\theta$, you will actually be measuring a $\theta_i$ which is $\theta$ plus a realization of a random Normal; and this random Normal has the same standard deviation as those of all the other researchers, and does not have any relation with the level of noise $\sigma_i$. The assumptions will not hold if the size of systematic errors is related to the amount of noise, or if the overall distribution of systematic errors is not Normal (maybe there are outliers, or there is a sharper peak of experimenters with very little systematic error).
+
 ### Inference
 
 Inference on $\theta$ can be done in a number of ways under this model. The original DerSimonyan and Laird procedure (DL) first estimates $\tau^2$ using the method of moments, then uses this as a plug-in value to estimate $\theta$ and a corresponding confidence interval Under a Normal approximation [@dersimonian1986meta]. Variants exist, such as using maximum likelihood for $\tau^2$ [@dersimonian1986meta; @jackson2010does].
 
 A later procedure, Hartung-Knapp-Sidik-Jonkman (HKSJ), changed the uncertainty estimation in DL to better account for the fact that our estimate of $\tau^2$ is uncertain [@hartung1999alternative; @sidik2002simple]. HKSJ has been shown to generally achieve target coverage far more consistently than DL [@inthout2014hartung] and to generally give wider confidence intervals [@wiksten2016hartung]. In this paper we will use the HKSJ procedure as we also found it to generally perform better than DL in our simulations.
 
-Other works instead perform Bayesian inference, by placing informative or uninformative priors on $\tau$ and $\theta$ [@sutton2001bayesian].
+Other works instead perform Bayesian inference by placing informative or uninformative priors on $\tau$ and $\theta$ [@sutton2001bayesian].
 
 ### Extensions
 
@@ -98,19 +104,53 @@ The Random Effects model can and has been extended to the case where there are c
 
 The model can also be extended to include information from study-level variables (e.g. year of publication, method used) in the distribution of $\theta_i$ to explain more of the spread in study-level effects.
 
+## Fixed Effects
+
+For comparison with RE we also present the Fixed Effects (FE) model.
+
+### Assumptions
+
+1. $y_i\overset{\mathrm{ind}}{\sim}\mathcal{N}(\theta,\sigma_i^2)$
+
+Effectively, we suppose that the standard deviations $\sigma_i$ given to us by the researchers truly represent all of the error in the problem—both systematic and noise. In general, in a problem where there really is unaccounted-for systematic error, this will lead to an underestimation of the amount of error (i.e. a confidence interval that is too narrow).
+
+### Inference
+
+Inference under FE is much simpler than under RE.
+
+1. Calculate the weighted mean $\bar{y}_w=\frac{\sum_{i=1}^n w_iy_i}{\sum_{i=1}^nw_i}$, where $w_i=1/\sigma_i^2$. This will be our point estimate, the center of the interval.
+2. The standard deviation of $\bar{y}_w$ is $\sigma_w=\frac{1}{\sqrt{\sum_{i=1}^nw_i}}=\sqrt{\sum_{i=1}^n1/\sigma_i^2}$. Therefore we can form a $1-\alpha$ confidence interval for $\theta$ as $$\bar{y}_w\pm z_{1-{\alpha/2}}\cdot \hat c\sigma_w,$$ where $z_{1-\alpha/2}$ is the $z$-statistic at the desired level (e.g. for a $1\sigma$ or $68.27\%$ interval, we use $z_{1-\alpha/2}=1$; for a $95\%$ interval, we have $\alpha=0.05$ and $z_{1-\alpha/2}=1.96$)
+
+
 ## Birge Ratio
 
-The Birge ratio originated as a way to measure the inconsistency of different estimates and their uncertainties (a quantitative version of "these confidence intervals don't overlap"). The Birge Ratio method (BR) is effectively what is now used by CODATA (under the name "Least-Squares Adjustment" [@tiesinga2021codata]) when they combine estimates of fundamental constants from multiple experiments. (Historically this has not always been the case, as in the 2002 adjustment's determination of $G$ [@mohr2005codata])
+The Birge ratio originated as a way to measure the inconsistency of different estimates and their uncertainties (a quantitative version of "these confidence intervals don't overlap"). The Birge Ratio method (BR) is effectively what is now used by CODATA (under the name "Least-Squares Adjustment" [@tiesinga2021codata]) when they combine estimates of fundamental constants from multiple experiments. (Historically this has not always been the case, as in the 2002 adjustment's determination of $G$ [@mohr2005codata]). It is also what is used by the Particle Data Group in its *Review of Particle Physics* when aggregating estimates of the properties of fundamental particles [@navas2024review, Section 5.2.2].
 
 ### Assumptions
 
 1.  $y_i\overset{\mathrm{ind}}{\sim}\mathcal{N}(\theta,c^2\sigma_i^2)$
 
-The idea is that the uncertainties reported in the different experiments are too small---as they only represent noise, and not systematic uncertainty. So we can just expand the uncertainties by a multiplicative scaling factor.
+We don't know $c$ a priori. The idea is that the uncertainties reported in the different experiments are too small---as they only represent noise, and not systematic uncertainty. So we can just expand the uncertainties by a multiplicative scaling factor.
+
+The difference from RE is that the uncertainties are underestimated multiplicatively, instead of additively. So, for example, suppose experimenters 1 and 2 reported $\sigma_1=3$ and $\sigma_2=6$. Under BR, we could have that the true sigmas of experimenters 1 and 2 are $9$ and $18$ instead---but under the model experimeter 2 will always have double the uncertainty as experimenter 1. Under RE, we could have the true sigmas be $9$ and $12$ instead---still a difference of 3 as reported, but the relative scaling has changed.
+
+This assumption could make sense if we feel that the true error in experiments is proportional to the reported error. If the reported error is statistical noise, then this also means that the noise standard deviations are proportional to the standard deviations of the unknown systematic errors. This can be reasonable, as a study which seeks to reduce statistical noise to a certain level will also try to correspondingly reduce systematic errors (otherwise, why reduce the noise?). But the assumption of _exact_ proportionality is quite strong.
 
 ### Inference
 
-To do inference, we estimate $c$ and then directly estimate $\theta$ by plugging in $\hat c$. Note that in practice, when estimating $c^2$, it is often clipped to be at least $1$.
+To do inference, we estimate $c$ and then directly estimate $\theta$ by plugging in $\hat c$. Note that in practice, when estimating $c^2$, it is often truncated to be at least $1$. One procedure to do this can be stated briefly as:
+
+1. Calculate the weighted mean $\bar{y}_w=\frac{\sum_{i=1}^n w_iy_i}{\sum_{i=1}^nw_i}$, where $w_i=1/\sigma_i^2$. This will be our point estimate, the center of the interval. Note that if $c=1$, the standard deviation of $\bar{y}_w$ is $\sigma_w=\frac{1}{\sqrt{\sum_{i=1}^nw_i}}=\sqrt{\sum_{i=1}^n1/\sigma_i^2}$.
+2. Calculate $\chi^2=\sum_{i=1}^n w_i(\bar{y}_w-x_i)^2$. If $c=1$, this will follow a Chi-squared distribution with degrees of freedom $n-1$, and will correspondingly have expectation $n-1$. Take $\hat c=\max(\sqrt{\chi^2/(n-1)},1)$, thus creating an estimate of $c$ truncated to be $\geq 1$.
+3. Now we can plug this in as a true value of $c$, and take the standard deviation of $\bar{y}_w$ as $\hat c\sigma_w=\sqrt{\sum_{i=1}^n1/c\sigma_i^2}=\frac{c}{\sqrt{\sum_{i=1}^nw_i}}$.
+4. Finally, form the $1-\alpha$ confidence interval for $\theta$ as $$\bar{y}_w\pm z_{1-{\alpha/2}}\cdot \hat c\sigma_w,$$ where $z_{1-\alpha/2}$ is the $z$-statistic at the desired level (e.g. for a $1\sigma$ or $68.27\%$ interval, we use $z_{1-\alpha/2}=1$; for a $95\%$ interval, we have $\alpha=0.05$ and $z_{1-\alpha/2}=1.96$)
+
+This procedure is almost exactly what is used by the Particle Data Group; they use two additional heuristics [@navas2024review, Section 5.2.2]:
+
+- If the estimate $\hat c$ is "very large," indicating large discrepancies in the experimental results not accounted for by noise, the average and interval may not be reported.
+- If the errors $\sigma_i$ vary widely, only the experiments with smaller errors are used to compute $\chi^2$. Specifically, only the experiments with $\sigma_i\leq 3\sigma_w\sqrt{n}$. This cutoff is "arbitrarily chosen" [@navas2024review, Section 5.2.2].
+
+This procedure is also close to what is used by CODATA, except their $\hat c$ is chosen heuristically as that which makes the normalized absolute residuals of the $y_i$'s from the weighted mean $\bar y_w$ less than two [@tiesinga2021codata]. Note that their work is considerably more complex than the scenarios we consider, because they simulatenously compute large sets of constants which depend on each other.
 
 As with the Random Effects model, we can also do inference by placing informative or uninformative priors on $c^2$ and $\theta$ [@bodnar2014adjustment].
 
@@ -141,7 +181,7 @@ Let $K$ be the number of experiments which yield an underestimate. From Assumpti
 
 ### Inference
 
-For simplicity, let's suppose $y_i\neq y_j$ for all $i\neq j$, and that $y_i\neq \theta$ for all $i$.
+For simplicity, let's suppose $y_i\neq y_j$ for all $i\neq j$, and that $y_i\neq \theta$ for all $i$. (This will happen with probability 1 if the $y_i$'s are continuously distributed)
 
 Let's consider the order statistics $y_{(1)}<\ldots< y_{(n)}$ (simply the sorted $y_1,\ldots,y_n$). For simplicity of notation, let $y_{(n+1)}=\infty$.
 
@@ -152,10 +192,10 @@ If $K=k$, we know that $y_{(k)}$ is an underestimate and therefore $y_{(k)}< \th
 -   Whenever $\theta<y_{(k+1)}$, $y_{(k+1)}$ is an overestimate, and therefore $K\leq k$.
 
 In short, we have
-\begin{equation*}K\leq k\Longleftrightarrow \theta< y_{(k+1)},\end{equation*}
+\begin{equation*}K\leq k\leftrightarrow \theta< y_{(k+1)},\end{equation*}
 from which we directly get
 \begin{equation*}P(K\leq k)=P(\theta<y_{(k+1)}).\end{equation*}
-The uncertainty in the LHS is over $y_{(k+1)}$. $P(K\leq k)$ can be directly calculated from the Binomial CDF.
+We are framing this as a frequentist problem where $\theta$ is unknown, but fixed (not a random variable). Thus the uncertainty in the RHS is over $y_{(k+1)}$. $P(K\leq k)$ can be directly calculated from the Binomial CDF.
 
 How can we turn these nice facts into a $1-\alpha$ confidence interval? Say we want a symmetric interval. For our lower bound $l$, pick the smallest $j$ such that $P(K\leq j)\leq \alpha/2$, and let the lower bound be $l=y_{(j+1)}$. We will get that:
 \begin{equation*}P(\theta<l)=P(\theta<y_{(j+1)})=P(K\leq j)\leq \alpha/2 .\end{equation*}
@@ -261,7 +301,7 @@ Examining these assumptions in the real world will inform the sensitivity analys
 
 ## Historical studies
 
-Some quantities, like the density of the Earth $\rho_\oplus$ or the speed of light $c$, have two desirable qualities:
+Some quantities, like the density of the Earth $\rho$ or the speed of light $c$, have two desirable qualities:
 
 - A long history of attempted estimates.
 - A modern value which is either exact or known much more exactly than before.
@@ -274,13 +314,13 @@ Note that because many historical estimates do not come with an associated uncer
 
 Since the 1980's, the speed of light, $c$, is defined as an exact constant in meters per second---the measurements of it became so precise that bulk of the remaining uncertainity was in the imprecision in the definition of the meter, thus the meter itself was redefined in terms of $c$.
 
-The speed of light has been the subject of hundreds of experiments since the 1600's. We collated a dataset of 157 such experiments, spanning from 1676 to 1978. We relied on a three reports which collected many experiments to create our dataset [@birge1934velocity; @froome1971velocity; @raynaud2013determining], and added two of the final determinations [@evenson1972speed; @blaney1974measurement]. For some experiments which are duplicated between reports, we typically pulled the data from the report which offered the most significant digits. Note that our resulting dataset of experiments is intended to be largely illustrative, and we will avoid drawing any strong conclusions from it.
+The speed of light has been the subject of hundreds of experiments since the 1600's. We collated a dataset of 157 such experiments, spanning from 1676 to 1978. We relied on three reports which collected many experiments to create our dataset [@birge1934velocity; @froome1971velocity; @raynaud2013determining], and added two of the final determinations [@evenson1972speed; @blaney1974measurement]. For some experiments which are duplicated between reports, we typically pulled the data from the report which offered the most significant digits. Note that our resulting dataset of experiments is intended to be largely illustrative, and we will avoid drawing any strong conclusions from it.
 
 ### The density of the Earth
 
-The density of the Earth, $\rho_\oplus$, is now generally agreed to be about 5.513. Though there is uncertainity in further digits, it is sufficiently precise when compared with historical estimates to offer another good case study.
+The density of the Earth, $\rho$, is now generally agreed to be about 5.513. Though there is uncertainity in further digits, it is sufficiently precise when compared with historical estimates to offer another good case study.
 
-We have collated a dataset of 37 experiments measuring $\rho_\oplus$, spanning 1687 to 1942, from three sources [@burgess1902value; @sagitov1970current; @hughes2006mean].
+We have collated a dataset of 37 experiments measuring $\rho$, spanning 1687 to 1942, from three sources [@burgess1902value; @sagitov1970current; @hughes2006mean].
 
 ## Fundamental particles
 
@@ -455,6 +495,7 @@ We see again that the CODATA interval is wider than that given by our BR---this 
 :label: fig:Gh-wider
 ![](figs/G1.pdf)
 ![](figs/h1.pdf)
+:::
 
 Since the Sign Test can target only a discrete set of coverages, for the $G$ data it will (under the assumptions) achieve coverage 79.0%, and 77.3% for the $h$ data. For comparison, in this figure the intervals from CODATA, RE, and BR are expanded to target these coverage levels. The CODATA, RE, and BR intervals from [](#fig:G),[](#fig:h) have been scaled them by the corresponding $z_{\alpha/2}$.
 
