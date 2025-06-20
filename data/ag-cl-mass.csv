@@ -1,0 +1,36 @@
+# ratio of mass of silver to chlorine is Ag:Cl
+# if Ag:Cl = 100:x, this table is the value of x
+# the true value of x is (35.453/107.8682) * 100 = 32.866961718
+# Data taken from "A Recalculation of the Atomic Weights", Clarke, 1910, pg. 79,82,83
+# Uncertainties given are PROBABLE ERROR, not 1sigma!!!
+# Under Normal assumption, can convert prob. err. to 1sigma by dividing
+# by 0.6745 (see pg. 9)
+# Clarke aggregated to 32.8606 with proberr 0.00031
+# 
+author,value,proberr
+# direct measurements (pg. 79)
+Maumené,32.736,0.0077
+Berzelius,32.757,0.0190
+Turner,32.832,0.0038
+Penny,32.836,0.0012
+Stas,32.8445,0.0008
+Marignac,32.854,0.0024
+Richards+Wells,32.861,0.00065
+Richerds+Wells,32.8668,0.0005
+Dumas,32.8755,0.0044
+# incidental measurements (pg. 82)
+Ebaugh,32.841,0.0050
+Richards+Archibald,32.847,0.0024
+Archibald,32.848,0.0020
+Archibald,32.850,0.0012
+Lenher,32.853,0.0060
+Baxter+Wilson,32.864,0.0054
+Baxter+Coffin,32.8657,0.0034
+Baxter+Hines,32.8670,0.0012
+# indirect estimates (pg. 83)
+Richards+Parker,32.842,0.0054
+Thorpe,32.855,0.0092
+Richards,32.8575,0.0029
+Baxter+Hines+Frevert,32.861,0.0016
+Richards+Staehler,32.869,0.0009
+Richards+Wells,32.873,0.0010

@@ -24,7 +24,7 @@ year,author,value,uncertainty,ref
 1778,Bode,306870,, [6]
 1785,Boscovich,307810,, [6]
 1809,Delambre,303320,, [6]
-1834,Wheatstone,402336,, [3]
+# 1834,Wheatstone,402336,, [3] (ELECTRICITY-NOT LIGHT)
 # 1838,Arago,308300,, [6]
 1841,Lindenau,300038,470, [6]
 1842,Lundahl+Eklöf,299174,630, [6]
