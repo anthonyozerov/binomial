@@ -1,0 +1,9 @@
+# value given under O=16 mass standard
+# true value: 14.007/15.999 * 16 = 14.007875492
+# Clarke aggregated to 14.0074 with proberr 0.00018
+# source: Clarke 1910 pg 51
+method,value,proberr
+N2,14.0073,0.00020
+N2O,14.0037,0.00095
+NO,14.0083,0.00055
+NH3,14.0089,0.00065

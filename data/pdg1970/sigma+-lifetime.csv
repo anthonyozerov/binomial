@@ -1,0 +1,24 @@
+# lifetime of Sigma+ in units 10^{-10}s
+# PDG ID: S019T
+# taken from PDG review of particle physics, august 1970, pg. 38
+# 2024 "ground truth" value: 0.8018 with 1sigma 0.0026
+# commented rows not included in PDG's august 1970 average
+# OR included in modern average (and thus should be excluded for comparison)
+value,uncertainty,author,year
+0.98,0.16,PUSCHEL,1960
+0.82,0.34,EVANS,1960
+0.85,0.13,FREDEN,1960
+0.80,0.084,KAPLON,1960
+0.76,0.18,CHIESA,1961
+0.75,0.11,BERTHELOT,1961
+0.82,0.10,BARKAS,1961
+0.749,0.056,GRARD,1962
+0.765,0.04,HUMPHREY,1962
+0.84,0.10,BHOWMIK,1964
+0.84,0.09,BALTAY,1965
+0.76,0.03,CARAYAN,1965
+# 0.83,0.032,CHANG,1966
+# 0.86,0.15,CHIEN,1966
+# 1.10,0.24,CHIEN,1966
+0.80,0.07,COOK,1966
+# 0.803,0.008,BARLCUTAU,1969

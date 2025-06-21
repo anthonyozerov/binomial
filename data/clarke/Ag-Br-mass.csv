@@ -1,0 +1,37 @@
+# ratio of mass of silver to bromine is Ag:Br
+# if Ag:Br = 100:x, this table is the value of x
+# the true value of (79.904/107.8682) * 100 = 74.075584834
+# Data taken from "A Recalculation of the Atomic Weights", Clarke, 1910, pg. 87,91,92
+# Uncertainties given are PROBABLE ERROR, not 1sigma!!!
+# Under Normal assumption, can convert prob. err. to 1sigma by dividing
+# by 0.6745 (see pg. 9)
+# Clarke aggregated to 74.0802 with proberr 0.00029
+#
+author,value,proberr
+# direct measurements (pg. 87)
+Richards,74.065,0.0035
+Richards+Collins+Heimrod,74.0706,0.0078
+Huntington,74.071,0.0072
+Scott,74.072,0.0023
+Marignac,74.077,0.0030
+Baxter,74.0785,0.00047
+Stas,74.081,0.0006
+Baxter,74.082,0.0018
+# incidental measurements (pg. 91)
+Thorpe+Laurie,74.062,0.0143
+Richards+Marigold,74.073,0.0027
+Richards+Baxter,74.074,0.0033
+Richards,74.075,0.0029
+Richards+Cushman,74.080,0.0030
+Archibald,74.080,0.0040
+Richards+Archibald,74.081,0.0017
+Thorpe,74.082,0.0176
+Baxter+Hines+Frevert,74.084,0.0010
+Baxter+Hines,74.084,0.0011
+# indirect estimates (pg. 92)
+Richards,74.077,0.0024
+Richards+Rogers,74.077,0.0016
+Cooke,74.078,0.0219
+Richards+Mueller,74.081,0.0012
+Huntington,74.086,0.0098
+Baxter,74.087,0.0049

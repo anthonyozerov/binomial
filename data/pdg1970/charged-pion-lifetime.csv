@@ -1,0 +1,20 @@
+# lifetime of charged pion in units 10^{-9}s
+# PDG ID: S008T
+# taken from PDG review of particle physics, august 1970, pg. 22
+# 2024 "ground truth" value: 26.033 with 1sigma 0.005
+# note difference in magnitude used between 1970 (-9) and 2024 (-8)
+# commented rows not included in PDG's august 1970 average
+# OR included in modern average (and thus should be excluded)
+year,author,value,uncertainty
+1957,CROWE,25.6,0.5
+1960,ANDERSON,25.6,0.8
+1960,ASHKIN,25.46,0.32
+# 1962,MERRISON,
+# 1965,ECKHAUSE,26.02,0.04
+1966,BARDON,25.6,0.3
+1966,DUNAITSEV,25.9,0.3
+# 1966,KINSEY,26.40,0.08
+1966,LOBKOWICZ,26.67,0.25
+# 1967,AYRES,26.6,0.2
+# 1967,NORDBERG,26.04,0.05
+1969,GREENBERG,26.02,0.04

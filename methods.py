@@ -207,7 +207,7 @@ def random_effects_hksj(values, sigmas, coverage=None, talpha=None):
 # based on "Combining Information: Statistical Issues and Opportunities for Research"
 # (1992) pg 145
 # https://nap.nationalacademies.org/catalog/20865/combining-information-statistical-issues-and-opportunities-for-research
-def random_effects_mle(values, sigmas, coverage=None, zalpha=None):
+def random_effects_mle(values, sigmas, coverage=None, zalpha=None, truth=None):
     """
     Compute confidence intervals using the maximum likelihood estimator.
 
@@ -240,9 +240,10 @@ def random_effects_mle(values, sigmas, coverage=None, zalpha=None):
 
     sigmas2 = sigmas**2
     tau2 = 0
+
     for i in range(40):
         w = 1 / (sigmas2 + tau2)
-        muhat = np.sum(w * values) / np.sum(w)
+        muhat = np.sum(w * values) / np.sum(w) if truth is None else truth
         tau2 = np.sum(w**2 * ((values - muhat)**2 - sigmas2)) / np.sum(w**2)
         tau2 = np.max([0, tau2])
     
@@ -251,7 +252,7 @@ def random_effects_mle(values, sigmas, coverage=None, zalpha=None):
 
     return interval, muhat, sigma, np.sqrt(tau2)
 
-def birge(values, sigmas, coverage=None, zalpha=None, pdg=False, codata=False):
+def birge(values, sigmas, coverage=None, zalpha=None, pdg=False, codata=False, truth=None):
     """
     Compute confidence intervals using Birge ratio model.
 
@@ -294,7 +295,11 @@ def birge(values, sigmas, coverage=None, zalpha=None, pdg=False, codata=False):
     # calculate precision-weighted standard error
     u = np.sqrt(1 / np.sum(1 / sigmas**2))
     # calculate precision-weighted mean
-    wm = u**2 * np.sum(values / sigmas**2)
+    if truth is None:
+        wm = u**2 * np.sum(values / sigmas**2)
+    else:
+        wm = truth
+    
     # calculate chi-squared statistic
     if not codata:
         if pdg:

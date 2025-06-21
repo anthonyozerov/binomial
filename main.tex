@@ -7,6 +7,7 @@
 \usepackage{hyperref}
 \usepackage{float}
 \usepackage{graphicx}
+\usepackage{microtype}
 
 \usepackage{enumitem}
 \setlist{nosep}
@@ -165,7 +166,7 @@ To perform his ``adjustment,'' Birge used a combination of heuristics and statis
 
 By 1932, Birge developed what is now known as the ``Birge ratio'' method for least-squares. The first clear statement of it is in \cite{birge1932calculation}. After obtaining the weighted mean by least-squares as usual, he computes the ratio of the error in the weighted mean calculated by ``external consistency'' (using the residuals between experiments and the weighted mean) to that calculated by ``internal consistency'' (using each experiment's own given error). This is a useful quantitative diagnostic tool: if the ratio is large, it indicates that the individual experiments have more spread between them than we would expect from their individual errors. But he goes beyond diagnostics, and, when calculating the error of the weighted mean, he advocates choosing the larger of the ``external consistency'' and ``internal consistency'' errors. This effectively forms the Birge ratio method which will be described more precisely in a later section. However, Birge also writes that when the ratio is large, the errors should be adjusted manually with personal judgment.
 
-This task of aggregating well-defined physical constants has only expanded from Birge's time to the present, and now includes constants representing particle properties in the standard model.
+Aggregations of fundamental physical constants are now performed by the Committee on Data of the International Science Council (CODATA). But this task of aggregating well-defined physical constants has only expanded, and now includes constants for particle properties in the standard model, performed by the Particle Data Group (PDG) in its frequently-updated \textit{Review of Particle Physics}. Both CODATA and the PDG use slight variations on Birge's method. The challenges of dealing with systematic uncertainty are illustrated by PDG's ``History Plots'' \citep[pg. 19, Figure 1]{navas2024review}, which show how, as PDG incorporated new experiments and discarded old ones over time, the resulting estimates of some particle properties have varied outside of the range of their error bars.
 
 An additional task has also arisen with the development of data- and simulation-driven Earth science. This involves estimates of less well-defined (and sometimes in principle unknowable) quantities. For example, we may consider the amount of global warming in the past or future, or the historical and present-day rate of ice mass loss in polar regions. Here, looking at multiple estimates is sometimes known as ``intercomparison.'' Some intercomparison studies simply seek to review the differences in the methods and results, while others seek to statistically combine multiple estimates into one.
 
@@ -663,36 +664,33 @@ The key difficulty with such an empirical analysis is that there are few quantit
 
 In this section, we are not interested in directly evaluating the performance of the methods presented in Section \ref{sec:methods}. Only the validity of their assumptions. After this section, and the simulation study, we will return such of these datasets which have ground truths and conduct a direct performance evaluation. This way, we will have insights from the simulation study to frame our discussion.
 
-\subsection{Historical studies}\label{historical-studies}
+\subsection{Historical studies with modern ground truth}\label{historical-studies}
 
-Some quantities, like the density of the Earth $\rho$ or the speed of light $c$, have two desirable qualities:
-
+Some physical quantities have the desirable quality that many experiments have been done in the past to measure them, and there is now a modern value which is either exact or known much more exactly than before. This makes them interesting case studies to evaluate the different assumptions presented in a setting where the ground-truth $\theta$ is known. We will use three sets of datasets, including measurements of:
 \begin{itemize}
-
-\item
-  A long history of attempted estimates.
-\item
-  A modern value which is either exact or known much more exactly than before.
+  \item Longstanding physical constants [17th century - 20th century].
+  \item Atomic mass ratios [mid-19th century - early 20th century].
+  \item Properties of fundamental particles [mid-20th century].
 \end{itemize}
+Thus we hope to cover a range of subjects and time periods from the modern history of the physical sciences. Unfortunately, we offer no datasets from 21st-century science, as those quantities which have been the subject of multiple studies tend to be those for which we do not yet have something approaching a ground-truth. Thus the insights we gain from this little investigation may not be so applicable to, for example, aggregating studies that reported Bayesian credible intervals---a more recent development.
 
-This makes them interesting case studies to evaluate the different assumptions, and investigate the performance of the different methods in a real-world setting where the ground truth is known.
+We think this collection of datasets is an important advance. As we will see in a later section, it enables real-world stress tests of methods for meta-analysis in physics without resorting to a simulation with friendly assumptions.
 
-Note that because many historical estimates do not come with an associated uncertainity, we will only be able to use the Sign Test and Signed-Rank Test on the complete datasets.
-
-\subsubsection{Datasets over time}
+\subsubsection{Long-term datasets}
 
 \begin{figure}
   \includegraphics[width=\textwidth]{figs/historical.pdf}
-  \caption{The three historical datasets visualized, with the deviation of the result from the true value on the $x$-axis against the year on the $y$-axis. The symmetric logarithmic scale is used for the $x$-axis so that small deviations are still visible. In each dataset, we see the results converging towards the true value over time as experimental or observational techniques improve. We also see a remarkable symmetry in that the results converge towards the true value from both sides---we do not see, for example, results starting low then increasing towards the truth.}
+  \caption{The three long-term historical datasets visualized, with the deviation of the result from the true value on the $x$-axis against the year on the $y$-axis. The symmetric logarithmic scale is used for the $x$-axis so that small deviations are still visible. In each dataset, we see the results converging towards the true value over time as experimental or observational techniques improve. We also see a remarkable symmetry in that the results converge towards the true value from both sides---we do not see, for example, results starting low then increasing towards the truth.}
+  \label{fig:historical}
 \end{figure}
 
-We have obtained three datasets than span centuries of science: measurements of the speed of light, of the density of the Earth, and of the Astronomical Unit. Each has a measurement history spanning centuries and a reduction in error of orders of magnitude over time.
+We have obtained three datasets than span centuries of science: measurements of the speed of light, of the density of the Earth, and of the Astronomical Unit. Each has seen a reduction in error of orders of magnitude over time.
 
-We don't expect any of our datasets to be complete or without errors. We collected them largely from review papers which list many experiments. We encountered several difficulties, including:
+We don't expect any of these datasets to be complete or without errors. We collected them largely from review papers which list many experiments, and encountered several difficulties, including:
 \begin{itemize}
   \item Some experiments are duplicated between reviews, with different values given. We typically pulled the data from the review which offered the most significant digits, or from that which offered an uncertainity if only one of them did.
   \item The date given for a result has no clear definition---it may be either the date of the result's publication, or the date when the experimental data was collected.
-  \item Some experimentalists report a sequence of similar results in consecutive years---in this case we typically pick one of the results.
+  \item Some experimentalists report a sequence of similar results in consecutive years---in this case we typically pick one of the results arbitrarily.
   \item Some reviews round data.
   \item Some reviews give data in nonstandard units, or narratively in relative units. We have tried to calculate the result appropriately.
 \end{itemize}
@@ -704,7 +702,7 @@ Since the 1980's, the speed of light, $c$, is defined as an exact constant in me
 
 The speed of light has been the subject of hundreds of experiments since the 1600's. We collated a dataset of 157 such experiments, spanning from 1676 to 1978. We relied on three reports which collected many experiments to create our dataset \citep{birge1934velocity,froome1971velocity,raynaud2013determining}, and added two of the final determinations \citep{evenson1972speed,blaney1974measurement}.
 
-For the speed of light, we will take $\theta=c=299792458\mathrm{m}/\mathrm{s}$.
+For the ground truth, we will take $\theta=c=299792458\mathrm{m}/\mathrm{s}$.
 
 \paragraph{The density of the Earth}
 
@@ -714,33 +712,107 @@ We have collated a dataset of 37 experiments measuring $\rho$, spanning from 168
 
 \paragraph{The Astronomical Unit}
 
-The Astronomical Unit is, roughly, the mean distance between the Earth and the Sun. The definition and thus the "correct" or "target" value has varied over time, but this is negligible compared to the errors in the observations. It is now fixed at $149597870700$ meters.
+The Astronomical Unit is, roughly, the mean distance between the Earth and the Sun. The definition and thus the ``correct'' or ``target'' value has varied over time, but this is negligible compared to the errors in the observations. It is now fixed at $149597870700$ meters.
 
 We have collected 27 estimates of this distance from \citet{atkins1964determination} and \citet{standish2004astronomical}.
 
 \subsubsection{Chemical datasets}
 
-We obtain from \citet{clarke1910recalculation} several chemical datasets of interest. As described in the Section \ref{sec:history}, Clarke used least squares to combine estimates of various chemical properties. In doing so, he also helpfully provided tables of the values that went into his combinations. We will focus on his calculations of \textit{atomic mass ratios}, as those in particular have not had any drift in unit definitions which would make them incomporable to modern values without adjustments which we are not qualified to make.
+\begin{figure}
+  \includegraphics[width=\textwidth]{figs/chemical.pdf}
+  \caption{The six chemical datasets obtained from \citet{clarke1910recalculation}. Results are arranged in order of their reported uncertainties. Shaded regions indicate the $1\sigma$ intervals indicated by modern values for their masses. We can see vast underestimations of error in the top four plots.}
+  \label{fig:chemical}
+\end{figure}
+
+We obtain from \citet{clarke1910recalculation} several chemical datasets of interest, shown in Figure \ref{fig:chemical}. As described in the Section \ref{sec:history}, Clarke used least squares to combine estimates of various chemical properties. In doing so, he also helpfully provided tables of the values that went into his combinations. We will focus on his calculations of \textit{atomic mass ratios}, as those in particular have not had any drift in unit definitions which would make them incomporable to modern values without adjustments which we are not qualified to make.
+
+Note that \citet{clarke1910recalculation} reports uncertainties in terms of ``probable error.'' We have converted these to $1\sigma$ uncertainties by dividing by $0.6745$---the appropriate conversion factor under a Normal assumption (also made by \citet{clarke1910recalculation}).
+
+\subsubsection{Particle datasets}
+
+\begin{figure}
+  \includegraphics[width=\textwidth]{figs/particles.pdf}
+  \caption{The six particle datasets obtained from \citet{roos1970review}. Results are arranged in order of publication, with more recent results lower. Shaded regions are the $1\sigma$ intervals indicated by \citet{navas2024review}. The datasets tend to show a narrowing of uncertainty and convergence to the truth over time.}
+  \label{fig:particle}
+\end{figure}
+
+Although we don't have real ``ground truths'' for various properties of fundamental particles, the estimates offered by \citet{navas2024review} in many cases have uncertainties which, when compared to the experimental state-of-the-art in the mid-twentieth century, let them serve as an effective ground truth. We therefore compile some datasets from PDG's August 1970 edition \citet{roos1970review}. We chose this edition arbitrarily as a middle ground between older editions which are based on fewer available experimental results and newer editions which do not state older experimental results. We compile datasets according to these criteria:
+\begin{itemize}
+  \item Several experimental results available.
+  \item Modern uncertainty much lower than the range of the results.
+\end{itemize}
+And apply the following processing steps:
+\begin{itemize}
+  \item Exclude any experiments not used in the average by \citet{roos1970review}
+  \item For experiments with two-sided errors, take the average of the two and round up.
+  \item Exclude any experiments which are used in the modern average by \citet{navas2024review}.
+\end{itemize}
+The datasets are shown in Figure \ref{fig:particle}.
 
 \subsubsection{Checking assumptions}
 
+
 \begin{table}
   \centering
-  \caption{Summary of results from historical studies: evaluating symmetry assumptions.}
+  \caption{Summary of results of symmetry investigation on historical studies. For each study, $\theta$ is the ``ground truth.'' In some datasets, there is no real ground-truth, so the modern $1\sigma$ interval is taken as the range of plausible values for $\theta$. Where different plausible values for $\theta$ lead to different results this is indicated by an interval in the table. The columns are: $n$: the number of experiments in the dataset. $\#(>\theta)$: the number of experiments with a value larger than $\theta$. Prop. $>\theta$: the proportion of experiments with a value larger than $\theta$. Prop. $p$-value: the $p$-value from the hypothesis test with $H_0$: $P(y_i>\theta)=0.5$, $H_1$: $P(y_i>\theta)\neq 0.5$ (supposing that $y_i>\theta$, $y_j>\theta$ are independent events for $i\neq j$). Sign-rank $p$-value: the $p$-value from the sign-rank test, intended to test the symmetry of the distribution of $y_i$'s about $\theta$.}
+  \label{tab:hist-sym}
   \smaller
-  \begin{tabular}{l|rrrrr}
-    Dataset & $\#$ & $\#>\theta$ & Prop. $>\theta$ & Prop. $p$-value & Sign-rank $p$-value \\\hline
-    Speed of light & 157 & 80 & 0.5096 & 0.8732 & 0.7811 \\
-    Density of Earth & 36 & 16 & 0.4444 & 0.6177 & 0.2655 \\
-    Astronomical Unit & 27 & 11 & 0.4074 & 0.4421 & 0.1624 \\
-    Oxygen to Hydrogen mass ratio & 15 & 11 & 0.7333 & 0.1185 & 0.0103 \\
-    Silver to Chlorine mass ratio & 23 & 4 & 0.1739 & 0.0026 & 0.0001 \\
+  \begin{tabular}{l|rcccc}
+    Dataset & $n$ & $\#>\theta$ & Prop. $>\theta$ & Prop. $p$-value & Sign-rank $p$-value \\\hline
+    Density of Earth & 36 & 16 & 0.44 & 0.62 & 0.27 \\
+    Speed of light & 157 & 80 & 0.51 & 0.87 & 0.78 \\
+    Astronomical Unit & 27 & 11 & 0.41 & 0.44 & 0.16 \\
+    Oxygen to Hydrogen mass ratio & 15 & [10, 11] & [0.67, 0.73] & [0.12, 0.3] & [0.0034, 0.064] \\
+    Silver to Chlorine mass ratio & 23 & [2, 7] & [0.087, 0.3] & [6.6e-05, 0.093] & [4.5e-06, 0.0043] \\
+    Silver to Iodine mass ratio & 13 & [3, 4] & [0.23, 0.31] & [0.092, 0.27] & [0.033, 0.04] \\
+    Silver to Bromine mass ratio & 24 & [12, 19] & [0.5, 0.79] & [0.0066, 1] & [0.002, 0.81] \\
+    Nitrogen mass (O=16) & 4 & [1, 3] & [0.25, 0.75] & [0.62, 1] & [0.38, 1] \\
+    Carbon mass (O=16) & 4 & 0 & 0 & 0.12 & 0.12 \\
+    $\Lambda$ mean lifetime $\mathrm{[10^{-10}s]}$ & 18 & 6 & 0.33 & 0.24 & [0.081, 0.18] \\
+    $\Sigma^+$ mean lifetime $\mathrm{[10^{-10}s]}$ & 13 & [6, 8] & [0.46, 0.62] & [0.58, 1] & [0.68, 0.89] \\
+    $m_{\pi^\pm}-m_{\pi^0}$ $\mathrm{[MeV]}$ & 7 & 4 & 0.57 & 1 & 1 \\
+    $K^\pm$ mean lifetime $\mathrm{[10^{-8}s]}$ & 9 & 5 & 0.56 & 1 & [0.5, 0.57] \\
+    $\pi^\pm$ mean lifetime $\mathrm{[10^{-9}s]}$ & 7 & 1 & 0.14 & 0.12 & 0.3 \\
+    $\eta$ mass $\mathrm{[MeV]}$ & 8 & 7 & 0.88 & 0.07 & 0.11 \\
   \end{tabular}
 \end{table}
 
-The simplest assumption to check is $P(y_i>\theta)=0.5$. In this dataset, we find that 77 experiments produced underestimates, while 80 experiments produced overestimates. This results in an empirical proportion of $y_i>\theta$ of 0.51, which is in surprisingly close agreement with the assumption. The $p$-value for the hypothesis test with $H_0: P(y_i>\theta)=1/2$, $H_1: P(y_i>\theta)\neq 1/2$ is $0.87$. We can further test the stronger assumption that the $y_i$'s are symmetrically distributed about $\theta$. The one-sample sign-rank test actually works for this purpose. We obtain a $p$-value of $0.78$.
+\paragraph{Symmetry assumptions} The simplest assumptions to evaluate are $P(y_i>\theta)=0.5$ and the symmetry of $y_i$ about $\theta$. Results relating to these are shown in Table \ref{tab:hist-sym}. We find remarkable agreement with the first assumption in our datasets. Surprisingly, for the speed of light, 77 experiments produced underestimates, while 80 experiments produced overestimates. We conducted hypothesis tests with $H_0: P(y_i>\theta)=1/2$, $H_1: P(y_i>\theta)\neq 1/2$ for each dataset, and find $p<0.05$ in 2/13 datasets. To test the stronger assumption that the $y_i$'s are symmetrically distributed about $\theta$, we can use the one-sample sign-rank test. Results for this test are more mixed, with $p<0.05$ in 4/13 datasets.
 
-Clearly, the distribution is not Normal. But this does not mean that $y_i$ is not normal about $\theta$---we could consider a case where the $y_i$ are Normal about $\theta$, but have $\sigma_i$'s of different magnitudes. This would indeed produce a more-peaked-than-Normal distribution of $y_i$'s like the one we see.
+We have no reason to expect the distribution of the $y_i$'s to be Normal within each set of experiments. But this does not mean that $y_i$ is not normal about $\theta$---we could consider a case where the $y_i$ are Normal about $\theta$, but have $\sigma_i$'s of different magnitudes. This would indeed produce a more-peaked-than-Normal distribution of $y_i$'s like the ones we see in Figure \ref{fig:historical}. It is in principle not be possible to use this data to disprove that $y_i\sim\mathcal{N}(\theta,?)$, because we can always choose an appropriate variance ``$?$'' to make the data consistent with this model. However, we can see by eye that $y_i\sim\mathcal{N}(\theta,\sigma_i^2)$ cannot always be the case---especially in the chemical datasets, we see that the $\sigma_i$'s are far too low for this to be likely. We will now investigate the different models for such underestimation.
+
+\paragraph{Models for systematic error} 
+
+\begin{table}
+\centering
+\caption{Summary of results of systematic error model investigation on historical studies. We compare the log-likelihood of the Birge Ratio, Random Effects, and Fixed Effect models at the maximum likelihood estimator. But, because we have a ground truth $\theta$ (or a best choice from a relatively narrow interval), we do not estimate $\hat\theta_{\mathrm{MLE}}$, and only estimate $\hat{c}_{\mathrm{MLE}}$ for the Birge Ratio and $\hat{\tau}_{\mathrm{MLE}}$ for Random Effects under the known $\theta$. Since each of these requires the $\sigma_i$ information, we exclude experiments with no $\sigma_i$ information, leading to reductions in $n$ in the historical datasets compared to Table \ref{tab:hist-sym} and the exclusion of the AU dataset. The Fixed Effect model is uniformly dominated by the Birge Ratio and Random Effects because it is a submodel of both. The Birge Ratio model achieves much higher log-likelihoods in the historical datasets (which causes the total to be in favor of Birge), while Random Effects achieves higher log-likelihoods in the chemical and particle datasets. Values of ``$\approx-\infty$'' indicate a likelihood so low as to be numerically intractable.}
+\label{tab:hist-syst}
+\smaller
+\begin{tabular}{lrrrr}
+  \hline Dataset & $n$ & Birge $\hat\ell$ & RE $\hat\ell$ & FE $\hat\ell$ \\\hline
+  Density of Earth & 18 & 21.9 & 16.9 & -56.6 \\
+  Speed of light & 99 & -493 & -611 & -611 \\\hline
+  Oxygen to Hydrogen mass ratio & 15 & 16.4 & 25.4 & $\approx-\infty$ \\
+  Silver to Chlorine mass ratio & 23 & 51.4 & 43.9 & -452 \\
+  Silver to Iodine mass ratio & 13 & 14.7 & 16.8 & $\approx-\infty$ \\
+  Silver to Bromine mass ratio & 24 & 73.8 & 85.3 & 34.9 \\
+  Nitrogen mass (O=16) & 4 & 21 & 19.7 & 19.7 \\
+  Carbon mass (O=16) & 4 & 12.1 & 12.7 & -284 \\\hline
+  $\Lambda$ mean lifetime $\mathrm{[10^{-10}s]}$ & 18 & 2.7 & 6.58 & -5.08 \\
+  $\Sigma^+$ mean lifetime $\mathrm{[10^{-10}s]}$ & 13 & 15.8 & 15.8 & 15.8 \\
+  $m_{\pi^\pm}-m_{\pi^0}$ $\mathrm{[MeV]}$ & 7 & 13.1 & 14.7 & 13 \\
+  $K^\pm$ mean lifetime $\mathrm{[10^{-8}s]}$ & 9 & 9.45 & 9.51 & 9.45 \\
+  $\pi^\pm$ mean lifetime $\mathrm{[10^{-9}s]}$ & 7 & -3.1 & -3.93 & -3.93 \\
+  $\eta$ mass $\mathrm{[MeV]}$ & 8 & -18.5 & -19.8 & -20.5 \\\hline
+  Total (historical) & 117 & -472 & -594 & -668 \\
+  Total (chemistry) & 83 & 189 & 204 & $\approx-\infty$ \\
+  Total (particle) & 62 & 19.5 & 22.8 & 8.85 \\\hline
+  Total & 262 & -263 & -367 & $\approx-\infty$ \\
+  \hline
+  \end{tabular}
+\end{table}
+
+Table \ref{tab:hist-sym} shows results for a comparison of the Birge Ratio, Random Effects, and Fixed Effect models.
 
 \subsection{Fundamental particles}\label{fundamental-particles}
 

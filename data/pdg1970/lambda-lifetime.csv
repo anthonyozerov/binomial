@@ -1,0 +1,27 @@
+# lifetime of lambda in units 10^{-10}s
+# PDG ID: S018T
+# taken from PDG review of particle physics, august 1970, pg. 36
+# 2024 "ground truth" value: 2.617 with 1sigma 0.010
+# commented rows not included in PDG's august 1970 average.
+year,author,value,uncertainty
+1958,Boldt,2.63,0.21
+1959,Crawford,2.72,0.16
+1960,Bowen,2.72,0.28
+1962,Chang,2.60,0.24
+1962,Humphrey,2.69,0.11
+1963,Block,2.36,0.06
+1963,Chretien,2.76,0.20
+1964,Hubbard,2.59,0.09
+1964,Kreisler,2.31,0.10
+1964,Schwartz,2.59,0.07
+1965,Baltay,2.51,0.16
+1965,Hill,2.6,0.1
+1966,Buran,2.35,0.09
+# 1966,Chien,2.50,0.14
+# 1966,Chien,2.70,0.20
+1966,Engelmann,2.452,0.055
+1967,Auerbach,2.68,0.12
+1967,Badier,2.44,0.15
+1967,Badier,2.55,0.15
+# 1968,Grimm,2.535,0.035
+1968,Hepp,2.47,0.08

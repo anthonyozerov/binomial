@@ -1,0 +1,13 @@
+# eta meson mass in MeV (PDG ID S014M)
+# taken from PDG review of particle physics, august 1970, pg. 32
+# 2024 "ground truth" value: 547.862 with 1sigma 0.017
+# commented rows not included in PDG's august 1970 average.
+year,author,value,uncertainty
+1962,BASTIEN,549.0,1.2
+1962,PICKUP,546.0,4.0
+1962,ALFF,548.0,1.0
+1963,DELCOURT,549.3,2.9
+1964,FOELSCHE,549.0,0.7
+1964,KRAEMER,552.0,3.0
+1965,FOSTER,548.2,0.65
+1966,JAMES,555.0,2.0

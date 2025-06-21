@@ -6,7 +6,7 @@
 # Under Normal assumption, can convert prob. err. to 1sigma by dividing
 # by 0.6745 (see pg. 9)
 # Clarke aggregated to 32.8606 with proberr 0.00031
-# 
+#
 author,value,proberr
 # direct measurements (pg. 79)
 Maumené,32.736,0.0077

@@ -1,0 +1,20 @@
+# lifetime of charged kaon in units 10^{-8}s
+# PDG ID: S010T
+# data taken from PDG review of particle physics, august 1970, pg. 23
+# 2024 "ground truth" value: 1.2380 with 1sigma 0.0020
+# commented rows not included in PDG's august 1970 average
+# OR included in modern average (and thus should be excluded for comparison)
+year,author,value,uncertainty
+1956,ILOFF,0.95,0.31
+1958,EISENBERG,1.60,0.3
+1959,BURROWES,1.21,0.06
+1960,FREDEN,1.38,0.24
+1961,BARKAS,1.25,0.20
+1961,BHOWNIK,1.27,0.30
+1961,NORDIN,1.31,0.08
+# 1961,NORDIN,1.24,0.07
+1962,BOYARSKI,1.231,0.011
+# 1965,FITCH,1.2433,0.0038
+# 1966,LOBKOWICZ,1.2265,0.0036
+1967,FORD,1.221,0.011
+# 1967,GIACOMELL,1.244,0.005

@@ -1,0 +1,23 @@
+# ratio of mass of silver to iodine is Ag:I
+# if Ag:I = 100:x, this table is the value of x
+# the true value of x is (126.90447/107.8782) * 100 = 117.6368071
+# Data taken from "A Recalculation of the Atomic Weights", Clarke, 1910, pg. 98
+# Uncertainties given are PROBABLE ERROR, not 1sigma!!!
+# Under Normal assumption, can convert prob. err. to 1sigma by dividing
+# by 0.6745 (see pg. 9)
+# Clarke aggregated to 117.6351 with proberr 0.00034
+#
+author,value,proberr
+Marignac,117.5335,0.0036
+Stas,117.5325,0.0024
+Stas,117.5373,0.0015
+Stas,117.5334,0.0014
+Scott,117.6421,0.0054
+Koethner+Aeuer,117.6413,0.0045
+Baxter,117.6314,0.0059
+Baxter,117.6412,0.0029
+Baxter,117.6479,0.0005
+Baxter,117.6573,0.0007
+Baxter,117.6525,0.0015
+Baxter,117.6585,0.0012
+Gallo,117.5770,0.0074

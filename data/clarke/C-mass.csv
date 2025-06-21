@@ -1,0 +1,9 @@
+# value given under O=16 mass standard
+# true value: 12.0107/15.999 * 16 = 12.01145716
+# Clarke aggregated to 12.0007 with proberr 0.0003
+# source: Clarke 1910 pg 58
+method,value,proberr
+C-combust,12.0017,0.0005
+CO-combust,12.0046,0.0008
+CO-density,12.0031,0.0008
+CO2-density,11.9972,0.0005
