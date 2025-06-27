@@ -1,9 +1,9 @@
-# lifetime of Sigma+ in units 10^{-10}s
+# $\Sigma^+$ mean lifetime
+# $\mathrm{[10^{-10}s]}$
+# RPP 2024 "ground truth" value: 0.8018
+# 1sigma: 0.0026
 # PDG ID: S019T
-# taken from PDG review of particle physics, august 1970, pg. 38
-# 2024 "ground truth" value: 0.8018 with 1sigma 0.0026
-# commented rows not included in PDG's august 1970 average
-# OR included in modern average (and thus should be excluded for comparison)
+# RPP aug. 1970 pg: 38
 value,uncertainty,author,year
 0.98,0.16,PUSCHEL,1960
 0.82,0.34,EVANS,1960

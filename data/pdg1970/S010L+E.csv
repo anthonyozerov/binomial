@@ -1,0 +1,18 @@
+#$\lambda_{+}$ (${K_{e3}}^{\pm}$ decay $f_{+}$ lin.~dep.)
+#
+# RPP 2024 "ground truth" value: 0.02959
+# 1sigma: 0.00025
+# PDG ID: S010L+E
+# RPP aug. 1970 pg: 26-27
+year,author,value,uncertainty
+1962,BROWN,0.038,0.045
+1964,JENSEN,-0.010,0.029
+1964,BORREANI,-0.04,0.05
+# 1966,BELLOTTI,0.025,0.018
+1967,BELLOTTI,0.045,0.018
+1967,IMLAY,0.016,0.016
+1967,KALMUS,0.028,0.014
+# 1968,BOTTERIL,0.08,0.04
+1968,EISLER,-0.02,0.10
+# 1969,HAIDT,0.053,0.026
+1970,BOTTERIL,0.045,0.015

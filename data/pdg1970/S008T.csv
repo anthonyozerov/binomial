@@ -1,10 +1,10 @@
-# lifetime of charged pion in units 10^{-9}s
+# $\pi^\pm$ mean lifetime
+# $\mathrm{[10^{-9}s]}$
+# RPP 2024 "ground truth" value: 26.033
+# 1sigma: 0.005
 # PDG ID: S008T
-# taken from PDG review of particle physics, august 1970, pg. 22
-# 2024 "ground truth" value: 26.033 with 1sigma 0.005
+# RPP aug. 1970 pg: 22
 # note difference in magnitude used between 1970 (-9) and 2024 (-8)
-# commented rows not included in PDG's august 1970 average
-# OR included in modern average (and thus should be excluded)
 year,author,value,uncertainty
 1957,CROWE,25.6,0.5
 1960,ANDERSON,25.6,0.8

@@ -1,0 +1,16 @@
+# $\Sigma(1385)^-$ mass
+# $\mathrm{[MeV]}$
+# RPP 2024 "ground truth" value: 1387.2
+# 1sigma: 0.5
+# PDG ID: B043M-
+# RPP aug. 1970 pg. 112
+year,author,value,uncertainty
+1961,DAHL,1382.0,3.0
+1961,ELY,1376.0,4.4
+1964,COOPER,1392.0,6.2
+# 1964,HUWE,1385.3,1.5
+1965,ARMENTERO,1384.0,1.0
+1965,SMITH,1391.5,2.6
+1965,SMITH,1399.8,4.0
+1966,LONDON,1389.0,9.0
+# 1967,SIEGEL,1390.7,2.0

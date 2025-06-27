@@ -1,0 +1,16 @@
+# $K^0_L$ lifetime
+# $\mathrm{[10^{-6}s]}$
+# RPP 2024 "ground truth" value: 0.05116
+# 1sigma: 0.00021
+# PDG ID: S013T
+# RPP aug. 1970 pg: 29
+# note magnitude difference between RPP 1970 and 2025
+# PDG USES CONSTRAINED FIT
+year,author,value,uncertainty
+1959,CRAWFORD,0.081,0.028
+1958,BARDON,0.051,0.019
+1962,DARMON,0.053,0.006
+1964,FUJII,0.053,0.006
+1965,ASTBURY,0.061,0.014
+1967,DEVLIN,0.0515,0.0014
+# 1967,LOWYS,0.050,0.005

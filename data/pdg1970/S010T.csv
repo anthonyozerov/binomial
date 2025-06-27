@@ -1,9 +1,9 @@
-# lifetime of charged kaon in units 10^{-8}s
+# $K^\pm$ mean lifetime
+# $\mathrm{[10^{-8}s]}$
+# RPP 2024 "ground truth" value: 1.2380
+# 1sigma: 0.0020
 # PDG ID: S010T
-# data taken from PDG review of particle physics, august 1970, pg. 23
-# 2024 "ground truth" value: 1.2380 with 1sigma 0.0020
-# commented rows not included in PDG's august 1970 average
-# OR included in modern average (and thus should be excluded for comparison)
+# RPP aug. 1970 pg: 23
 year,author,value,uncertainty
 1956,ILOFF,0.95,0.31
 1958,EISENBERG,1.60,0.3

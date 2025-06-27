@@ -1,0 +1,12 @@
+# $\mu$ mean lifetime
+# $\mathrm{[10^{-6}s]}$
+# RPP 2024 "ground truth" value: 2.1969811
+# 1sigma: 0.0000022
+# PDG ID: S004T
+# RPP aug. 1970 pg: 21
+year,author,value,uncertainty
+1962,FARLEY,2.198,0.001
+1962,LUNDY,2.203,0.004
+1963,ECKHAUSE,2.202,0.003
+1963,MEYER,2.197,0.002
+1963,MEYER,2.198,0.002

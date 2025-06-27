@@ -1,8 +1,9 @@
-# lifetime of lambda in units 10^{-10}s
+# $\Lambda$ mean lifetime
+# $\mathrm{[10^{-10}s]}$
+# RPP 2024 "ground truth" value: 2.617
+# 1sigma: 0.010
 # PDG ID: S018T
-# taken from PDG review of particle physics, august 1970, pg. 36
-# 2024 "ground truth" value: 2.617 with 1sigma 0.010
-# commented rows not included in PDG's august 1970 average.
+# RPP aug. 1970 pg: 36
 year,author,value,uncertainty
 1958,Boldt,2.63,0.21
 1959,Crawford,2.72,0.16

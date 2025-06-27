@@ -1,0 +1,12 @@
+# $K^0$ mass
+# $\mathrm{[MeV]}$
+# RPP 2024 "ground truth" value: 497.611
+# 1sigma: 0.013
+# PDG ID: S011M
+# RPP aug. 1970 pg: 27
+# PDG USES CONSTRAINED FIT
+year,author,value,uncertainty
+1964,CHRISTENS,498.1,0.4
+1965,KIM,497.44,0.33
+1966,BALTAY,498.9,0.5
+1967,FITCH,497.44,0.50

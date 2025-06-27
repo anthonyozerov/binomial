@@ -3,20 +3,29 @@
 \usepackage{parskip}
 
 \usepackage{amsmath}
+\usepackage{bm}
 \usepackage{amssymb}
-\usepackage{hyperref}
+
 \usepackage{float}
 \usepackage{graphicx}
 \usepackage{microtype}
-
 \usepackage{enumitem}
 \setlist{nosep}
 
 \usepackage{minted}
 
 \usepackage{natbib}
-\bibliographystyle{unsrtnat}
+\bibliographystyle{plainnat}
 \renewcommand{\bibsection}{\section{\bibname}} %make bibliography show in TOC
+% \usepackage{backref}
+\usepackage[backref=page]{hyperref}
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd{\BR@backref}{\newblock}{\newblock[Cited on pg.~}{}{}
+\patchcmd{\BR@backref}{\par}{]\par}{}{}
+\makeatother
+
+\usepackage{siunitx}
 
 \renewcommand{\listingscaption}{Code Snippet}
 
@@ -29,6 +38,9 @@
 
 \usepackage{fancyhdr}
 \pagestyle{fancy}
+\fancyhead{}
+\fancyhead[L]{\rightmark}
+
 
 \setcounter{tocdepth}{2}
 
@@ -271,6 +283,17 @@ There are many methods that can be used to aggregate estimates. As we will see, 
 
 \subsection{Independent experiments}
 
+Let's first introduce some notation. If we have experiments $y_1,\ldots,y_n$ with corresponding uncertainties $\sigma_1,\ldots,\sigma_n$, let $\bar{y}$ be the inverse-variance weighted mean:
+\[\bar{y}=\frac{\sum_{i=1}^n y_i/\sigma_i^2}{\sum_{i=1}^n 1/\sigma_i^2}\]
+Now, we can define the $Q$ statistic as:
+\[Q=\sum_{i=1}^n (y_i-\bar{y})^2/\sigma_i^2\]
+And the statistic $H^2$ as:
+\[H^2=Q/(n-1)\]
+Finally, we can define the $I^2$ statistic as:
+\[I^2=(H^2-1)/H^2\]
+
+% this section taken from baker2012meta p 113
+
 \subsubsection{Random Effects}\label{random-effects}
 
 The Random Effects model and method originated in the medical meta-analysis literature \citep{dersimonian1986meta}. It is now common in meta-analyses in medicine and the social sciences, but uncommon in the physical sciences.
@@ -306,7 +329,7 @@ The Random Effects model can and has been extended to the case where there are c
 
 The model can also be extended to include information from study-level variables (e.g.~year of publication, method used) in the distribution of $\theta_i$ to explain more of the spread in study-level effects.
 
-\subsubsection{Fixed Effect}
+\subsubsection{Fixed Effect}\label{sec:fixed-effect}
 
 For comparison with RE we also present the Fixed Effect (FE) model.
 
@@ -330,9 +353,27 @@ Inference under FE is much simpler than under RE.
   The standard deviation of $\bar{y}_w$ is $\sigma_w=\frac{1}{\sqrt{\sum_{i=1}^nw_i}}=\sqrt{\sum_{i=1}^n1/\sigma_i^2}$. Therefore we can form a $1-\alpha$ confidence interval for $\theta$ as \[\bar{y}_w\pm z_{1-{\alpha/2}}\cdot \hat c\sigma_w,\] where $z_{1-\alpha/2}$ is the $z$-statistic at the desired level (e.g.~for a $1\sigma$ or $68.27\%$ interval, we use $z_{1-\alpha/2}=1$; for a $95\%$ interval, we have $\alpha=0.05$ and $z_{1-\alpha/2}=1.96$)
 \end{enumerate}
 
-\subsubsection{Birge Ratio}
+\subsubsection{Birge Ratio}\label{sec:birge}
 
-The Birge ratio originated as a way to measure the inconsistency of different estimates and their uncertainties (a quantitative version of ``these confidence intervals don't overlap''). The Birge Ratio method (BR) is effectively what is now used by CODATA (under the name ``Least-Squares Adjustment'' \citep{tiesinga2021codata}) when they combine estimates of fundamental constants from multiple experiments. (Historically this has not always been the case, as in the 2002 adjustment's determination of $G$ \citep{mohr2005codata}). It is also what is used by the Particle Data Group in its \emph{Review of Particle Physics} when aggregating estimates of the properties of fundamental particles \citep[Section 5.2.2]{navas2024review}.
+As described in Section \ref{sec:history}, the Birge ratio originated as a way to measure the inconsistency of different estimates and their uncertainties (a quantitative version of ``these confidence intervals don't overlap''). The Birge Ratio method (BR) is effectively what is now used by CODATA (under the name ``Least-Squares Adjustment'' \citep{tiesinga2021codata}) when they combine estimates of fundamental constants from multiple experiments. (Historically this has not always been the case, as in the 2002 adjustment's determination of $G$ \citep{mohr2005codata}). It is also what is used by the Particle Data Group in its \emph{Review of Particle Physics} when aggregating estimates of the properties of fundamental particles \citep[Section 5.2.2]{navas2024review}.
+
+It seems that \citet{stanley2015neither} were the first to argue for this method in the non-physics meta-analysis literature, under the name ``unrestricted weighted least squares.'' However, we see it recognized and dismissed as early as \citet{thompson1999explaining}.\footnote{See the following discussion:
+  \begin{quote}
+The rationale for using a multiplicative factor for variance inflation is weak. The idea that the
+variance of the estimated effect within each study should be multiplied by some constant has little
+intuitive appeal, and leads to the same dominance of large studies over small studies that has
+been critized in the context of fixed effect meta-analysis. Thus, despite the fact that such
+analyses are easy to carry out, and might therefore be used as a quick and approximate way of
+assessing the impact of residual heterogeneity on the results, we do not recommended them in
+practice. The use of an additive component of variance to represent heterogeneity between studies
+is more intuitively appealing, and of course is the usual way of representing heterogeneity in meta-
+analysis without covariates as well as in many other situations.
+
+\hfill{-- \citet[pg. 2705]{thompson1999explaining}}
+  \end{quote}
+}
+
+
 
 \paragraph{Assumptions}\label{assumptions-2}
 
@@ -355,7 +396,7 @@ To do inference, we estimate $c$ and then directly estimate $\theta$ by plugging
 \item
   Calculate the weighted mean $\bar{y}_w=\frac{\sum_{i=1}^n w_iy_i}{\sum_{i=1}^nw_i}$, where $w_i=1/\sigma_i^2$. This will be our point estimate, the center of the interval. Note that if $c=1$, the standard deviation of $\bar{y}_w$ is $\sigma_w=\frac{1}{\sqrt{\sum_{i=1}^nw_i}}=\sqrt{\sum_{i=1}^n1/\sigma_i^2}$.
 \item
-  Calculate $\chi^2=\sum_{i=1}^n w_i(\bar{y}_w-x_i)^2$. If $c=1$, this will follow a Chi-squared distribution with degrees of freedom $n-1$, and will correspondingly have expectation $n-1$. Take $\hat c=\max(\sqrt{\chi^2/(n-1)},1)$, thus creating an estimate of $c$ truncated to be $\geq 1$.
+  Calculate $\chi^2=\sum_{i=1}^n w_i(\bar{y}_w-y_i)^2$. If $c=1$, this will follow a Chi-squared distribution with degrees of freedom $n-1$, and will correspondingly have expectation $n-1$. Take $\hat c=\max(\sqrt{\chi^2/(n-1)},1)$, thus creating an estimate of $c$ truncated to be $\geq 1$.
 \item
   Now we can plug this in as a true value of $c$, and take the standard deviation of $\bar{y}_w$ as $\hat c\sigma_w=\sqrt{\sum_{i=1}^n1/\hat c\sigma_i^2}=\frac{\hat c}{\sqrt{\sum_{i=1}^nw_i}}$.
 \item
@@ -531,6 +572,50 @@ Where $\tau^2$ is unknown. Of course, this model will not be true, because the $
 We can use the standard confidence interval for the mean of a Normal distribution:
 \%TODO
 
+\subsubsection{Different systematic errors}
+
+In the parametric models discussed so far which account for systematic error (i.e.~the Birge ratio and Random Effects), the different experiments are posited to have the same ``amount'' of systematic error---they are all underestimating error by a scaling factor, or by an additive factor, but this factor is the same for all of the data points. As discussed by \citet{taylor1982numerical}, this may not be a good assumption. Indeed, suppose we have two points $y_i,y_j$, with $\sigma_i=\sigma_j$, and that $y_i$ is an obvious outlier while $y_j$ is right in the main cluster of observations. Under both the Birge Ratio method and Random Effects, the adjusted errors of the two points will be the same (BR: $\hat c\sigma_i=\hat c\sigma_j$, RE: $\sigma_i+\hat \tau=\sigma_j+\hat \tau$). This seems like an undesirable property.
+
+We can come up with a couple models to address this:
+\begin{itemize}
+  \item As an equivalent of the Birge Ratio: $y_i\sim\mathcal{N}(\theta,\sigma_i^2c_i^2)$.
+  \item As an equivalent of Random Effects: $y_i\sim\mathcal{N}(\theta,\sigma_i^2+\tau_i^2)$.
+\end{itemize}
+These models are easy to write down, but inference is another matter. It is of course possible to do Bayesian inference by setting priors on $\theta$ and $c_i$ or $\tau_i$ (perhaps with a hierarchical prior on $c_i$ or $\tau_i$) and using MCMC or deriving the posterior analytically. But, in the author's experimentation, the resulting posterior for $\theta$ is fairly sensitive to the choice of prior for $c_i$ or $\tau_i$, and it is not obvious \textit{a priori} what distribution these follow.
+
+In general, we can think of both of the models above as variants on the model $y_i\sim(\theta,{\sigma_i^\prime}^2)$, where $\sigma_i^\prime$ is the true unknown standard deviation of $y_i$, which is presumably somehow related to the given $\sigma_i$. The models above will effectively induce priors on $\sigma_i^\prime$ that depend on $\sigma_i$.
+
+In setting priors for $c_i$ or $\tau_i$ (or, equivalently, for $\sigma_i'$), we will encounter similar difficulties as those discussed by \citet{gelman2006prior} for setting the prior on the group-level variance parameter in the two-level Normal hierarchical model with unknown mean and variances. In particular, the result can be very sensitive to the choice of prior distribution, even between different ``noninformative'' priors.
+
+However, we have the additional difficulty that each parameter $\sigma_i^\prime$ has only \textit{one} observation associated with it. To perform an inference that we can trust, we need to either somehow group the $\sigma_i^\prime$'s or give them believable informative priors.
+
+\citet[sec. 5.1]{merkatas2019shades} introduces a particular version of ``Random Effects with different factors,'' which we can write in our notation as:
+\begin{itemize}
+  \item $\tau_i^2=\sum_{k=1}^K\pi_{i,k}\lambda^2_k$
+  \item $\lambda^2_k\sim\mathrm{HalfCauchy}(m_k)$, where we are parameterizing the Half-Cauchy distribution by its median $m_k$, and:
+  \[
+  m_k=\begin{cases}
+    \frac{1}{n}\sum_{i=1}^n|\sigma_i-\mathrm{median}(\sigma_1,\ldots,\sigma_n)| & K=1\\
+    \frac{k-1}{K-1}\min(\sigma_1,\ldots,\sigma_j)+\frac{K-k}{K-1}\,\mathrm{sd}(y_1,\ldots,y_j) & K>1
+    \end{cases}
+  \]
+  In words, when $K=1$, $m_k$ is the mean absolute deviation of the $\sigma_i$'s from their median, and when $K>1$, the $m_k$'s are equally spaced from the smallest $\sigma_i$ to the empirical standard deviation of the $y_i$'s.
+  \item $\bm{\pi}_{i}\sim\mathrm{Dirichlet}(\bm{1}_K)$
+  \item $1\leq K\leq n$, and $K$ is chosen within these bounds by LOOIC (``Leave-One-Out cross-validation Information Criterion'') \citep[sec. 5.2]{merkatas2019shades}.
+\end{itemize}
+The idea is that, in the case where $K\ll n$, instead of directly estimating $n$ values $\tau_i^2$, we only estimate $K\ll n$ values $\lambda_k^2$, and each $\tau_i^2$ ends up as a weighted mean of these $\lambda_k^2$. Inducing such a correlation in $\tau_1^2,\ldots,\tau_n^2$ will effectively pull them towards each other, helping constrain the posterior on each $\tau_i^2$.
+
+\citet{forbes2016hierarchical}, thinking of each $\sigma_i$ as estimate of the unknown corresponding $\sigma_i'$, proposes the following model (adapted to our notation):
+\begin{itemize}
+  \item $y_i\sim \mathcal{N}(\theta,{\sigma_i^\prime}^2)$
+  \item $1/\sigma_i'^2\sim\mathrm{Gamma}(\nu_i/2,\nu_i\sigma^2_i/2)$ (shape-rate parameterization)
+  \item $\nu_i$ are fixed or have their own prior \citep[sec. 3.1, 3.3]{forbes2016hierarchical}.
+\end{itemize}
+Such a model in fact makes it possible for the $\sigma_i$'s to be overestimates of the true standard deviations $\sigma_i^\prime$ (of course, if this is undesirable, the $\sigma_i^\prime$'s can be truncated). For values of $\nu_i$ that are not very close to zero, this model effectively gives each $\sigma_i^\prime$ an informative prior that is perhaps believable, as it is related to the given $\sigma_i$.
+
+%TODO: look at RUKHIN 2019 HOMOGENEOUS
+% AND POSSOLO & ELSTER https://iopscience.iop.org/article/10.1088/0026-1394/51/3/339
+
 \subsection{Forecast combining}
 
 \subsubsection{Linear pool}
@@ -662,7 +747,7 @@ To examine independence, we will look at the autocorrelation of the time series 
 
 The key difficulty with such an empirical analysis is that there are few quantities where we have both a ground truth and enough experiments estimating it to evaluate the above assumptions---if we had a ground truth, there probably wouldn't be so many experiments! Fortunately, in physics, some quantities have been estimated for centuries, with errors decreasing by orders of magnitude over time. We will analyze a couple cases of this, then move to a large-scale analysis of experiments in data from the Particle Data Group---where there are many experiments, but no ground truth.
 
-In this section, we are not interested in directly evaluating the performance of the methods presented in Section \ref{sec:methods}. Only the validity of their assumptions. After this section, and the simulation study, we will return such of these datasets which have ground truths and conduct a direct performance evaluation. This way, we will have insights from the simulation study to frame our discussion.
+In this section, we are not interested in directly evaluating the performance of the methods presented in Section \ref{sec:methods}. Only the validity of their assumptions. After this section, and the simulation study, we will return to such of these datasets as have ground truths and conduct a direct performance evaluation. This way, we will have insights from the simulation study to frame our discussion.
 
 \subsection{Historical studies with modern ground truth}\label{historical-studies}
 
@@ -674,7 +759,7 @@ Some physical quantities have the desirable quality that many experiments have b
 \end{itemize}
 Thus we hope to cover a range of subjects and time periods from the modern history of the physical sciences. Unfortunately, we offer no datasets from 21st-century science, as those quantities which have been the subject of multiple studies tend to be those for which we do not yet have something approaching a ground-truth. Thus the insights we gain from this little investigation may not be so applicable to, for example, aggregating studies that reported Bayesian credible intervals---a more recent development.
 
-We think this collection of datasets is an important advance. As we will see in a later section, it enables real-world stress tests of methods for meta-analysis in physics without resorting to a simulation with friendly assumptions.
+We think this collection of datasets is an important advance. As we will see in this section, it enables a general investigation of the nature of data from ``independent'' experiments. But, as we will see in a later section, it also serves as a good real-world stress test of methods for meta-analysis in physics which doesn't rely on a simulation with friendly assumptions.
 
 \subsubsection{Long-term datasets}
 
@@ -720,7 +805,7 @@ We have collected 27 estimates of this distance from \citet{atkins1964determinat
 
 \begin{figure}
   \includegraphics[width=\textwidth]{figs/chemical.pdf}
-  \caption{The six chemical datasets obtained from \citet{clarke1910recalculation}. Results are arranged in order of their reported uncertainties. Shaded regions indicate the $1\sigma$ intervals indicated by modern values for their masses. We can see vast underestimations of error in the top four plots.}
+  \caption{The four chemical datasets obtained from \citet{clarke1910recalculation}. Results are arranged in order of their reported uncertainties. Shaded regions indicate the $1\sigma$ intervals indicated by modern values for their masses. We can see vast underestimations of error in the top four plots.}
   \label{fig:chemical}
 \end{figure}
 
@@ -728,11 +813,11 @@ We obtain from \citet{clarke1910recalculation} several chemical datasets of inte
 
 Note that \citet{clarke1910recalculation} reports uncertainties in terms of ``probable error.'' We have converted these to $1\sigma$ uncertainties by dividing by $0.6745$---the appropriate conversion factor under a Normal assumption (also made by \citet{clarke1910recalculation}).
 
-\subsubsection{Particle datasets}
+\subsubsection{Particle physics datasets}
 
 \begin{figure}
   \includegraphics[width=\textwidth]{figs/particles.pdf}
-  \caption{The six particle datasets obtained from \citet{roos1970review}. Results are arranged in order of publication, with more recent results lower. Shaded regions are the $1\sigma$ intervals indicated by \citet{navas2024review}. The datasets tend to show a narrowing of uncertainty and convergence to the truth over time.}
+  \caption{The 18 particle physics datasets obtained from \citet{roos1970review}. Results are arranged in order of publication, with more recent results lower. Shaded regions are the $1\sigma$ intervals indicated by \citet{navas2024review}. The datasets tend to show a narrowing of uncertainty and convergence to the truth over time.}
   \label{fig:particle}
 \end{figure}
 
@@ -758,22 +843,8 @@ The datasets are shown in Figure \ref{fig:particle}.
   \label{tab:hist-sym}
   \smaller
   \begin{tabular}{l|rcccc}
-    Dataset & $n$ & $\#>\theta$ & Prop. $>\theta$ & Prop. $p$-value & Sign-rank $p$-value \\\hline
-    Density of Earth & 36 & 16 & 0.44 & 0.62 & 0.27 \\
-    Speed of light & 157 & 80 & 0.51 & 0.87 & 0.78 \\
-    Astronomical Unit & 27 & 11 & 0.41 & 0.44 & 0.16 \\
-    Oxygen to Hydrogen mass ratio & 15 & [10, 11] & [0.67, 0.73] & [0.12, 0.3] & [0.0034, 0.064] \\
-    Silver to Chlorine mass ratio & 23 & [2, 7] & [0.087, 0.3] & [6.6e-05, 0.093] & [4.5e-06, 0.0043] \\
-    Silver to Iodine mass ratio & 13 & [3, 4] & [0.23, 0.31] & [0.092, 0.27] & [0.033, 0.04] \\
-    Silver to Bromine mass ratio & 24 & [12, 19] & [0.5, 0.79] & [0.0066, 1] & [0.002, 0.81] \\
-    Nitrogen mass (O=16) & 4 & [1, 3] & [0.25, 0.75] & [0.62, 1] & [0.38, 1] \\
-    Carbon mass (O=16) & 4 & 0 & 0 & 0.12 & 0.12 \\
-    $\Lambda$ mean lifetime $\mathrm{[10^{-10}s]}$ & 18 & 6 & 0.33 & 0.24 & [0.081, 0.18] \\
-    $\Sigma^+$ mean lifetime $\mathrm{[10^{-10}s]}$ & 13 & [6, 8] & [0.46, 0.62] & [0.58, 1] & [0.68, 0.89] \\
-    $m_{\pi^\pm}-m_{\pi^0}$ $\mathrm{[MeV]}$ & 7 & 4 & 0.57 & 1 & 1 \\
-    $K^\pm$ mean lifetime $\mathrm{[10^{-8}s]}$ & 9 & 5 & 0.56 & 1 & [0.5, 0.57] \\
-    $\pi^\pm$ mean lifetime $\mathrm{[10^{-9}s]}$ & 7 & 1 & 0.14 & 0.12 & 0.3 \\
-    $\eta$ mass $\mathrm{[MeV]}$ & 8 & 7 & 0.88 & 0.07 & 0.11 \\
+    \hline Dataset & $n$ & $\#>\theta$ & Prop. $>\theta$ & Prop. $p$-value & Sign-rank $p$-value \\\hline
+    \input{tables/hist-sym.tex}\\\hline
   \end{tabular}
 \end{table}
 
@@ -785,55 +856,61 @@ We have no reason to expect the distribution of the $y_i$'s to be Normal within 
 
 \begin{table}
 \centering
-\caption{Summary of results of systematic error model investigation on historical studies. We compare the log-likelihood of the Birge Ratio, Random Effects, and Fixed Effect models at the maximum likelihood estimator. But, because we have a ground truth $\theta$ (or a best choice from a relatively narrow interval), we do not estimate $\hat\theta_{\mathrm{MLE}}$, and only estimate $\hat{c}_{\mathrm{MLE}}$ for the Birge Ratio and $\hat{\tau}_{\mathrm{MLE}}$ for Random Effects under the known $\theta$. Since each of these requires the $\sigma_i$ information, we exclude experiments with no $\sigma_i$ information, leading to reductions in $n$ in the historical datasets compared to Table \ref{tab:hist-sym} and the exclusion of the AU dataset. The Fixed Effect model is uniformly dominated by the Birge Ratio and Random Effects because it is a submodel of both. The Birge Ratio model achieves much higher log-likelihoods in the historical datasets (which causes the total to be in favor of Birge), while Random Effects achieves higher log-likelihoods in the chemical and particle datasets. Values of ``$\approx-\infty$'' indicate a likelihood so low as to be numerically intractable.}
+\caption{Summary of results of systematic error model investigation on real-world datasets. We compare the log-likelihood of the Birge Ratio, Random Effects, and Fixed Effect models at the maximum likelihood estimator. But, because we have a ground truth $\theta$ (or a best choice from a relatively narrow interval), we do not estimate $\hat\theta_{\mathrm{MLE}}$, and only estimate $\hat{c}_{\mathrm{MLE}}$ for the Birge Ratio and $\hat{\tau}_{\mathrm{MLE}}$ for Random Effects under the known $\theta$. Since each of these requires the $\sigma_i$ information, we exclude experiments with no $\sigma_i$ information, leading to reductions in $n$ in the historical datasets compared to Table \ref{tab:hist-sym} and the exclusion of the AU dataset. The Fixed Effect model is uniformly dominated by the Birge Ratio and Random Effects because it is a submodel of both. The Birge Ratio model achieves much higher log-likelihoods in the historical datasets (which causes the total to be in favor of Birge), while Random Effects achieves higher log-likelihoods in the chemical and particle datasets.}
 \label{tab:hist-syst}
 \smaller
 \begin{tabular}{lrrrr}
-  \hline Dataset & $n$ & Birge $\hat\ell$ & RE $\hat\ell$ & FE $\hat\ell$ \\\hline
-  Density of Earth & 18 & 21.9 & 16.9 & -56.6 \\
-  Speed of light & 99 & -493 & -611 & -611 \\\hline
-  Oxygen to Hydrogen mass ratio & 15 & 16.4 & 25.4 & $\approx-\infty$ \\
-  Silver to Chlorine mass ratio & 23 & 51.4 & 43.9 & -452 \\
-  Silver to Iodine mass ratio & 13 & 14.7 & 16.8 & $\approx-\infty$ \\
-  Silver to Bromine mass ratio & 24 & 73.8 & 85.3 & 34.9 \\
-  Nitrogen mass (O=16) & 4 & 21 & 19.7 & 19.7 \\
-  Carbon mass (O=16) & 4 & 12.1 & 12.7 & -284 \\\hline
-  $\Lambda$ mean lifetime $\mathrm{[10^{-10}s]}$ & 18 & 2.7 & 6.58 & -5.08 \\
-  $\Sigma^+$ mean lifetime $\mathrm{[10^{-10}s]}$ & 13 & 15.8 & 15.8 & 15.8 \\
-  $m_{\pi^\pm}-m_{\pi^0}$ $\mathrm{[MeV]}$ & 7 & 13.1 & 14.7 & 13 \\
-  $K^\pm$ mean lifetime $\mathrm{[10^{-8}s]}$ & 9 & 9.45 & 9.51 & 9.45 \\
-  $\pi^\pm$ mean lifetime $\mathrm{[10^{-9}s]}$ & 7 & -3.1 & -3.93 & -3.93 \\
-  $\eta$ mass $\mathrm{[MeV]}$ & 8 & -18.5 & -19.8 & -20.5 \\\hline
-  Total (historical) & 117 & -472 & -594 & -668 \\
-  Total (chemistry) & 83 & 189 & 204 & $\approx-\infty$ \\
-  Total (particle) & 62 & 19.5 & 22.8 & 8.85 \\\hline
-  Total & 262 & -263 & -367 & $\approx-\infty$ \\
-  \hline
+  \hline Dataset & $n$ & Birge $\hat\ell$ & RE $\hat\ell$ & FE $\hat\ell$ \\\hline\hline
+  \input{tables/hist-syst.tex}\\\hline
   \end{tabular}
 \end{table}
 
 Table \ref{tab:hist-sym} shows results for a comparison of the Birge Ratio, Random Effects, and Fixed Effect models.
 
-\subsection{Fundamental particles}\label{fundamental-particles}
+\subsection{Large datasets with no ground truth}\label{fundamental-particles}
 
-The Particle Data Group has published estimates of properties of fundamental particles since 1957 (see above for description of their measurement aggregation method). For example, the \emph{top quark} is a fundamental particle, and physicists can measure its mass (a property of the particle). As of the 2025 update, there are 1269 particle properties for which PDG provides an estimate (or ``average'') using their aggregation method which have at least three underlying measurements. Together, these use 6239 underlying measurements. Because there are so many, we can use this dataset to try to get a handle on the distribution of estimates in particle physics. One difficulty will be that we would like to put the measurements on a common scale, but we have no certain ground truth information by which to standardize them (otherwise there would be no need to measure).
+\subsubsection{Dataset descriptions}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\textwidth]{figs/noground_violin.pdf}
+  \caption{Summary statistics of the large datasets with no ground truths.}\label{fig:noground-violin}
+\end{figure}
+
+Figure \ref{fig:noground-violin} provides summary statistics of the datasets described below.
+
+\paragraph{Particle physics} The Particle Data Group has published estimates of properties of fundamental particles since 1957 (see Section \ref{sec:birge} for a description of their measurement aggregation method). For example, the \emph{top quark} is a fundamental particle, and physicists can measure its mass (a property of the particle). As of the 2025 update, there are 1269 particle properties for which PDG provides an estimate (or ``average'') using their aggregation method which have at least three underlying measurements. Together, these use 6239 underlying measurements. Because there are so many, we can use this dataset to try to get a handle on the distribution of estimates in particle physics. One difficulty will be that we would like to put the measurements on a common scale, but we have no certain ground truth information by which to standardize them (otherwise there would be no need to measure).
+
+\paragraph{Key comparisons} To both ensure the consistency of measurement standards and evaluate the competency of national measurement laboratories, BIPM organizes ``key comparisons,'' where a number of laboratories measure the same quantity. We have obtained a subset of key comparisons on measurements of radionuclide activity whose digitization is described in \cite{coulon2021digitalization}.
+
+\paragraph{Psychology replications} A comparison to a setting closer to home for most meta-analysis research may be fruitful. But we would still like it to be somewhat like our physical science analyses, where studies agree exactly on the target estimand. A good dataset to look at is therefore multi-site replications of a study. The Many Labs 2 project \citep{klein2018many} offers one such dataset, with 25 estimands and a total 1414 independent estimates. Because these are replications, each will try to follow the same experimental protocol. Thus the source of extra heterogeneity will largely be the different samples (different groups of people experimented on).\footnote{Small deviations from the protocol or an incompletely-specified protocol may also effect results. For example, the color of the walls in room which the experiment takes place in is probably not specified in the protocol, but we can expect that it will have a tiny (likely undetectable) effect on participant behavior.} In physics, on the contrary, the source of heterogeneity is in the different instruments and methods are used.
+
+% TODO: add many labs 1
+
+\paragraph{Medical meta-analyses} We obtain from \citet{baker2013meta} a set of 14 meta-analyses of a total of 551 underlying medical studies. Note that we exclude the pravastatin dataset described as we were unable to reproduce the summary statistics shown in \citet{baker2013meta}.
+
+\paragraph{PDG 2011} We obtain, also from \citet{baker2013meta}, 19 sets of results from the 2011 PDG RPP. These have a total of 192 underlying measurements. We include this dataset for closer comparison with prior work, and to examine whether results change between the dataset of \citeauthor{baker2013meta} and ours, which have different inclusion criteria.
+
+Note that we exclude the $t\bar{t}$ cross section dataset described as it includes results known to PDG to be correlated \citep{pdg2011topquark}. We also include only the values used by PDG in its averages, instead of considering the whole set of experiments as done by \citet{baker2013meta}. This is because some values are excluded from averages due to not being independent or being included in later results.
 
 \subsubsection{Distribution of measurements}\label{distribution-of-measurements}
 
-For a given property of a particle, say we have $n$ measurements $y_1,\ldots,y_n$ with associated given standard deviations $\sigma_1,\ldots,\sigma_n$. We'd like to examine the distributional assumptions in generating $y_i$. The strongest assumption we can make is the Fixed Effects assumption that $y_i\overset{ind}{\sim}\mathcal{N}(\theta,\sigma_i^2)$, but we don't know the ground truth $\theta$. Let's compute their precision-weighted mean $\bar{y}=\frac{1}{S}\sum_{i=1}^n\frac{y_i}{\sigma_i^2}$, where $S=\sum_{i=1}^n \frac{1}{\sigma_i^2}$. This is equivalent to the aggregated estimate provided by PDG. Now we can consider the residuals $y_i-\bar{y}$. If $y_i\overset{ind}{\sim}\mathcal{N}(\theta,\sigma_i^2)$, then:
-\[y_i-\bar{y}\sim \mathcal{N}\left(0, \sigma_i^2(1-\frac{1}{\sigma_i^2S})^2+\frac{S-\frac{1}{\sigma_i^2}}{S^2}\right).\]
-Ideally, we'd like to put all of these $y_i-\bar{y}$ residuals from all different particle properties on the same scale, as now their distribution depends on the $\sigma_i$'s within each particle property. But we can simply divide $y_i-\bar{y}$ by the square root of the variance term given above. This will yield standardized residuals which, supposing that $y_i\overset{ind}{\sim} \mathcal{N}(\mu,\sigma_i^2)$, will follow a standard Normal distribution $\mathcal{N}(0,1)$. Do they?
+For a given set of experiments/studies, say we have $n$ results $y_1,\ldots,y_n$ with associated given standard deviations $\sigma_1,\ldots,\sigma_n$. We'd like to examine the distributional assumptions in generating $y_i$. The strongest assumption we can make is the Fixed Effects assumption that $y_i\overset{ind}{\sim}\mathcal{N}(\theta,\sigma_i^2)$, but we don't know the ground truth $\theta$. Let's compute their precision-weighted mean $\bar{y}=\frac{1}{S}\sum_{i=1}^n\frac{y_i}{\sigma_i^2}$, where $S=\sum_{i=1}^n \frac{1}{\sigma_i^2}$.\footnote{This is the same as the point estimate we would obtain from Fixed Effect (Section \ref{sec:fixed-effect}) or the Birge Ratio (Section \ref{sec:birge}). The Birge Ratio is used by PDG.} Now we can consider the residuals $y_i-\bar{y}$. If $y_i\overset{ind}{\sim}\mathcal{N}(\theta,\sigma_i^2)$, then:
+\[y_i-\bar{y}\sim \mathcal{N}\left(0, \sigma_i^2\left(1-\frac{1}{\sigma_i^2S}\right)^2+\frac{S-\frac{1}{\sigma_i^2}}{S^2}\right).\]
+Ideally, we'd like to put all of these $y_i-\bar{y}$ residuals from all different sets of experiments on the same scale, as now their distribution depends on the $\sigma_i$'s within each set. But we can simply divide $y_i-\bar{y}$ by the square root of the variance term given above. This will yield standardized residuals which, supposing that $y_i\overset{ind}{\sim} \mathcal{N}(\mu,\sigma_i^2)$, will follow a standard Normal distribution $\mathcal{N}(0,1)$. Do they?
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\textwidth]{figs/pdg_std_residuals.pdf}
-\caption{Distribution of the residuals of particle property measurements standardized using the method described above. They do not quite follow a Standard Normal distribution, especially evident with extra mass in the tails.}
-\label{fig:pdg-std-residuals}
+\includegraphics[width=\textwidth]{figs/noground-std-resids.pdf}
+\caption{Distribution of the absolute value of the residuals of individual experiments standardized using the method described above. The red line is a folded Standard Normal PDF. None of the datasets quite follow a folded Standard Normal distribution, especially evident with extra mass in the tail.}
+\label{fig:noground-std-resids}
 \end{figure}
 
-As shown in Figure \ref{fig:pdg-std-residuals}, although they are surprisingly close to following a Standard Normal distribution, they do not quite follow it. The distribution is wider than an $\mathcal{N}(0,1)$ distribution, even though if it were true that $y_i\overset{ind}{\sim} \mathcal{N}(\mu,\sigma_i^2)$, the result should be $\mathcal{N}(0,1)$. What can we conclude from this? Intuitively, there are systematics at play which make the $y_i$'s more dispersed about the mean than the given $\sigma_i$'s and a Normal assumption would suggest. More precisely, the assumption $y_i\overset{ind}{\sim} \mathcal{N}(\mu,\sigma_i^2)$ is exactly the Fixed Effects assumption, where there is no systematic error. Therefore, in this dataset of thousands of particle properties in particle physics, performing inference under Fixed Effects assumptions would be suspect.
+As shown in Figure \ref{fig:noground-std-resids}, none of the datasets quite follow a Standard Normal distribution. The distributions are wider than an $\mathcal{N}(0,1)$ distribution, even though if it were true that $y_i\overset{ind}{\sim} \mathcal{N}(\mu,\sigma_i^2)$, the result should be $\mathcal{N}(0,1)$. What can we conclude from this? Intuitively, there are unaccounted-for errors at play which make the $y_i$'s more dispersed about the mean than the given $\sigma_i$'s and a Normal assumption would suggest. Note that including the systematic errors given in the PDG datasets brings them much closer to a Normal distribution, but there is still some overdispersion. The radionuclide, psychology, and medical datasets have more overdispersion than the PDG when systematic errors are included.
 
-The Fixed Effects assumptions are suspect because PDG data does indeed have unaccounted-for systematic errors. But how many datasets have these? Let's go back to the full, unstandardized dataset and examine what values of $\hat c$ and $\hat \tau$ are achieved by the Birge Ratio method and Random Effects in PDG data. Figure \ref{fig:pdg-birge-re} displays this result. Even if there is no unaccounted-for error, it is still possible for $\hat c$ or $\hat \tau$ to be larger than 1 and 0 by random chance. Thus we have added a control to Figure \ref{fig:pdg-birge-re} displaying histograms for $\hat c$ and $\hat \tau$ obtained by resampling the whole dataset according to $y_i\overset{\mathrm{ind}}{\sim}\mathcal{N}(0, \sigma_i)$.\footnote{The calculations of $\hat c$ and $\hat \tau$ are invariant to a shift in the mean, so we don't need to know $\theta$ to perform this resampling experiment.} This creates a hypothetical PDG dataset with no unaccounted-for errors.
+What does this overdispersion mean in practice? The assumption $y_i\overset{ind}{\sim} \mathcal{N}(\mu,\sigma_i^2)$ is exactly the Fixed Effect assumption, where there is no systematic error. Therefore, in any of these datasets, performing inference under Fixed Effect assumptions would be suspect.
+
+The Fixed Effect assumptions is suspect because the datasets indeed have unaccounted-for errors. But how many sets of results have these? Let's go back to the full, unstandardized dataset and examine what values of $\hat c$ and $\hat \tau$ are achieved by the Birge Ratio method and Random Effects in PDG data. Figure \ref{fig:pdg-birge-re} displays this result. Even if there is no unaccounted-for error, it is still possible for $\hat c$ or $\hat \tau$ to be larger than 1 and 0 by random chance. Thus we have added a control to Figure \ref{fig:pdg-birge-re} displaying histograms for $\hat c$ and $\hat \tau$ obtained by resampling the whole dataset according to $y_i\overset{\mathrm{ind}}{\sim}\mathcal{N}(0, \sigma_i)$.\footnote{The calculations of $\hat c$ and $\hat \tau$ are invariant to a shift in the mean, so we don't need to know $\theta$ to perform this resampling experiment.} This creates a hypothetical PDG dataset with no unaccounted-for errors.
 
 \begin{figure}[H]
 \centering
@@ -854,33 +931,36 @@ Let's now proceed to a direct model comparison for those methods which have well
 
 \textbf{Likelihoods}
 
-In our dataset we can compute on each particle property, for Random Effects, the MLE of $\theta$ and $\tau$, for Fixed Effects, the MLE of $\theta$, and for the Birge Ratio, the MLE of $\theta$ and $c$. We can then compute the likelihood of the data at this MLE. We can also calculate standard metrics like the Akaike Information Criterion (AIC) and Bayesian Information Criterion (BIC).\footnote{Recall that if $\ell$ is the log-likelihood, $k$ is the number of parameters, and $n$ is the number of samples, then $\mathrm{BIC}=k\ln(n)-2\ell$ and $\mathrm{AIC}=2k-2\ell$.}  Table \ref{tab:pdg-loglike} displays these results.
-
 \begin{table}
   \centering
-  \caption{MLE log-likelihood (totaled across all particle properties), as well as the BIC and AIC (averaged across particle properties) for the Birge Ratio, Random Effects, and Fixed Effects models on PDG data. The Birge Ratio model is used by PDG.}
-  \label{tab:pdg-loglike}
-  \begin{tabular}{lrrr}
-    \hline
-     & Total log-likelihood & Mean BIC & Mean AIC \\
-    \hline
-    Birge Ratio & -8087.33 & 16.32 & 17.38 \\
-    Random Effects & -8022.13 & 16.21 & 17.27 \\
-    Fixed Effects & -8905.87 & 16.20 & 16.73 \\
-    \hline
-    \end{tabular}
+  \caption{Negative of MLE log-likelihood (totaled across all sets of results in a dataset), as well as the BIC and AIC (averaged across sets of results) for the Birge Ratio (BR), Random Effects (RE), and Fixed Effect (FE) models. Lower is better in each column. The Birge Ratio model is used by PDG. Random Effects is used by BIPM, and in psychology and medical meta-analyses.}
+  \label{tab:noground-loglike}
+  \smaller
+  \begin{tabular}{l|rrr|rrr|rrr}
+  \hline & \multicolumn{3}{c|}{Negative log-likelihood} & \multicolumn{3}{c|}{Mean BIC} & \multicolumn{3}{c}{Mean AIC} \\
+  Dataset & BR & RE & FE & BR & RE & FE & BR & RE & FE\\\hline\input{tables/noground-loglike.tex}
+  \\\hline
+  \end{tabular}
 \end{table}
 
-We should first note that the Birge Ratio and Random Effects models each have two unknown parameters---($\theta,c$) and ($\theta,\tau$) respectively---while the Fixed Effects model has one unknown parameter, $\theta$. So the Birge Ratio and Random Effects models can be compared directly using their log-likelihoods, without needing to account for a difference in the number of estimated parameters. That is, they are equally simple models. In Table \ref{tab:pdg-loglike}, we see that the Random Effects model achieves a larger log-likelihood than the Birge Ratio (and, correspondingly, lower BIC and AIC). This means that under these metrics, the Random Effects model is a better model for PDG data than the Birge Ratio---the model which is used by PDG to infer $\theta$. Before continuing further, let's examine whether the total log-likelihood favors Random Effects due to a few outlier particle properties. Figure \ref{fig:pdg-loglike} is a scatterplot of the Random Effects MLE log-likelihood against that for the Birge Ratio. It shows that particle properties more often favor Random Effects than they do the Ratio, and the Random Effects outperforming Birge Ratio in terms of the total log-likelihood is not solely driven by outliers.
+In our dataset we can compute in each set of results, for Random Effects, the MLE of $\theta$ and $\tau$, for Fixed Effects, the MLE of $\theta$, and for the Birge Ratio, the MLE of $\theta$ and $c$. We can then compute the likelihood of the data at this MLE. We can also calculate standard metrics like the Akaike Information Criterion (AIC) and Bayesian Information Criterion (BIC).\footnote{Recall that if $\ell$ is the log-likelihood, $k$ is the number of parameters, and $n$ is the number of samples, then $\mathrm{BIC}=k\ln(n)-2\ell$ and $\mathrm{AIC}=2k-2\ell$.}  Table \ref{tab:noground-loglike} displays these results.
+
+We should first note that the Birge Ratio and Random Effects models each have two unknown parameters---($\theta,c$) and ($\theta,\tau$) respectively---while the Fixed Effect model has one unknown parameter, $\theta$. So the Birge Ratio and Random Effects models can be compared directly using their log-likelihoods, without needing to account for a difference in the number of estimated parameters. That is, they are equally simple models. In Table \ref{tab:noground-loglike}, we see that in each dataset, the Random Effects model achieves a lower negative log-likelihood (therefore higher log-likelihood) than the Birge Ratio and, correspondingly, lower BIC and AIC. This means that under these metrics, the Random Effects model is a better model for all datasets than the Birge Ratio.
+
+Recall that the Birge Ratio is the model used by PDG to infer $\theta$, and they combine the given statistical and systematic uncertainties (i.e.~they use \texttt{pdg2025-both}).
+
+Now we can examine the BIC's and AIC's closer. In every dataset except \texttt{pdg2025-both}, Random Effects achieves the lowest BIC and AIC. Curiously, in \texttt{pdg2025-both}, the Fixed Effect model outperforms both the Birge Ratio and Random Effects under BIC and AIC. Didn't we just establish in the previous section that the Fixed Effect model is not appropriate in any dataset? Yes, but BIC and AIC, here calculated on a per-particle-property level and averaged, give an advantage to Fixed Effect because it has one fewer parameter. In \texttt{pdg2025-both}, this yields an advantage of $2$ for AIC and an average advantage of $1.47$ for BIC. So, even if we can see based on descriptive statistics of the full PDG dataset that Fixed Effect does not fit the data well, it tends to yield lower BIC and AIC on a per-particle-property level. This indicates that, if we only have one small set of experiments that we wish to aggregate, it may be dangerous to select a model and method based only on the statistical properties of the small set. Perhaps the knowledge that ``there is nontrivial underestimation of errors in this set of experiments, and we will underestimate the final uncertainity if we don't account for this'' should alone be enough to disqualify using a model like Fixed Effect.
+
+Now let's examine whether the results above are due to outliers: perhaps in each dataset, there are one or two set of experiments where RE is much better than BR, but on the whole BR is better. Figure \ref{fig:noground-loglike} shows, for each result in each dataset, the difference between the Random Effects MLE log-likelihood and that for the Birge Ratio. In each dataset, sets of results more often favor Random Effects than they do the Birge Ratio, and Random Effects outperforming the Birge Ratio in terms of the total log-likelihood is not solely driven by outliers.
 
 \begin{figure}
   \centering
-  \includegraphics[width=\textwidth]{figs/pdg_loglike.pdf}
-  \caption{Log-likelihoods of the MLEs of the Random Effects and Birge Ratio models for each particle property in the PDG dataset described. Random Effects tends to be favored. The percentages do not add up to 100\% because many of the log-likelihoods are equal: this occurs in the case where $\hat\tau_{\mathrm{MLE}}=0$ and $\hat{c}_{\mathrm{MLE}}=1$.}
-  \label{fig:pdg-loglike}
+  \includegraphics[width=\textwidth]{figs/noground_loglike_diff.pdf}
+  \caption{Difference in log-likelihoods of the MLEs of the Random Effects and Birge Ratio models for each set of results in each dataset described. Random Effects tends to be favored. The fractions do not add up to 1 because many of the log-likelihoods are equal: this occurs in the case where $\hat\tau_{\mathrm{MLE}}=0$ and $\hat{c}_{\mathrm{MLE}}=1$. It does not appear that outliers are driving the results in Table \ref{tab:noground-loglike}}
+  \label{fig:noground-loglike}
 \end{figure}
 
-Now we can turn to the curious fact in Table \ref{tab:pdg-loglike} that the Fixed Effects model outperforms both the Birge Ratio and Random Effects under BIC and AIC. Didn't we just establish in the previous section that the Fixed Effects model is not appropriate? Yes, but BIC and AIC, here calculated on a per-particle-property level and averaged, give an advantage to Fixed Effects because it has one fewer parameter. This yields an advantage of $2$ for AIC and an average advantage of $1.47$ for BIC. So, even if we can see based on descriptive statistics of the full PDG dataset that Fixed Effects does not fit the data well, it tends to yield lower BIC and AIC on a per-particle-property level. This indicates that, if we only have one small set of experiments that we wish to aggregate, it may be dangerous to select a model and method based only on the statistical properties of the small set. Perhaps the knowledge that ``there is nontrivial underestimation of errors in this set of experiments, and we will underestimate the final uncertainity if we don't account for this'' should alone be enough to disqualify using a model like Fixed Effects.
+
 
 %TODO: cite the "two groups that should meet" paper's results on PDG data
 
