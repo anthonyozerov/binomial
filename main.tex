@@ -1,5 +1,5 @@
-\documentclass[12pt]{article}
-\usepackage{geometry}
+\documentclass[letterpaper,12pt]{article}
+\usepackage[margin=1in,includehead]{geometry}
 \usepackage{parskip}
 
 \usepackage{amsmath}
@@ -19,17 +19,24 @@
 \renewcommand{\bibsection}{\section{\bibname}} %make bibliography show in TOC
 % \usepackage{backref}
 \usepackage[backref=page]{hyperref}
+\usepackage{libertine}
+\usepackage[libertine,cmintegrals,cmbraces,vvarbb]{newtxmath}
+\usepackage[scaled=0.95]{inconsolata}
+
+% change the format of the 'cited on'
 \usepackage{etoolbox}
 \makeatletter
 \patchcmd{\BR@backref}{\newblock}{\newblock[Cited on pg.~}{}{}
 \patchcmd{\BR@backref}{\par}{]\par}{}{}
 \makeatother
 
+\usepackage{doi}
+
 \usepackage{siunitx}
 
 \renewcommand{\listingscaption}{Code Snippet}
 
-\usepackage[font={small},labelfont={bf}]{caption}
+\usepackage[font={small},labelfont={bf,it},textfont={it}]{caption}
 
 \renewcommand{\footnoterule}{\vfill\kern -3pt \hrule width 0.4\columnwidth \kern 2.6pt}
 
@@ -40,6 +47,8 @@
 \pagestyle{fancy}
 \fancyhead{}
 \fancyhead[L]{\rightmark}
+\fancyhead[R]{\thepage}
+\fancyfoot{}
 
 
 \setcounter{tocdepth}{2}
@@ -55,7 +64,7 @@
 \maketitle
 
 \begin{abstract}
-Many applied studies seek to aggregate multiple estimates of a target quantity $\theta$ from different experiments/methods, taking into account both systematic errors (or, generally, between-study heterogeneity) and within-study noise. Inference typically involves strong assumptions, such as a normal random-effects model. We apply the sign test from nonparametric statistics, which uses weaker assumption: that each study independently underestimates the true value $\theta$ with probability $1/2$. Producing exact confidence intervals for $\theta$ under this assumption is easy. Our simulations show that the resulting intervals are competitive with intervals from commonly-used procedures like DerSimonian \& Laird and HKSJ. The sign test is further invariant to monotone transformations, robust to outliers, and oddly does not require any information on the within-study noise. We think it might be useful in the physical sciences, and present retrospective case studies using historical estimates of physical constants.
+\noindent Many applied studies seek to aggregate multiple estimates of a target quantity $\theta$ from different experiments/methods, taking into account both systematic errors (or, generally, between-study heterogeneity) and within-study noise. Inference typically involves strong assumptions, such as a normal random-effects model. We develop new methods with weaker assumptions by drawing on nonparametric statistics. To evaluate the assumptions and performance of different methods, we use real-world physical science datasets with and without ground truths and perform a simulation study. The nonparametric methods perform favorably in these analyses, and we also find that an additive as opposed to multiplicative error model is appropriate. We present case studies to illustrate the careful application of meta-analysis in the physical sciences.
 \end{abstract}
 
 \newpage
@@ -70,7 +79,7 @@ Combining multiple estimates of a quantity into one is common across the science
 
 One key issue that arises is systematic uncertainty, where an estimate of a quantity may have some error not due to noise which can't be reduced by collecting a larger sample or running the experiment for longer. This error can be due to issues in the experiment like a non-randomly-sampled population, or an instrument which is miscalibrated, or analysis issues like approximations and model imperfections. Empirically, this can be seen when results from different experiments/teams/methods are far outside of each other's error bars. Aggregating multiple estimates must therefore not only account for the modeled noise, but also somehow model the systematic uncertainties in the different estimates. This leads to the counterintuitive fact that combining multiple estimates sometimes \emph{increases} our uncertainty, rather than decreasing it---this is because the level of systematic error is not apparent in only one estimate, and becomes apparent when we see more.
 
-We will begin by discussing and setting up the general problem. Then, we will go through different sets of assumptions which can be used to do inference in this setting, and follow with an evaluation of the assumptions using real-world datasets. Next, we will perform a simulation study to evaluate the performance of different inference methods and their sensitivity to violations of assumptions.
+We will begin in this section by discussing and setting up the general problem. Then, in Section \ref{sec:methods}, we will go through different sets of assumptions which can be used to do inference in this setting, and follow in Section \ref{sec:assumptions} with an evaluation of the assumptions using real-world datasets. Informed by the results of Section \ref{sec:assumptions}, we will perform a simulation study in Section \ref{sec:simulation} to evaluate the performance of different inference methods and their sensitivity to violations of assumptions. This will be followed by Section \ref{sec:realworld}, where we will investigate the performance on real-world datasets.
 
 We will present results on two toy examples---estimates of the gravitational constant and of the Planck constant---to illustrate how the different methods work when applied to real data. Finally, we will present two case studies: aggregating estimates of the properties of fundamental particles, and aggregating estimates of Antarctic ice sheet mass loss over time. This will illustrate how the methods presented and discussed here can be used in real scientific problems.
 
@@ -176,7 +185,18 @@ In Birge's pioneering work \citeyearpar{birge1929probable}, it is apparent that 
 
 To perform his ``adjustment,'' Birge used a combination of heuristics and statistics. In terms of heuristics, he used domain knowledge or apparent inconsistency to discard poor or outdated experimental results. From the statistical side, he again used the least-squares method or Fixed Effect model. In the context of aggregating physics experiments, ``least-squares'' has come to mean taking an inverse-variance-weighted mean of the $y_i$'s, where the variances are somehow calculated from the $y_i$'s and $\sigma_i$ (in the simplest case, the variances are taken as $1/\sigma_i^2$, and the weights are proportional to $1/\sigma_i^2$). The uncertainty is taken as appropriate for a weighted mean. But Birge was quick to discard least-squares results when they seemed insensible. For example, in his calculation of the charge of the electron, for which only two values were used, he took a weighted mean as usual, but adopted ``as its probable error the smaller of the two individual errors, rather than that given by least squares, since the latter is rather meaningless when only two observations are concerned'' \citep{birge1929probable}.
 
-By 1932, Birge developed what is now known as the ``Birge ratio'' method for least-squares. The first clear statement of it is in \cite{birge1932calculation}. After obtaining the weighted mean by least-squares as usual, he computes the ratio of the error in the weighted mean calculated by ``external consistency'' (using the residuals between experiments and the weighted mean) to that calculated by ``internal consistency'' (using each experiment's own given error). This is a useful quantitative diagnostic tool: if the ratio is large, it indicates that the individual experiments have more spread between them than we would expect from their individual errors. But he goes beyond diagnostics, and, when calculating the error of the weighted mean, he advocates choosing the larger of the ``external consistency'' and ``internal consistency'' errors. This effectively forms the Birge ratio method which will be described more precisely in a later section. However, Birge also writes that when the ratio is large, the errors should be adjusted manually with personal judgment.
+By 1932, Birge developed what is now known as the ``Birge ratio'' method for least-squares. The first clear statement of it is in \cite{birge1932calculation}. After obtaining the weighted mean by least-squares as usual, he computes the ratio of the error in a point calculated by its ``external consistency'' (using the residuals between experiments and the weighted mean) to that calculated by ``internal consistency'' (using its own given error, which at the time was often computed empirically from the spread of multiple measurements).\footnote{This ratio is stated in eq.~20 of \citet{birge1932calculation}.} This is a useful quantitative diagnostic tool: if the ratio is large, it indicates that the individual experiments have more spread between them than we would expect from their individual errors. But he goes beyond diagnostics, and, when calculating the error of the weighted mean, he advocates choosing the larger of the ``external consistency'' and ``internal consistency'' errors. This effectively forms the Birge ratio method which will be described more precisely in a later section. However, Birge also writes that when the ratio is large, the errors should be adjusted manually with personal judgment.
+
+As noted by \citet{baker2013meta}, this thread of meta-analysis research in physics seems to have occurred largely separate from the field of statistics. Indeed, \citet{cochran1954combination} discusses the problem of meta-analysis with physical constants as an example, but seems unaware of Birge's line of work.\footnote{
+He offers an insightful independent perspective on combining experiments measuring physical constants (note: by ``interaction'' below he means ``an interaction of the effect with experiments''---this is the unaccounted-for variation in experimental results.):
+\begin{quote}
+  In the determination of a physical constant, we might conclude that interaction exists because some of the experiments (e.g.~the earlier ones) were done by a technique that is subject to a bias of unknown magnitude, whereas the remainder of the experiments appear to be unbiased. In this event we would presumably discard the results from the biased experiments and consider only a combination of results from the unbiased experiments.
+
+  \ldots
+
+  Occasionally, in laboratory experiments which were thought to be well-controlled, large interactions may appear for which no adequate explanation can be given. In this event it might be best to hand the problem back to the experimenters, on the grounds that there is not much point in attempting a ``best'' combined estimate until the experimenters can reach better agreement in their results, or at least find out why they disagree.\hfill --\citet{cochran1954combination}
+\end{quote}
+}
 
 Aggregations of fundamental physical constants are now performed by the Committee on Data of the International Science Council (CODATA). But this task of aggregating well-defined physical constants has only expanded, and now includes constants for particle properties in the standard model, performed by the Particle Data Group (PDG) in its frequently-updated \textit{Review of Particle Physics}. Both CODATA and the PDG use slight variations on Birge's method. The challenges of dealing with systematic uncertainty are illustrated by PDG's ``History Plots'' \citep[pg. 19, Figure 1]{navas2024review}, which show how, as PDG incorporated new experiments and discarded old ones over time, the resulting estimates of some particle properties have varied outside of the range of their error bars.
 
@@ -279,24 +299,42 @@ In this paper, we will largely ignore the problem of such domain-specific data s
 
 \section{Assumptions and Inference}\label{sec:methods}
 
-There are many methods that can be used to aggregate estimates. As we will see, most of them assume a statistical model which, given $\theta$, generates the data. For each approach, we will discuss the assumptions and associated parameter inference methods. The assumptions will be discussed empirically later, as will the performance of the different methods on simulated data.
+There are many methods that can be used to aggregate estimates. As we will see, most of them assume a statistical model which, given $\theta$, generates the data. For each approach, we will discuss the assumptions and associated parameter inference methods. The assumptions will be examined empirically later in Section \ref{sec:assumptions}, and the performance of the methods on simulated and real data will be examined in Sections \ref{sec:simulation} and \ref{sec:realworld}.
 
 \subsection{Independent experiments}
 
-Let's first introduce some notation. If we have experiments $y_1,\ldots,y_n$ with corresponding uncertainties $\sigma_1,\ldots,\sigma_n$, let $\bar{y}$ be the inverse-variance weighted mean:
-\[\bar{y}=\frac{\sum_{i=1}^n y_i/\sigma_i^2}{\sum_{i=1}^n 1/\sigma_i^2}\]
+Let's first introduce some notation, following \citet{baker2013meta}. If we have experiments $y_1,\ldots,y_n$ with corresponding uncertainties $\sigma_1,\ldots,\sigma_n$, let $\bar{y}$ be the inverse-variance weighted mean:
+\begin{equation}\label{eq:ybar}
+  \bar{y}=\frac{\sum_{i=1}^n y_i/\sigma_i^2}{\sum_{i=1}^n 1/\sigma_i^2}.
+\end{equation}
+Under $y_i\overset{\mathrm{ind}}\sim\mathcal{N}(\theta,\sigma_i^2)$, the standard deviation of $\bar{y}$ is:
+\begin{equation}\label{eq:sigmaybar}
+  \sigma_{\bar y}=\frac{1}{\sqrt{\sum_{i=1}^n1/\sigma_i^2}}.
+\end{equation}
 Now, we can define the $Q$ statistic as:
-\[Q=\sum_{i=1}^n (y_i-\bar{y})^2/\sigma_i^2\]
-And the statistic $H^2$ as:
-\[H^2=Q/(n-1)\]
+\begin{equation}\label{eq:Q}
+  Q=\sum_{i=1}^n (y_i-\bar{y})^2/\sigma_i^2.
+\end{equation}
+If $y_i\overset{\mathrm{ind}}\sim\mathcal{N}(\theta,\sigma_i^2)$, then $Q\sim\chi^2_{n-1}$, and $\mathbb E[Q]=n-1$. Let's define the statistic $R_B$ as:
+\[R_B=\sqrt{Q/(n-1)}\]
+$R_B=\sqrt{Q/(n-1)}$ is the Birge Ratio.\footnote{Although \citet{birge1932calculation} did not define a ``Birge'' ratio---this would, perhaps, have been presumptuous---he gave a ratio (pg.~218, equation 20) which is equal to $R_B$. However \citet{baker2013meta} and \citet{hedges1987hard} both refer to $R_B^2$ as ``Birge's ratio'' or ``the Birge ratio.'' Though \citet[Section 3.1]{kacker2002combined} and \citet[Section III.A.1]{taylor1969determination}, perhaps closer to the metrology literature, use the non-squared version. We will refer to the the non-squared $R_B$ as the ``Birge Ratio.''} Intuitively, if $R_B\gg1$, $Q$ is greatly exceeding its expectation of $n-1$, which suggests that the residuals $y_i-\bar{y}$ are larger than we would expect from the given $\sigma_i$.
+
 Finally, we can define the $I^2$ statistic as:
-\[I^2=(H^2-1)/H^2\]
+\[I^2=(R_B^2-1)/R_B^2\]
+The $I^2$ statistic is commonly used in the non-physics meta-analysis literature as a measure of heterogeneity.
 
 % this section taken from baker2012meta p 113
 
-\subsubsection{Random Effects}\label{random-effects}
+\subsubsection{Random Effects}\label{sec:re}
 
-The Random Effects model and method originated in the medical meta-analysis literature \citep{dersimonian1986meta}. It is now common in meta-analyses in medicine and the social sciences, but uncommon in the physical sciences.
+The modern use of the Random Effects model and method originated started from the medical meta-analysis literature \citep{dersimonian1986meta}. However, we see an equivalent model stated in a meta-analysis context by \citet{cochran1937problems}, and indeed \citet{dersimonian2015meta} point to \citet{cochran1954combination} for their approach, though their estimation method was novel.
+\footnote{Interestingly, \citet{cochran1937problems,cochran1954combination} is greatly concerned with uncertainty in the given $\sigma_i$'s (he calls the given values $s_i$'s, mere estimates of the $\sigma_i$'s, as do \citet{dersimonian1986meta}). In his work, this seems to form the bulk of the statistical challenge. This problem is not solved by \citet{dersimonian1986meta}, who write:
+\begin{quote}
+In all our work we assume that the sampling variances are known, although in reality we estimate them from the data. Further research needs to be done in this area as there are alternative estimators that might be preferable to the ones we use. For instance, if the sample sizes in each study are small, then sampling variances based on pooled estimates of the proportions in the treat-mentand control groups might be better than the ones based on estimates of proportions from the individual studies. Another alternative is to shrink the individual proportions towards a pooled estimate before calculating the variances. Further investigation is needed before one single method emerges as superior.
+
+\hfill{}--\citet{dersimonian1986meta}
+\end{quote}
+} The model and method is now common in meta-analyses in medicine and the social sciences, but uncommon in the physical sciences.
 
 \paragraph{Assumptions}\label{assumptions}
 
@@ -308,10 +346,12 @@ The Random Effects model places some distributional assumptions upon our setting
 \item
   $\theta_i\overset{\mathrm{iid}}{\sim}\mathcal{N}(\theta,\tau^2)$
 \end{enumerate}
+Or, equivalently:
+\begin{enumerate}
+  \item $y_i\overset{\mathrm{ind}}{\sim}\mathcal{N}(\theta,\sigma_i^2+\tau^2)$
+\end{enumerate}
 
-$\tau^2$ is a new parameter introduced to model the spread of the systematically-biased experiment values $\theta_1,\ldots,\theta_n$ around the true value $\theta$.
-
-From these assumptions, we get $y_i\overset{\mathrm{ind}}{\sim}\mathcal{N}(\theta,\sigma_i^2+\tau^2)$. Effectively, the systematic uncertainty and noise are additive.
+$\tau^2$ is a new parameter introduced to model the spread of the systematically-biased experiment values $\theta_1,\ldots,\theta_n$ around the true value $\theta$. Effectively, the error not included in $\sigma_i^2$ is additive with it.
 
 These assumptions could make sense if we think that all of the studies suffer from random unaccounted-for systematic errors with the same standard deviation. Assumption 2 effectively says that when you go out to measure $\theta$, you will actually be measuring a $\theta_i$ which is $\theta$ plus a realization of a random Normal; and this random Normal has the same standard deviation as those of all the other researchers, and does not have any relation with the level of noise $\sigma_i$. The assumptions will not hold if the size of systematic errors is related to the amount of noise, or if the overall distribution of systematic errors is not Normal (maybe there are outliers, or there is a sharper peak of experimenters with very little systematic error).
 
@@ -322,6 +362,42 @@ Inference on $\theta$ can be done in a number of ways under this model. The orig
 A later procedure, Hartung-Knapp-Sidik-Jonkman (HKSJ), modified the uncertainty estimation in DL to better account for the fact that our estimate of $\tau^2$ is uncertain \citep{hartung1999alternative,sidik2002simple}. HKSJ has been shown to generally achieve target coverage far more consistently than DL \citep{inthout2014hartung} and to generally give wider confidence intervals \citep{wiksten2016hartung}. In this article we will use the HKSJ procedure as we also found it to generally perform better than DL in our simulations.
 
 Other works instead perform Bayesian inference by placing informative or uninformative priors on $\tau$ and $\theta$ \citep{sutton2001bayesian}.
+
+For completeness, here is how inference is done. First, we estimate $\hat\tau^2$:
+
+\begin{enumerate}
+  \item \textbf{Moment estimate of $\tau^2$}: Calculate $Q$ (Equation \ref{eq:Q}), and let $w_i=1/\sigma_i^2$. Obtain:
+  \begin{equation}
+    \hat\tau^2_{\mathrm{MOM}}=\mathrm{max}\left(\frac{Q-(n-1)}{\sum_{i=1}^nw_i - \frac{\sum_{i=1}^nw_i^2}{\sum_{i=1}^nw_i}}\right)
+  \end{equation}
+  \item \textbf{MLE of $\tau^2$}. This is given by \citet[eq.~8-9]{hardy1996likelihood}.\footnote{In fact
+  \citet[pg.~113]{cochran1937problems} gives simultaneous equations from which the following procedure can be obtained, and may have been the first to report this method. \citet[Section 2.8]{rao1981estimators} also report this method but consider the case where $\sigma_i$ is also unknown and estimated, and report a lack of success.
+  } Starting with an initial estimate $\hat\tau^2$ (we find that the empirical variance of the $y_i$'s works well), iteratively compute these quantities, repeating until convergence:
+  \begin{align*}
+  w_i^\star &= \frac{1}{\sigma_i^2+\hat\tau^2}\\
+  \hat\theta &= \frac{\sum_{i=1}^n y_iw_i^\star}{\sum_{i=1}^n w_i^\star}\\
+  \hat\tau^2 &= \frac{\sum_{i=1}^n ((\hat\theta-y_i)^2-\sigma_i^2){w_i^\star}^2}{\sum_{i=1}^n {w_i^\star}^2}
+  \end{align*}
+  Take the $\hat\tau^2$ we obtain at the end of this procedure as $\hat\tau^2_{\mathrm{MLE}}$.\footnote{If we would like, we can instead search for $\hat\tau^2_{\mathrm{MLE}}$ over a grid of values, plugging in the $\hat\theta$ below to create $(\hat\tau^2,\hat\theta)$ pairs and computing the resulting likelihood of the $y_i$'s. A grid from $0$ to the empirical variance of the $y_i$'s works well.}
+\end{enumerate}
+Then, setting $w_i^\star=1/(\sigma_i^2+\hat\tau^2)$, we estimate $\theta$:
+\begin{equation}
+  \hat\theta=\frac{\sum_{i=1}^ny_iw_i^\star}{\sum_{i=1}^nw_i^\star}
+\end{equation}
+If $\hat\tau^2$ is an MLE, this $\hat\theta$ will be an MLE for $\theta$. Next, we want to produce a confidence interval for $\theta$:
+\begin{enumerate}
+  \item \textbf{Dersimonian and Laird}: Compute $\sigma_\theta=\sqrt{\frac{1}{\sum_{i=1}^nw_i^\star}}$. The $1-\alpha$ interval is then:
+  \begin{equation}
+    \left[\hat\theta+z_{\alpha/2}\sigma_\theta,\hat\theta+z_{1-\alpha/2}\sigma_\theta\right].
+  \end{equation}
+  This is designed for any estimate of $\tau^2$, but in this work will refer to this interval for $\hat\tau^2_{\mathrm{MOM}}$ as the ``the Dersimonian and Laird method.''
+  \item \textbf{HKSJ}: Compute $Q^\star=\sum_{i=1}^n w_i^\star(y_i-\bar{y})^2$.\footnote{Note that this is just like the $Q$ statistic in Equation \ref{eq:Q}, but with the weights $1/\sigma_i^2$ replaced by $w_i^\star=1/(\sigma_i^2+\hat\tau^2)$}. Let $\sigma_\theta=\sqrt{Q^\star/(n-1)}$, and construct the interval:
+  \begin{equation}
+    \left[\hat\theta+t_{\alpha/2,n-1}\sigma_\theta,\hat\theta+t_{1-\alpha/2,n-1}\sigma_\theta\right].
+  \end{equation}
+  This is designed for the moment estimator $\hat\tau^2_{\mathrm{MOM}}$.
+  \item \textbf{Likelihood}: For the MLE only, we can construct a confidence interval for $\theta$ via an inversion of the likelihood ratio test. We can even construct a joint confidence region for $(\theta,\tau^2)$ \citep{hardy1996likelihood}.
+\end{enumerate}
 
 \paragraph{Extensions}\label{extensions}
 
@@ -348,9 +424,9 @@ Inference under FE is much simpler than under RE.
 
 \begin{enumerate}
 \item
-  Calculate the weighted mean $\bar{y}_w=\frac{\sum_{i=1}^n w_iy_i}{\sum_{i=1}^nw_i}$, where $w_i=1/\sigma_i^2$. This will be our point estimate, the center of the interval.
+  Calculate the weighted mean $\bar{y}$ (Equation \ref{eq:ybar}). This will be our point estimate, the center of the interval.
 \item
-  The standard deviation of $\bar{y}_w$ is $\sigma_w=\frac{1}{\sqrt{\sum_{i=1}^nw_i}}=\sqrt{\sum_{i=1}^n1/\sigma_i^2}$. Therefore we can form a $1-\alpha$ confidence interval for $\theta$ as \[\bar{y}_w\pm z_{1-{\alpha/2}}\cdot \hat c\sigma_w,\] where $z_{1-\alpha/2}$ is the $z$-statistic at the desired level (e.g.~for a $1\sigma$ or $68.27\%$ interval, we use $z_{1-\alpha/2}=1$; for a $95\%$ interval, we have $\alpha=0.05$ and $z_{1-\alpha/2}=1.96$)
+  The standard deviation of $\bar{y}$ is $\sigma_{\bar y}$ (Equation \ref{eq:sigmaybar}). We can form a $1-\alpha$ confidence interval for $\theta$ as \[\bar{y}_w\pm z_{1-{\alpha/2}}\cdot \hat c\sigma_w,\] where $z_{1-\alpha/2}$ is the $z$-statistic at the desired level (e.g.~for a $1\sigma$ or $68.27\%$ interval, we use $z_{1-\alpha/2}=1$; for a $95\%$ interval, we have $\alpha=0.05$ and $z_{1-\alpha/2}=1.96$)
 \end{enumerate}
 
 \subsubsection{Birge Ratio}\label{sec:birge}
@@ -374,7 +450,6 @@ analysis without covariates as well as in many other situations.
 }
 
 
-
 \paragraph{Assumptions}\label{assumptions-2}
 
 \begin{enumerate}
@@ -388,29 +463,29 @@ The difference from RE is that the uncertainties are underestimated multiplicati
 
 This assumption could make sense if we feel that the true error in experiments is proportional to the reported error. If the reported error is statistical noise, then this also means that the noise standard deviations are proportional to the standard deviations of the unknown systematic errors. This can be reasonable, as a study which seeks to reduce statistical noise to a certain level will also try to correspondingly reduce systematic errors (otherwise, why reduce the noise?). But the assumption of \emph{exact} proportionality is quite strong.
 
-\paragraph{Inference}\label{inference-2}
+\paragraph{Inference}
 
 To do inference, we estimate $c$ and then directly estimate $\theta$ by plugging in $\hat c$. Note that in practice, when estimating $c^2$, it is often truncated to be at least $1$. One procedure to do this can be stated briefly as:
 
 \begin{enumerate}
 \item
-  Calculate the weighted mean $\bar{y}_w=\frac{\sum_{i=1}^n w_iy_i}{\sum_{i=1}^nw_i}$, where $w_i=1/\sigma_i^2$. This will be our point estimate, the center of the interval. Note that if $c=1$, the standard deviation of $\bar{y}_w$ is $\sigma_w=\frac{1}{\sqrt{\sum_{i=1}^nw_i}}=\sqrt{\sum_{i=1}^n1/\sigma_i^2}$.
+  Calculate the inverse-variance weighted mean $\bar{y}$ (Equation \ref{eq:ybar}). This will be our point estimate, the center of the interval. Note that if $c=1$, the standard deviation of $\bar{y}_w$ is $\sigma_{\bar y}$ (Equation \ref{eq:sigmaybar}). $\bar{y}$ is both a moment estimator and MLE for $\theta$.
 \item
-  Calculate $\chi^2=\sum_{i=1}^n w_i(\bar{y}_w-y_i)^2$. If $c=1$, this will follow a Chi-squared distribution with degrees of freedom $n-1$, and will correspondingly have expectation $n-1$. Take $\hat c=\max(\sqrt{\chi^2/(n-1)},1)$, thus creating an estimate of $c$ truncated to be $\geq 1$.
+  Calculate the $Q$ statistic (Equation \ref{eq:Q}). If $c=1$, $Q$ will follow a $\chi^2_{n-1}$ distribution, and will correspondingly have expectation $n-1$. In general, $Q$ will have expectation $c^2(n-1)$. Take $\hat{c}_{\mathrm{MOM}}=\max(\sqrt{Q/(n-1)},1)$, a moment estimator of $c$ truncated to $\geq 1$. Note that $\hat{c}_{\mathrm{MOM}}=\max(R_B,1)$, where $R_B$ is the Birge ratio. For an MLE instead, $\hat{c}_{\mathrm{MLE}}=\max(\sqrt{Q/n},1)$.\footnote{Proof left to reader. We see that $\hat{c}_\mathrm{MLE}\leq \hat{c}_{\mathrm{MOM}}$, so inference under the MLE will yield a narrower confidence interval for $\theta$.}
 \item
-  Now we can plug this in as a true value of $c$, and take the standard deviation of $\bar{y}_w$ as $\hat c\sigma_w=\sqrt{\sum_{i=1}^n1/\hat c\sigma_i^2}=\frac{\hat c}{\sqrt{\sum_{i=1}^nw_i}}$.
+  Now we can plug in $\hat c$ as a true value of $c$, and take the standard deviation of $\bar{y}$ as $\hat c\sigma_{\bar y}$.
 \item
-  Finally, form the $1-\alpha$ confidence interval for $\theta$ as \[\bar{y}_w\pm z_{1-{\alpha/2}}\cdot \hat c\sigma_w,\] where $z_{1-\alpha/2}$ is the $z$-statistic at the desired level (e.g.~for a $1\sigma$ or $68.27\%$ interval, we use $z_{1-\alpha/2}=1$; for a $95\%$ interval, we have $\alpha=0.05$ and $z_{1-\alpha/2}=1.96$)
+  Finally, form the $1-\alpha$ confidence interval for $\theta$ as \[\bar{y}\pm z_{1-{\alpha/2}}\cdot \hat c\sigma_{\bar y},\] where $z_{1-\alpha/2}$ is the $z$-statistic at the desired level (e.g.~for a $1\sigma$ or $68.27\%$ interval, we use $z_{1-\alpha/2}=1$; for a $95\%$ interval, we have $\alpha=0.05$ and $z_{1-\alpha/2}=1.96$)
 \end{enumerate}
 
-This procedure is almost exactly what is used by the Particle Data Group; they use two additional heuristics \citep[Section 5.2.2]{navas2024review}:
+Essentially, all this procedure does is multiply the uncertainty from the Fixed Effect model by the observed Birge Ratio $R_B$ if it is greater than one. This inference procedure is almost exactly what is used by the Particle Data Group; they use two additional heuristics \citep[Section 5.2.2]{navas2024review}:
 
 \begin{itemize}
 
 \item
   If the estimate $\hat c$ is ``very large,'' indicating large discrepancies in the experimental results not accounted for by noise, the average and interval may not be reported.
 \item
-  If the errors $\sigma_i$ vary widely, only the experiments with smaller errors are used to compute $\chi^2$. Specifically, only the experiments with $\sigma_i\leq 3\sigma_w\sqrt{n}$. This cutoff is ``arbitrarily chosen'' \citep[Section 5.2.2]{navas2024review}.
+  If the errors $\sigma_i$ vary widely, only the experiments with smaller errors are used to compute $\chi^2$. Specifically, only the experiments with $\sigma_i\leq 3\sigma_{\bar y}\sqrt{n}$. This cutoff is ``arbitrarily chosen'' \citep[Section 5.2.2]{navas2024review}.
 \end{itemize}
 
 This procedure is also close to what is used by CODATA, except their $\hat c$ is chosen heuristically as that which makes the normalized absolute residuals of the $y_i$'s from the weighted mean $\bar y_w$ less than two \citep{tiesinga2021codata}. Note that their work is considerably more complex than the scenarios we consider, because they simulatenously compute large sets of constants which depend on each other.
@@ -425,9 +500,9 @@ Just like the random effects model, the Birge ratio method can be extended to th
 
 The Birge Ratio method offers a simple model and relatively straightforward inference. \citet{taylor1982numerical} refers to it as ``objective.'' But \citet{taylor1982numerical} also points out an interesting consequence that we have ``the a priori uncertainty of a highly consistent input datum\ldots with possibly a well defined uncertainity increased by the same factor as a highly discrepant datum\ldots with perhaps a poorly defined uncertainty.'' What Taylor is pointing to is the unintuitive result that we will scale the uncertainties of all points by the same factor. If we have a distant outlier $y_0$ with $\sigma_0=1$ and a point $y_1$ in about the middle of the $y_i$'s which also has $\sigma_1=1$, it seems intuitive that we would expand the uncertainity of the distant outlier by a larger factor, because it is quite inconsistent with the rest of the data. But the Birge Ratio method will effectively lead to both $y_0$ and $y_1$ having an ``adjusted'' uncertainity of $\hat c$ when used to compute the final interval.
 
-\subsubsection{Sign Test}\label{sign-test}
+\subsubsection{Sign Test}\label{sec:st}
 
-We can call this method the ``Sign Test'' (ST): it is in fact an inversion (to get a confidence interval) of a test for the median of a distribution. But for clarity we will present only as a method to get confidence intervals.
+We can call this method the ``Sign Test'' (ST): it is in fact an inversion (to get a confidence interval) of a test for the median of a distribution. But for clarity we will present it only as a method to get confidence intervals.
 
 \paragraph{Assumptions}\label{assumptions-3}
 
@@ -463,7 +538,9 @@ If $K=k$, we know that $y_{(k)}$ is an underestimate and therefore $y_{(k)}< \th
 In short, we have
 \begin{equation*}K\leq k\leftrightarrow \theta< y_{(k+1)},\end{equation*}
 from which we directly get
-\begin{equation*}P(K\leq k)=P(\theta<y_{(k+1)}).\end{equation*}
+\begin{equation}\label{eq:st-prob}
+  P(K\leq k)=P(\theta<y_{(k+1)}).
+\end{equation}
 We are framing this as a frequentist problem where $\theta$ is unknown, but fixed (not a random variable). Thus the uncertainty in the RHS is over $y_{(k+1)}$. $P(K\leq k)$ can be directly calculated from the Binomial CDF.
 
 How can we turn these nice facts into a $1-\alpha$ confidence interval? Say we want a symmetric interval. For our lower bound $l$, pick the smallest $j$ such that $P(K\leq j)\leq \alpha/2$, and let the lower bound be $l=y_{(j+1)}$. We will get that:
@@ -477,7 +554,7 @@ Note that this method doesn't require knowledge of the $\sigma_i^2$'s, so them b
 
 See the code belowfor a minimal Python implementation of this inference procedure.
 
-\begin{listing}[h]
+\begin{listing}[htbp]
 \caption{Minimal Python code for the Sign Test's inference. The main thing to be careful with in implementation is correct indexing.}
 \smaller
 \begin{minted}{python}
@@ -511,7 +588,8 @@ Saying that the probability of an overestimate is exactly 0.5 could be a strong 
 
 Either method will yield a wider interval which takes into account our less-confident assumptions about $p$.
 
-\paragraph{Relaxing Assumption 2}\label{relaxing-assumption-2}
+\paragraph{Relaxing Assumption 2}
+\phantomsection\label{sec:binom-ass-2}
 
 Saying that the events $y_i>\theta$ are independent could also be a strong assumption. For example, there may be a grouping effect among studies. To relax this, we can model $K$ as another known or derived probability distribution (e.g., again, a Beta-Binomial) or one estimated from simulations under a custom data-generating process. However, it does not seem easy to reason about what the relevant conditional probabilities might be, even for two estimates (this would be the probability $P(y_i>\theta|y_j>\theta),\ i\neq j$), without placing additional distributional assumptions on our setting.
 
@@ -523,9 +601,17 @@ Our assumptions and inference also do not at all involve the $\sigma_i$'s, makin
 
 Unlike most inferential methods for RE and BR, our inference does not involve a prior or any distributional approximations. Under Assumptions 1 and 2, inference will be exact for any value of $n$, and coverage which is at least at the target level is guaranteed.
 
-One caveat is that the Binomial distribution is discrete, so for finite $n$ the tail probabilities only take on a set of discrete values. So, without playing tricks like randomly shrinking or collapsing the interval, we cannot achieve exactly 0.6827 ($1\sigma$) coverage, but will always achieve coverage $\geq 0.6827$. See \ref{table-n} for examples of values of $n$ and the smallest coverage level $\geq0.6827$ which can be achieved exactly---usually, it is not too much higher.
+One caveat is that the Binomial distribution is discrete, so for finite $n$ the tail probabilities only take on a set of discrete values. So, without playing tricks like randomly shrinking or collapsing the interval, we cannot achieve exactly 0.6827 ($1\sigma$) coverage, but for $n\geq 3$ can achieve coverage $\geq 0.6827$.\footnote{For $n=2$, we can only achieve 50\% by taking the range of the points.} See \ref{table-n} for examples of values of $n$ and the smallest coverage level $\geq0.6827$ which can be achieved exactly---usually, it is not too much higher.
 
-\subsubsection{Signed-Rank Test}\label{signed-rank-test}
+\paragraph{Continuous coverage levels} We can think of a few possible heuristics to achieve an arbitrary continuous coverage. Let the target coverage be $\gamma$ with $\alpha=1-\gamma$, the achieved coverage be $\gamma^\prime$ with $\alpha^\prime=1-\gamma$, and let the interval using the inference procedure described above be $I^\prime$.
+
+\begin{itemize}
+  \item If $I^\prime$ were a level-$\gamma^\prime$ interval from a Normal model, it would be of the form $I^\prime=[\hat\theta-|z_{\alpha^\prime/2}|\sigma,\hat\theta+|z_{\alpha^\prime/2}|\sigma]$. Our desired level-$\gamma$ interval would be of the form $I=[\hat\theta-|z_{\alpha/2}|\sigma,\hat\theta+|z_{\alpha/2}|\sigma]$. To obtain $I$ from $I^\prime$, we could just shrink $I^\prime$ about its center, scaling its width by $z_{\alpha/2}/z_{\alpha^\prime/2}$. This forms one possible heuristic. As an alternative, we could shrink $I^\prime$ by the same factor but about the median of the $y_i$'s.
+  \item As a slightly more involved form of the above, we can consider the interval $I^{\prime\prime}$ which is one step narrower than $I^\prime$ and therefore has coverage $\gamma^{\prime\prime}<\gamma$, with corresponding $\alpha^{\prime\prime}=1-\gamma$. We could expand $I^{\prime\prime}$ similarly to how $I^\prime$ is shrunk above; this will likely yield a different result. Perhaps we can form some heuristic for $I$ by considering $I^\prime$ and $I^{\prime\prime}$ together.
+  \item Ignoring $I^\prime$, we can treat $P(\theta<y_{(k+1)})$ in Equation \ref{eq:st-prob} as if it is as a CDF for $\theta$ only sampled at the points $y_1,\ldots,y_n$ (it is not). We can interpolate this CDF (perhaps linearly, or with an isotonic regression), then directly obtain a level-$\gamma$ interval for $\theta$ from it---this will be the same as or narrower than $I^\prime$. This is not particularly principled, but the inference procedure given above for the sign test works the same if we treat $P(\theta<y_{(k+1)})$ as a CDF for $\theta$, so this might be a natural continuous approximation of it.
+\end{itemize}
+
+\subsubsection{Signed-Rank Test}\label{sec:srt}
 
 This approach is due to \citet{wilcoxon1945individual}, and we can refer to it as SRT. Our discussion will follow \citet[Section 5.7]{conover1999practical}.
 
@@ -545,7 +631,7 @@ Effectively, ST's Assumption 1 has been strengthened to a symmetry assumption, a
 \begin{itemize}
 
 \item
-  If we can argue convincingly that in a real-world problem $P(y_i<\theta)=0.5$, we should be able to argue that $y_i$ is symmetric about $\theta$ without much more effort (``the sizes of the errors look the same if you're over or under-estimating'').
+  If we can argue convincingly that in a real-world problem $P(y_i<\theta)=0.5$, we might be able to argue that $y_i$ is symmetric about $\theta$ without much more effort (``the sizes of the errors look the same if you're over or under-estimating''). This may not be convincing, as a simple monotonic transformation can make symmetry no longer hold---for example, $\theta>0$, and we want to estimate $\theta^2$ instead of $\theta$. But if, say, $\theta\approx 10^6$, and the distribution of $y_i$ is symmetric and has $\sigma_i=1$ about $\theta$, then symmetry will roughly be preserved even under such a transformation.
 \item
   As mentioned above, a scenario where the events $y_i<\theta$ are independent but the $y_i$'s themselves are not would seem fairly contrived.
 \end{itemize}
@@ -553,6 +639,8 @@ Effectively, ST's Assumption 1 has been strengthened to a symmetry assumption, a
 \paragraph{Inference}\label{inference-4}
 
 Inference under these assumptions is far less trivial than for ST. We can take the $\alpha/2$ and $1-\alpha/2$ quantiles $L$, $U$ of the distribution of $\sum_{i=1}^n iB_i$, where the $B_i$'s are independent and each $-1$ or $1$ with equal probability. Then, if we compute the $n(n+1)/2$ averages of the form $(y_i+y_j)/2$, $i\leq j$ and order them in increasing order, the $L$th and $U$th averages will form our level $\geq 1-\alpha$ confidence interval.
+
+\paragraph{Continuous coverage levels} As with ST, for a given $n$ SRT can only achieve coverage at a discrete set of values, though the discrete set is considerably denser. We can use similar heuristics as for ST if we want a precise coverage level.
 
 \subsubsection{t-Test}\label{t-test}
 
@@ -627,7 +715,7 @@ In this setting, \cite{stone1961opinion} introduced the linear opinion pool.\foo
 
   \hfill -- \citet[pg. 130]{laplace1951essay}\end{quote}
 
-  This voting method, if normalized, will result in an averaged probability in each bin, and can perhaps be interpreted as equivalent to a linear opinion pool for a discrete variable.} Given probability density functions $f_1(\theta),\ldots,f_n(\theta)$ and weights $w_1,\ldots,w_n\geq 0$ such that $\sum_{i=1}^n w_i=1$, we can pool the probability distributions thus:
+  \noindent This voting method, if normalized, will result in an averaged probability in each bin, and can perhaps be interpreted as equivalent to a linear opinion pool for a discrete variable.} Given probability density functions $f_1(\theta),\ldots,f_n(\theta)$ and weights $w_1,\ldots,w_n\geq 0$ such that $\sum_{i=1}^n w_i=1$, we can pool the probability distributions thus:
 
 \[\hat f(\theta)=\sum_{i=1}^n w_if_i(\theta)\]
 
@@ -718,14 +806,16 @@ We have split up the $c$ we had previously (which did not allow for \emph{both} 
 The frequentist procedure described is a simple extension of the Birge Ratio, and, through the estimate $\hat c$, nicely interpolates between meta-analysis and forecasting---the inference procedure offered, when $\hat c\geq1$, yields the Birge Ratio result, and when $\hat c<1$, automatically takes into account the irreducible uncertainity in $\theta$. Further, the method empirically estimates how much of the forecasts' uncertainties $\sigma_i$ represent irreducible uncertainity in $\theta$ or simply uncertainity in $\mu$, without requiring extra data from the forecasters.
 
 The method does have some serious limitations, however:
-1. The estimate of $\hat c$ is very unstable. In the Birge Ratio method, the reason that it $\hat c$ is truncated to be $\geq1$ is that, even in datasets where $c\geq 1$, we may often estimate $c<1$. As with the Birge Ratio, the uncertainity in $\hat c$ could be taken into account via a Bayesian approach.
-2. Real forecasts do not come from the distribution $y_i\overset{\mathrm{ind}}{\sim}\mathcal{N}(\mu,c^2\sigma_i^2)$. In practice, some forecasters will be poorly calibrated and yield outlier $y_i$'s that are far from $\theta$ and have low $\sigma_i$'s. In the case of such outliers, we will likely have $\hat c>1$.
-3. We assume that each forecast has the same ratio $(1-c^2)$ of irreducible to total uncertainty (this is very unrealistic).
-4. Forecasts are often asymmetric.
+\begin{itemize}
+  \item The estimate of $\hat c$ is very unstable. In the Birge Ratio method, the reason that $\hat c$ is truncated to be $\geq1$ is that, even in datasets where $c\geq 1$, we may often estimate $c<1$. As with the Birge Ratio, the uncertainity in $\hat c$ could be taken into account via a Bayesian approach.
+  \item Real forecasts do not come from the distribution $y_i\overset{\mathrm{ind}}{\sim}\mathcal{N}(\mu,c^2\sigma_i^2)$. In practice, some forecasters will be poorly calibrated and yield outlier $y_i$'s that are far from $\theta$ and have low $\sigma_i$'s. In the case of such outliers, we may have $\hat c>1$ even if we are in the ``forecast aggregation'' setting.
+  \item We assume that each forecast has the same ratio $(1-c^2)$ of irreducible to total uncertainty (this is very unrealistic).
+  \item Forecasts are often asymmetric.
+\end{itemize}
 
 In general, the problem of aggregating something which could be either a set of forecasts or a set of independent experiments, or something in between, given only $(y_i,\sigma_i)$ pairs, seems infeasible without making unrealistic assumptions.
 
-\section{Evaluating the validity of assumptions}\label{evaluating-the-validity-of-assumptions}
+\section{Evaluating the validity of assumptions}\label{sec:assumptions}
 
 We know that none of the sets of assumptions presented here will hold in the real world. But some assumptions will yield better inference (narrower intervals or correct coverage) than others. We therefore set out on the challenging task of empirically assessing which assumptions closely model real-world collections of experiments and which yield better inference. This will inform both the sensitivity analysis in our later simulation study and our practical recommendations. In particular, we will examine the following assumptions:
 
@@ -749,7 +839,7 @@ The key difficulty with such an empirical analysis is that there are few quantit
 
 In this section, we are not interested in directly evaluating the performance of the methods presented in Section \ref{sec:methods}. Only the validity of their assumptions. After this section, and the simulation study, we will return to such of these datasets as have ground truths and conduct a direct performance evaluation. This way, we will have insights from the simulation study to frame our discussion.
 
-\subsection{Historical studies with modern ground truth}\label{historical-studies}
+\subsection{Historical studies with modern ground truth}\label{sec:historical-studies}
 
 Some physical quantities have the desirable quality that many experiments have been done in the past to measure them, and there is now a modern value which is either exact or known much more exactly than before. This makes them interesting case studies to evaluate the different assumptions presented in a setting where the ground-truth $\theta$ is known. We will use three sets of datasets, including measurements of:
 \begin{itemize}
@@ -763,7 +853,7 @@ We think this collection of datasets is an important advance. As we will see in 
 
 \subsubsection{Long-term datasets}
 
-\begin{figure}
+\begin{figure}[htbp]
   \includegraphics[width=\textwidth]{figs/historical.pdf}
   \caption{The three long-term historical datasets visualized, with the deviation of the result from the true value on the $x$-axis against the year on the $y$-axis. The symmetric logarithmic scale is used for the $x$-axis so that small deviations are still visible. In each dataset, we see the results converging towards the true value over time as experimental or observational techniques improve. We also see a remarkable symmetry in that the results converge towards the true value from both sides---we do not see, for example, results starting low then increasing towards the truth.}
   \label{fig:historical}
@@ -803,7 +893,7 @@ We have collected 27 estimates of this distance from \citet{atkins1964determinat
 
 \subsubsection{Chemical datasets}
 
-\begin{figure}
+\begin{figure}[htbp]
   \includegraphics[width=\textwidth]{figs/chemical.pdf}
   \caption{The four chemical datasets obtained from \citet{clarke1910recalculation}. Results are arranged in order of their reported uncertainties. Shaded regions indicate the $1\sigma$ intervals indicated by modern values for their masses. We can see vast underestimations of error in the top four plots.}
   \label{fig:chemical}
@@ -815,9 +905,9 @@ Note that \citet{clarke1910recalculation} reports uncertainties in terms of ``pr
 
 \subsubsection{Particle physics datasets}
 
-\begin{figure}
+\begin{figure}[htbp]
   \includegraphics[width=\textwidth]{figs/particles.pdf}
-  \caption{The 18 particle physics datasets obtained from \citet{roos1970review}. Results are arranged in order of publication, with more recent results lower. Shaded regions are the $1\sigma$ intervals indicated by \citet{navas2024review}. The datasets tend to show a narrowing of uncertainty and convergence to the truth over time.}
+  \caption{The 46 particle physics datasets obtained from \citet{roos1970review}. In each plot, results are arranged in order of publication, with more recent results lower. Shaded regions are the $1\sigma$ intervals indicated by \citet{navas2024review}. Stars below plots indicate the significance of (bottom-left) the binomial $p$-value and (bottom-right) the signed-rank test $p$-value. [$\ast\ast\ast\rightarrow p\leq 0.001$; $\ast\ast\rightarrow p\leq 0.01$; $\ast\rightarrow p\leq0.05$]. Details for these tests are in the text in Section \ref{sec:historical-assumptions-check} and in Table \ref{tab:hist-sym} (where an uncertain ground truth leads to multiple $p$-values as described in Table \ref{tab:hist-sym}, this figure shows the smaller). The datasets tend to show a narrowing of uncertainty and convergence to the truth over time. Some indicate possible violation of the symmetry assumptions, with \texttt{M005M} (measurements of the mass of $f_2(1270)$) especially notable in this respect.}
   \label{fig:particle}
 \end{figure}
 
@@ -828,50 +918,105 @@ Although we don't have real ``ground truths'' for various properties of fundamen
 \end{itemize}
 And apply the following processing steps:
 \begin{itemize}
-  \item Exclude any experiments not used in the average by \citet{roos1970review}
+  \item Exclude any experiments not used in the average by \citet{roos1970review}.
   \item For experiments with two-sided errors, take the average of the two and round up.
   \item Exclude any experiments which are used in the modern average by \citet{navas2024review}.
 \end{itemize}
 The datasets are shown in Figure \ref{fig:particle}.
 
-\subsubsection{Checking assumptions}
+\subsubsection{Checking assumptions}\label{sec:historical-assumptions-check}
 
 
-\begin{table}
+\begin{table}[htbp]
   \centering
-  \caption{Summary of results of symmetry investigation on historical studies. For each study, $\theta$ is the ``ground truth.'' In some datasets, there is no real ground-truth, so the modern $1\sigma$ interval is taken as the range of plausible values for $\theta$. Where different plausible values for $\theta$ lead to different results this is indicated by an interval in the table. The columns are: $n$: the number of experiments in the dataset. $\#(>\theta)$: the number of experiments with a value larger than $\theta$. Prop. $>\theta$: the proportion of experiments with a value larger than $\theta$. Prop. $p$-value: the $p$-value from the hypothesis test with $H_0$: $P(y_i>\theta)=0.5$, $H_1$: $P(y_i>\theta)\neq 0.5$ (supposing that $y_i>\theta$, $y_j>\theta$ are independent events for $i\neq j$). Sign-rank $p$-value: the $p$-value from the sign-rank test, intended to test the symmetry of the distribution of $y_i$'s about $\theta$.}
+  \caption{Summary of results of symmetry investigation on historical studies. For each study, $\theta$ is the ``ground truth.'' In some datasets, there is no real ground-truth, so the modern $1\sigma$ interval is taken as the range of plausible values for $\theta$. Where different plausible values for $\theta$ lead to different results this is indicated by an interval in the table. The columns are: $n$: the number of experiments in the dataset. $\#(>\theta)$: the number of experiments with a value larger than $\theta$. Prop. $>\theta$: the proportion of experiments with a value larger than $\theta$. Prop. $p$-value: the $p$-value from the hypothesis test with $H_0$: $P(y_i>\theta)=0.5$, $H_1$: $P(y_i>\theta)\neq 0.5$ (supposing that $y_i>\theta$, $y_j>\theta$ are independent events for $i\neq j$). Sign-rank $p$-value: the $p$-value from the sign-rank test, intended to test the symmetry of the distribution of $y_i$'s about $\theta$. $p$-values for these tests in the 1970 PDG data are shown in an abbreviated form in Figure \ref{fig:particle}.}
   \label{tab:hist-sym}
   \smaller
   \begin{tabular}{l|rcccc}
-    \hline Dataset & $n$ & $\#>\theta$ & Prop. $>\theta$ & Prop. $p$-value & Sign-rank $p$-value \\\hline
-    \input{tables/hist-sym.tex}\\\hline
+    \hline Dataset & $n$ & $\#>\theta$ & Prop. $>\theta$ & Prop. $p$-value & Sign-rank $p$-value \\\hline\input{tables/hist-sym.tex}\\\hline
   \end{tabular}
 \end{table}
 
-\paragraph{Symmetry assumptions} The simplest assumptions to evaluate are $P(y_i>\theta)=0.5$ and the symmetry of $y_i$ about $\theta$. Results relating to these are shown in Table \ref{tab:hist-sym}. We find remarkable agreement with the first assumption in our datasets. Surprisingly, for the speed of light, 77 experiments produced underestimates, while 80 experiments produced overestimates. We conducted hypothesis tests with $H_0: P(y_i>\theta)=1/2$, $H_1: P(y_i>\theta)\neq 1/2$ for each dataset, and find $p<0.05$ in 2/13 datasets. To test the stronger assumption that the $y_i$'s are symmetrically distributed about $\theta$, we can use the one-sample sign-rank test. Results for this test are more mixed, with $p<0.05$ in 4/13 datasets.
+\paragraph{Symmetry assumptions} The simplest assumptions to evaluate are $P(y_i>\theta)=0.5$ and the symmetry of $y_i$ about $\theta$. Results relating to these are shown in Table \ref{tab:hist-sym} and (for PDG data) in Figure \ref{fig:particle}. We find remarkable agreement with the first assumption in our datasets. Surprisingly, for the speed of light, 77 experiments produced underestimates, while 80 experiments produced overestimates. We conducted hypothesis tests with $H_0: P(y_i>\theta)=1/2$, $H_1: P(y_i>\theta)\neq 1/2$ for each dataset, and find possible $p<0.05$ in 7/53 datasets. To test the stronger assumption that the $y_i$'s are symmetrically distributed about $\theta$, we can use the one-sample sign-rank test. Results for this test are slightly more mixed, with $p<0.05$ in 11/53 datasets.
 
-We have no reason to expect the distribution of the $y_i$'s to be Normal within each set of experiments. But this does not mean that $y_i$ is not normal about $\theta$---we could consider a case where the $y_i$ are Normal about $\theta$, but have $\sigma_i$'s of different magnitudes. This would indeed produce a more-peaked-than-Normal distribution of $y_i$'s like the ones we see in Figure \ref{fig:historical}. It is in principle not be possible to use this data to disprove that $y_i\sim\mathcal{N}(\theta,?)$, because we can always choose an appropriate variance ``$?$'' to make the data consistent with this model. However, we can see by eye that $y_i\sim\mathcal{N}(\theta,\sigma_i^2)$ cannot always be the case---especially in the chemical datasets, we see that the $\sigma_i$'s are far too low for this to be likely. We will now investigate the different models for such underestimation.
+Because of the different $\sigma_i$'s, we have no reason to expect the empirical distribution of the $y_i$'s to be Normal within each set of experiments. But this does not mean that each individual $y_i$ is not normal about $\theta$---we could consider a case where the $y_i$ are Normal about $\theta$, but have $\sigma_i$'s of different magnitudes. This would indeed produce a more-peaked-than-Normal distribution of $y_i$'s with a heavy tail like the ones we see in Figure \ref{fig:historical}.\footnote{
+\citet{birge1932calculation} offers an insightful early discussion of how this affects the observed distribution of residuals from a weighted mean:
+\begin{quote}
+I believe that the apparent excess of large residuals sometimes noted in practise is due usually to the unsuspected presence of observations of unequal reliability. If a portion of the observations has actually one precision index h, and another portion has another, it is easy to show that a single plot of all the residuals should exhibit an apparent excess of large residuals. \hfill --\citet[pg.~213]{birge1932calculation}
+\end{quote}
+} It is in principle not possible to use this data to disprove that $y_i\sim\mathcal{N}(\theta,?)$, because we can always choose an appropriate variance ``$?$'' to make the data consistent with this model. However, we can see by eye that $y_i\sim\mathcal{N}(\theta,\sigma_i^2)$ cannot always be the case---especially in the chemical datasets, we see that the $\sigma_i$'s are far too low for this to be likely. We will now investigate the different models for such underestimation.
 
 \paragraph{Models for systematic error} 
 
-\begin{table}
+\begin{table}[htbp]
 \centering
-\caption{Summary of results of systematic error model investigation on real-world datasets. We compare the log-likelihood of the Birge Ratio, Random Effects, and Fixed Effect models at the maximum likelihood estimator. But, because we have a ground truth $\theta$ (or a best choice from a relatively narrow interval), we do not estimate $\hat\theta_{\mathrm{MLE}}$, and only estimate $\hat{c}_{\mathrm{MLE}}$ for the Birge Ratio and $\hat{\tau}_{\mathrm{MLE}}$ for Random Effects under the known $\theta$. Since each of these requires the $\sigma_i$ information, we exclude experiments with no $\sigma_i$ information, leading to reductions in $n$ in the historical datasets compared to Table \ref{tab:hist-sym} and the exclusion of the AU dataset. The Fixed Effect model is uniformly dominated by the Birge Ratio and Random Effects because it is a submodel of both. The Birge Ratio model achieves much higher log-likelihoods in the historical datasets (which causes the total to be in favor of Birge), while Random Effects achieves higher log-likelihoods in the chemical and particle datasets.}
+\caption{Summary of results of systematic error model investigation on real-world datasets. We compare the log-likelihood of the Birge Ratio, Random Effects, and Fixed Effect models at the maximum likelihood estimator, and also present the likelihood-maximizing exponent $\beta$ from the model in Equation \ref{eq:bakermodel} ($\beta=0$ corresponds to RE and $\beta=1$ corresponds to BR). Because we have a ground truth $\theta$ (or a best choice from a relatively narrow interval), we do not estimate $\hat\theta_{\mathrm{MLE}}$, and only estimate $\hat{c}_{\mathrm{MLE}}$ for the Birge Ratio and $\hat{\tau}_{\mathrm{MLE}}$ for Random Effects under the known $\theta$. Since each of these requires the $\sigma_i$ information, we exclude experiments with no $\sigma_i$ information, leading to reductions in $n$ in the historical datasets compared to Table \ref{tab:hist-sym} and the exclusion of the AU dataset. The Fixed Effect model is uniformly dominated by the Birge Ratio and Random Effects because it is a submodel of both. The Birge Ratio model achieves much higher log-likelihoods in the historical datasets (which causes the total to be in favor of Birge), while Random Effects tends to achieve higher log-likelihoods in the chemical and particle datasets.}
 \label{tab:hist-syst}
 \smaller
-\begin{tabular}{lrrrr}
-  \hline Dataset & $n$ & Birge $\hat\ell$ & RE $\hat\ell$ & FE $\hat\ell$ \\\hline\hline
+\begin{tabular}{lrrrrrrr}
+  \hline Dataset & Sets of results & Total $n$ & Birge $\hat\ell$ & RE $\hat\ell$ & FE $\hat\ell$ & $\hat\beta_{\mathrm{MLE}}$ & $\beta$ $95\%$ conf.~int.  \\\hline\hline
   \input{tables/hist-syst.tex}\\\hline
   \end{tabular}
 \end{table}
 
-Table \ref{tab:hist-sym} shows results for a comparison of the Birge Ratio, Random Effects, and Fixed Effect models.
+We can further use this data containing ground truths to compare the Birge Ratio and Random Effects models. With $\theta$ known, we can compute the corresponding likelihood-maximizing $\tau$ (for RE) and $c$ (for BR), and compare the resulting likelihoods. We can likewise compute the likelihood for the Fixed Effect model, which has no parameters to infer here. Finally, for comparison with prior work, we can fit the model described by \citet[eq.~4]{baker2013meta}:
+\begin{equation}\label{eq:bakermodel}
+  y_i\overset{\mathrm{ind}}\sim\mathcal{N}(\theta,\sigma_i^2+\tau^2\sigma_i^{2\beta})
+\end{equation}
+$\beta=0$ is equivalent to the Random Effects model, and $\beta=1$ is equivalent to the Birge Ratio model. Under this model, for a given $\beta$, we find a likelihood-maximizing $\tau^2$.\footnote{
+We do this by searching over a grid of $\tau$ values as there is no closed-form solution. %TODO: confirm that there is no closed-form solution
+}
+Collecting the resulting likelihoods for different $\beta$'s, we find the likelihood-maximizing $\hat\beta_{\mathrm{MLE}}$ in any given dataset or set of datasets. Note that we only search over $\beta\in[0,1]$ as we seek to interpolate between RE and BR.
+
+Table \ref{tab:hist-sym} shows results for this likelihood-based comparison. %TODO: discussion
+
+The result $\hat\beta_{\mathrm{MLE}}=0$ with $95\%$ likelihood ratio confidence interval $[0.0,0.24]$ in the particle dataset offers stronger support for RE over BR than the $\hat\beta_{\mathrm{MLE}}=0.222$ with $95\%$ interval $[0,0.434]$ obtained by \citet[pg.~115]{baker2013meta}. %TODO: check method for likelihood ratio confidence interval. Is df on chisq correct?
+
+\paragraph{Independence}
+
+The weakest independence assumption made by the methods presented in Section \ref{sec:methods} is that of the independence of the events $y_i>\theta$. Stronger independence assumptions, like the full distributional independence of the $y_i$'s in Random Effects and the Birge Ratio, imply the independence of $y_i>\theta$.
+
+\textit{A priori}, we do not expect the independence of $y_i>\theta$ to be hold in the real world, because of herding effects---if one author reports a value $y_i$ with narrow uncertainty after a long, expensive experiment, other authors in the future are more likely to double-check their methods if they yield results very different from $y_i$. Can we detect this lack of independence in any of our datasets?
+
+A simple way to examine this is to look at the chronological sequence of results. Let's suppose that the probability of $y_i>\theta$ is $0.5$, and that these events are independent. Then the events $\neg((y_i>\theta)\oplus(y_{i+1}>\theta))$---both are above $\theta$ or both are below $\theta$---are also independent for $i=1,\ldots,n_d-1$, where $n_d$ is the number of results in dataset $d$.\footnote{Let $o_i$ be the event $y_i>\theta$ and let $b_i=\neg((y_i>\theta)\oplus(y_{i+1}>\theta))=\neg(o_i\oplus o_{i+1})$. Clearly $P(b_i)=1/2$ for all $i$. Consider the sequence $(b_1,b_2,\ldots,b_{n_d-1})$. This sequence could only be obtained by two different $o$ sequences: starting with $o_1=0$ or $o_1=1$, the sequence must continue with $o_i=\neg(o_{i-1}\oplus b_{i-1})$. Thus $P(b_1,\ldots,b_{n_d-1})=2\cdot 2^{-n_d}=(\frac{1}{2})^{n_d-1}=P(b_1)\cdot\ldots\cdot P(b_{n_d-1})$, and therefore the $b_i$'s are independent.} Suppose that in dataset $d$ this event has $K_d=k_d$ successes. Under the assumptions we have that:
+\[K_d\sim\mathrm{Binomial}(n_d-1,0.5).\]
+We can further sum up the successes across all of the $N$ datasets, and under the assumptions this will have the following distribution:
+\[\sum_{d=1}^NK_d\sim \mathrm{Binomial}\left(\sum_{d=1}^N(n_d-1),0.5\right).\]
+We can then perform a right-tailed test on $\sum_{d=1}^N k_d$, since the right tail is where there are more pairs of consecutive points on the same side of $\theta$ than we expect. We can also create confidence intervals for the probability $p=0.5$ in the above equation.
+
+Let's examine this in the 1970 PDG dataset. There are a couple of issues that we must address:
+\begin{itemize}
+  \item Dates of publication are given only as years, and there can be multiple results from one year. So there are multiple ways a given set of results can be sorted by date, and these will yield different pairs of consecutive results. We uniformly sample from all possible chronological sortings of the results consistent with the given years.
+  \item The modern values $\theta$ are not exact. We show results for taking $\theta$ as the truth, and for taking one of $\theta$, $\theta-\sigma$, or $\theta+\sigma$ as the truth---choosing among these in each dataset whichever favors the smallest probability $p$ of consecutive results being on the same side of the truth. The latter approach is rather generous towards $p\leq 0.5$.
+\end{itemize}
+In each replication to obtain our results, we further subsample and only take 40 of the 46 PDG datasets, so that our results can be slightly more robust to the choice of datasets.
+
+\begin{figure}[htbp]
+  \includegraphics[width=\textwidth]{figs/pdg_indep.pdf}
+  \caption{Examination of independence in the 1970 PDG dataset via consecutive over- and under-estimation of $\theta$. The grey results are where $\theta$ is taken as the truth in each dataset, and the black results are where whichever of $\theta$, $\theta-\sigma$, or $\theta+\sigma$ favors $p=0.5$ is taken as the truth (The modern values $\theta$ are not exact. $\sigma$ is that shown in Figure \ref{fig:particle}). Left: one-sided hypothesis tests show consistently low $p$-values for the alternative $p>0.5$. Right: 90\% confidence intervals for $p$, where the median, 0.25, and 0.75 quantiles of the endpoints across replications are shown. Most of the time, $p=0.5$ is excluded. But $p$ is not likely to be much more than $0.5$.}
+  \label{fig:pdg-indep}
+\end{figure}
+
+The results are shown in Figure \ref{fig:pdg-indep}. We see that we consistently achieve low $p$-values for the one-sided hypothesis test with $H_0$: $p=0.5$, $H_1$: $p>0.5$, even with the more generous choices of ground truth. This should not be surprising, because we expect there to be a herding or bandwagon effect causing $p>0.5$. With a large enough dataset, we should see small $p$-values in the test, and the 1970 PDG dataset is quite large. What is perhaps more useful is the 90\% confidence interval obtained for $p$. It generally excludes $p=0.5$ (as the $p$-values would suggest), and indicates values of $p$ somewhere between $0.5$ and $0.65$.
+
+Let's consider another model. We can ignore the time aspect, and suppose that the events $(y_i>\theta)$ are all mutually correlated within a dataset. In particular, if we map $y_i>\theta$ to $o_i=1$, and $y_i\leq \theta$ to $o_i=0$, let's say that the correlation $\mathrm{Corr}(o_i,o_j)=\rho$ for $i\neq j$. Under a Binomial distribution, $\rho=0$. $\rho>0$ will appear as an overdispersed version of a $\mathrm{Binomial(n_d,0.5)}$ distribution, which we can model as a $\mathrm{BetaBinomial(n_d,\alpha,\beta)}$ where we fix $\alpha=\beta$ such that, marginally, $P(y_i>\theta)=0.5$.\footnote{Recall that a Beta-Binomial distribution is simply a hierarchical Binomial model, where the result comes from $\mathrm{Binomial}(n,p)$ but $p$ comes from $\mathrm{Beta}(\alpha,\beta)$. When $\alpha=\beta$, $\mathrm{E}[p]=\alpha/(\alpha+\beta)=0.5$ and therefore, marginally for any of the Bernoulli trials within the Binomial, $P(y_i>\theta)=0.5$.} This model is equivalent to a correlated Bernoulli model where $\rho=1/(\alpha+\beta+1)$ \cite[eq.~6]{hisakado2006correlated}. We can set the prior $\rho\sim\mathrm{Uniform}[0,1]$; by the relation above we get $\alpha+\beta=\rho^{-1}-1$ and if we assume $\alpha=\beta$ then $\alpha=\beta=(\rho^{-1}-1)/2$. Our observed data is then $K_d\sim\mathrm{BetaBinomial}(n_d,\alpha,\beta)$, and we can use MCMC to find the posterior distribution for $\rho$.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.7\textwidth]{figs/pdg_rho.pdf}
+  \caption{Posterior distribution for $\rho$ in the 1970 PDG dataset, where we use the prior $\rho\sim\mathrm{Unif}[0,1]$ and suppose that $P(y_i>\theta)=0.5$ and the events $(y_i>\theta)$ within each dataset have correlation $\rho$. The grey result is for $\theta$ being taken as the truth in each dataset, and the black result is for whichever of $\theta$, $\theta-\sigma$, or $\theta+\sigma$ favors $\rho=0$ being taken as the truth (The modern values $\theta$ are not exact. $\sigma$ is that shown in Figure \ref{fig:particle}). This model consistently yields a $\rho$ that is somewhat greater than zero.}
+  \label{fig:pdg-rho}
+\end{figure}
+
+Figure \ref{fig:pdg-rho} shows the result. When taking $\theta$'s at face value, we obtain a posterior distribution for $\rho$ which is centered on 0.2. When taking the ground truth from $\theta$, $\theta-\sigma$, or $\theta+\sigma$ as in the previous result, we obtain a posterior which is centered somewhat above $0.1$. Both posterior distributions have little mass near $\rho=0$.
+
+These two results we have obtained, for the probability of consecutive points being on the same side of $\theta$ and for $\rho$, both demonstrate a problematic lack of independence in the 1970 PDG dataset. They invalidate the independence assumptions of \textit{all} of the methods presented in Section \ref{sec:methods}. However, we ought not despair. First, we never expected these assumptions to truly hold in the real world, and their violation does not necessarily imply that the methods will perform poorly in inference. It is indeed hard to judge \textit{a priori} how problematic the degree of dependence we have found is for the performance of the methods. We will use the results from this section to inform some of our simulated datasets in Section \ref{sec:simulation}, and we will see the performance of the methods directly on the PDG dataset and others in Section \ref{sec:realworld}. Second, these results help us determine how exactly to improve our methods---in particular, they directly suggest data-driven choices for how to relax Assumption 2 of the Sign Test in Section \ref{sec:binom-ass-2}. 
 
 \subsection{Large datasets with no ground truth}\label{fundamental-particles}
 
 \subsubsection{Dataset descriptions}
 
-\begin{figure}
+\begin{figure}[htbp]
   \centering
   \includegraphics[width=\textwidth]{figs/noground_violin.pdf}
   \caption{Summary statistics of the large datasets with no ground truths.}\label{fig:noground-violin}
@@ -879,7 +1024,7 @@ Table \ref{tab:hist-sym} shows results for a comparison of the Birge Ratio, Rand
 
 Figure \ref{fig:noground-violin} provides summary statistics of the datasets described below.
 
-\paragraph{Particle physics} The Particle Data Group has published estimates of properties of fundamental particles since 1957 (see Section \ref{sec:birge} for a description of their measurement aggregation method). For example, the \emph{top quark} is a fundamental particle, and physicists can measure its mass (a property of the particle). As of the 2025 update, there are 1269 particle properties for which PDG provides an estimate (or ``average'') using their aggregation method which have at least three underlying measurements. Together, these use 6239 underlying measurements. Because there are so many, we can use this dataset to try to get a handle on the distribution of estimates in particle physics. One difficulty will be that we would like to put the measurements on a common scale, but we have no certain ground truth information by which to standardize them (otherwise there would be no need to measure).
+\paragraph{Particle physics} The Particle Data Group has published estimates of properties of fundamental particles since 1957 (see Section \ref{sec:birge} for a description of their measurement aggregation method). For example, the \emph{top quark} is a fundamental particle, and physicists can measure its mass (a property of the particle). As of the 2025 update, there are 1269 particle properties for which PDG provides an estimate (or ``average'') using their aggregation method which have at least three underlying measurements. Together, these use 6239 underlying measurements. Because there are so many, we can use this dataset to try to get a handle on the distribution of estimates in particle physics.
 
 \paragraph{Key comparisons} To both ensure the consistency of measurement standards and evaluate the competency of national measurement laboratories, BIPM organizes ``key comparisons,'' where a number of laboratories measure the same quantity. We have obtained a subset of key comparisons on measurements of radionuclide activity whose digitization is described in \cite{coulon2021digitalization}.
 
@@ -889,17 +1034,23 @@ Figure \ref{fig:noground-violin} provides summary statistics of the datasets des
 
 \paragraph{Medical meta-analyses} We obtain from \citet{baker2013meta} a set of 14 meta-analyses of a total of 551 underlying medical studies. Note that we exclude the pravastatin dataset described as we were unable to reproduce the summary statistics shown in \citet{baker2013meta}.
 
-\paragraph{PDG 2011} We obtain, also from \citet{baker2013meta}, 19 sets of results from the 2011 PDG RPP. These have a total of 192 underlying measurements. We include this dataset for closer comparison with prior work, and to examine whether results change between the dataset of \citeauthor{baker2013meta} and ours, which have different inclusion criteria.
+\paragraph{PDG 2011} We obtain, also from \citet{baker2013meta}, 20 sets of results from the 2011 PDG RPP. These have a total of 484 underlying measurements.
 
-Note that we exclude the $t\bar{t}$ cross section dataset described as it includes results known to PDG to be correlated \citep{pdg2011topquark}. We also include only the values used by PDG in its averages, instead of considering the whole set of experiments as done by \citet{baker2013meta}. This is because some values are excluded from averages due to not being independent or being included in later results.
+Some notes on this datase to be aware of:
+\begin{itemize}
+\item The $t\bar{t}$ cross-section dataset described includes results known to PDG to be correlated, thus PDG did not directly apply the Birge Ratio method as they do for other sets of results \citep{pdg2011topquark}.
+\item \citet{baker2013meta} consider the whole set of experiments reported by PDG, instead of just those used in the average. While this yields more data, this makes the dataset is unrepresentative of sets of results which the PDG actually uses for averages. For example, some values are excluded from averages by PDG due to not being independent or being included in later results.
+\end{itemize}
+The stricter inclusion criteria of our PDG 2025 dataset are designed to avoid these issues.\footnote{Our stricter criteria are only possible because PDG now provides machine-readable data on all underlying results considered in the RPP, which allows us to automatically collect and filter a very large dataset without manual effort. This was not the case in 2011.} Nonetheless, we include this dataset for closer comparison with prior work and to examine how much these considerations may make results differ.
+
 
 \subsubsection{Distribution of measurements}\label{distribution-of-measurements}
 
-For a given set of experiments/studies, say we have $n$ results $y_1,\ldots,y_n$ with associated given standard deviations $\sigma_1,\ldots,\sigma_n$. We'd like to examine the distributional assumptions in generating $y_i$. The strongest assumption we can make is the Fixed Effects assumption that $y_i\overset{ind}{\sim}\mathcal{N}(\theta,\sigma_i^2)$, but we don't know the ground truth $\theta$. Let's compute their precision-weighted mean $\bar{y}=\frac{1}{S}\sum_{i=1}^n\frac{y_i}{\sigma_i^2}$, where $S=\sum_{i=1}^n \frac{1}{\sigma_i^2}$.\footnote{This is the same as the point estimate we would obtain from Fixed Effect (Section \ref{sec:fixed-effect}) or the Birge Ratio (Section \ref{sec:birge}). The Birge Ratio is used by PDG.} Now we can consider the residuals $y_i-\bar{y}$. If $y_i\overset{ind}{\sim}\mathcal{N}(\theta,\sigma_i^2)$, then:
+For a given set of experiments/studies, say we have $n$ results $y_1,\ldots,y_n$ with associated given standard deviations $\sigma_1,\ldots,\sigma_n$. We'd like to examine the distributional assumptions in generating $y_i$ even though we don't know the ground truths. The strongest assumption we can make is the Fixed Effects assumption that $y_i\overset{ind}{\sim}\mathcal{N}(\theta,\sigma_i^2)$, but we don't know the ground truth $\theta$. Let's compute their precision-weighted mean $\bar{y}=\frac{1}{S}\sum_{i=1}^n\frac{y_i}{\sigma_i^2}$, where $S=\sum_{i=1}^n \frac{1}{\sigma_i^2}$.\footnote{This is the same as the point estimate we would obtain from Fixed Effect (Section \ref{sec:fixed-effect}) or the Birge Ratio (Section \ref{sec:birge}). The Birge Ratio is used by PDG.} Now we can consider the residuals $y_i-\bar{y}$. If $y_i\overset{ind}{\sim}\mathcal{N}(\theta,\sigma_i^2)$, then:
 \[y_i-\bar{y}\sim \mathcal{N}\left(0, \sigma_i^2\left(1-\frac{1}{\sigma_i^2S}\right)^2+\frac{S-\frac{1}{\sigma_i^2}}{S^2}\right).\]
 Ideally, we'd like to put all of these $y_i-\bar{y}$ residuals from all different sets of experiments on the same scale, as now their distribution depends on the $\sigma_i$'s within each set. But we can simply divide $y_i-\bar{y}$ by the square root of the variance term given above. This will yield standardized residuals which, supposing that $y_i\overset{ind}{\sim} \mathcal{N}(\mu,\sigma_i^2)$, will follow a standard Normal distribution $\mathcal{N}(0,1)$. Do they?
 
-\begin{figure}[H]
+\begin{figure}[htbp]
 \centering
 \includegraphics[width=\textwidth]{figs/noground-std-resids.pdf}
 \caption{Distribution of the absolute value of the residuals of individual experiments standardized using the method described above. The red line is a folded Standard Normal PDF. None of the datasets quite follow a folded Standard Normal distribution, especially evident with extra mass in the tail.}
@@ -912,7 +1063,7 @@ What does this overdispersion mean in practice? The assumption $y_i\overset{ind}
 
 The Fixed Effect assumptions is suspect because the datasets indeed have unaccounted-for errors. But how many sets of results have these? Let's go back to the full, unstandardized dataset and examine what values of $\hat c$ and $\hat \tau$ are achieved by the Birge Ratio method and Random Effects in PDG data. Figure \ref{fig:pdg-birge-re} displays this result. Even if there is no unaccounted-for error, it is still possible for $\hat c$ or $\hat \tau$ to be larger than 1 and 0 by random chance. Thus we have added a control to Figure \ref{fig:pdg-birge-re} displaying histograms for $\hat c$ and $\hat \tau$ obtained by resampling the whole dataset according to $y_i\overset{\mathrm{ind}}{\sim}\mathcal{N}(0, \sigma_i)$.\footnote{The calculations of $\hat c$ and $\hat \tau$ are invariant to a shift in the mean, so we don't need to know $\theta$ to perform this resampling experiment.} This creates a hypothetical PDG dataset with no unaccounted-for errors.
 
-\begin{figure}[H]
+\begin{figure}[htbp]
 \centering
 \includegraphics[width=\textwidth]{figs/pdg_birge_re.pdf}
 \caption{Within the PDG dataset, these are the empirical distributions of (left) the Birge Ratio $\hat c$ and (right) the $\hat\tau$ systematic error term from Random Effects. For both, we see that most sets of measurements ($57\%$) have a Birge Ratio $\hat c=1$ (no systematic error), and most ($75\%$)have a $\hat\tau=0$, indicating no (or low) unaccounted-for errors. However, judging by the control, this is a less than we would expect if the PDG data had no unaccounted-for error. Likewise, in the case of measurements with $\hat c>1$ or $\hat\tau>0$, we see that the PDG tends towards larger values of $\hat c$ and $\hat\tau$ than the control.
@@ -931,15 +1082,14 @@ Let's now proceed to a direct model comparison for those methods which have well
 
 \textbf{Likelihoods}
 
-\begin{table}
+\begin{table}[htbp]
   \centering
   \caption{Negative of MLE log-likelihood (totaled across all sets of results in a dataset), as well as the BIC and AIC (averaged across sets of results) for the Birge Ratio (BR), Random Effects (RE), and Fixed Effect (FE) models. Lower is better in each column. The Birge Ratio model is used by PDG. Random Effects is used by BIPM, and in psychology and medical meta-analyses.}
   \label{tab:noground-loglike}
   \smaller
   \begin{tabular}{l|rrr|rrr|rrr}
   \hline & \multicolumn{3}{c|}{Negative log-likelihood} & \multicolumn{3}{c|}{Mean BIC} & \multicolumn{3}{c}{Mean AIC} \\
-  Dataset & BR & RE & FE & BR & RE & FE & BR & RE & FE\\\hline\input{tables/noground-loglike.tex}
-  \\\hline
+  Dataset & BR & RE & FE & BR & RE & FE & BR & RE & FE\\\hline\input{tables/noground-loglike.tex}\\\hline
   \end{tabular}
 \end{table}
 
@@ -949,17 +1099,28 @@ We should first note that the Birge Ratio and Random Effects models each have tw
 
 Recall that the Birge Ratio is the model used by PDG to infer $\theta$, and they combine the given statistical and systematic uncertainties (i.e.~they use \texttt{pdg2025-both}).
 
-Now we can examine the BIC's and AIC's closer. In every dataset except \texttt{pdg2025-both}, Random Effects achieves the lowest BIC and AIC. Curiously, in \texttt{pdg2025-both}, the Fixed Effect model outperforms both the Birge Ratio and Random Effects under BIC and AIC. Didn't we just establish in the previous section that the Fixed Effect model is not appropriate in any dataset? Yes, but BIC and AIC, here calculated on a per-particle-property level and averaged, give an advantage to Fixed Effect because it has one fewer parameter. In \texttt{pdg2025-both}, this yields an advantage of $2$ for AIC and an average advantage of $1.47$ for BIC. So, even if we can see based on descriptive statistics of the full PDG dataset that Fixed Effect does not fit the data well, it tends to yield lower BIC and AIC on a per-particle-property level. This indicates that, if we only have one small set of experiments that we wish to aggregate, it may be dangerous to select a model and method based only on the statistical properties of the small set. Perhaps the knowledge that ``there is nontrivial underestimation of errors in this set of experiments, and we will underestimate the final uncertainity if we don't account for this'' should alone be enough to disqualify using a model like Fixed Effect.
+Now we can examine the BIC's and AIC's closer. In every dataset except \texttt{pdg2025-both}, Random Effects achieves the lowest BIC and AIC. Curiously, in \texttt{pdg2025-both}, the Fixed Effect model outperforms both the Birge Ratio and Random Effects under BIC and AIC. Didn't we just establish in the previous section that the Fixed Effect model is not appropriate in any dataset? Yes, but BIC and AIC, here calculated on a per-particle-property level and averaged, give an advantage to Fixed Effect because it has one fewer parameter. In \texttt{pdg2025-both}, this yields an advantage of $2$ for AIC and an average advantage of $1.47$ for BIC. So, even if we can see based on descriptive statistics of the full PDG dataset that Fixed Effect does not fit the data well, it tends to yield lower BIC and AIC on a per-particle-property level. This indicates that, if we only have one small set of experiments that we wish to aggregate, it may be dangerous to select a model and method based only on the statistical properties of the small set. Perhaps the knowledge that ``there is nontrivial underestimation of errors in this set of experiments, and we will underestimate the final uncertainity if we don't account for this'' should alone disqualify using a model like Fixed Effect.
 
-Now let's examine whether the results above are due to outliers: perhaps in each dataset, there are one or two set of experiments where RE is much better than BR, but on the whole BR is better. Figure \ref{fig:noground-loglike} shows, for each result in each dataset, the difference between the Random Effects MLE log-likelihood and that for the Birge Ratio. In each dataset, sets of results more often favor Random Effects than they do the Birge Ratio, and Random Effects outperforming the Birge Ratio in terms of the total log-likelihood is not solely driven by outliers.
+\begin{table}[htbp]
+  \centering
+  \caption{Likelihood-maximizing exponent $\beta$ from the model in Equation \ref{eq:bakermodel} ($\beta=0$ corresponds to RE and $\beta=1$ corresponds to BR). All confidence intervals exclude $\beta=1$, and only that for \texttt{pdg2025-stat} excludes $\beta=0$. The results for \texttt{baker-pdg2011-stat} and \texttt{baker-medical} are reproduction of \citet[pg.~115--116]{baker2013meta}, who obtained respectively for these two datasets: $\hat\beta_{\mathrm{MLE}}=0.222$ with interval $[0, 0.434]$ and $\hat\beta_{\mathrm{MLE}}=0.18$ with interval $[0, 0.34]$.}
+  \label{tab:noground-bakermodel}
+  \smaller
+  \begin{tabular}{l|rr}
+  \hline Dataset & $\hat\beta_{\mathrm{MLE}}$ & $95\%$ conf.~int.\\\hline\input{tables/noground-bakermodel.tex}\\\hline
+  \end{tabular}
+\end{table}
 
-\begin{figure}
+As we did in Section \ref{sec:historical-assumptions-check}, let's now apply the model from Equation \ref{eq:bakermodel}.\footnote{For a given $\tau$ and $\beta$, if we let $w_i^\star=1/\left(\sigma_i^2+\tau^2\sigma_i^{2\beta}\right)$, $\hat\theta_{\mathrm{MLE}}$ is the weighted mean $(\sum_{i=1}^nw_i^\star y_i)/\sum_{i=1}^nw_i^\star$. We can do this for many values of $\tau$ across a grid and thus find, for a given $\beta$, $(\hat\theta_{\mathrm{MLE}},\hat\tau_{\mathrm{MLE}})$. We can thus fund the likelihood under different values of $\beta$.} Results are shown in Table \ref{tab:noground-bakermodel}. We see that none of the datasets favor the Birge Ratio model, and most contain the Random Effects model in their interval for the exponent $\beta$. The interval for \texttt{pdg2025-stat} excludes both models, suggesting a relationship between $\sigma_i$ and the size of the unaccounted-for error which is positive but less than linear.
+
+\begin{figure}[htbp]
   \centering
   \includegraphics[width=\textwidth]{figs/noground_loglike_diff.pdf}
   \caption{Difference in log-likelihoods of the MLEs of the Random Effects and Birge Ratio models for each set of results in each dataset described. Random Effects tends to be favored. The fractions do not add up to 1 because many of the log-likelihoods are equal: this occurs in the case where $\hat\tau_{\mathrm{MLE}}=0$ and $\hat{c}_{\mathrm{MLE}}=1$. It does not appear that outliers are driving the results in Table \ref{tab:noground-loglike}}
   \label{fig:noground-loglike}
 \end{figure}
 
+Finally, let's examine whether all of our results above favoring RE are due to outliers: perhaps in each dataset, there are one or two sets of experiments where RE is much better than BR, but on the whole BR is better. Figure \ref{fig:noground-loglike} shows, for each result in each dataset, the difference between the Random Effects MLE log-likelihood and that for the Birge Ratio. In each dataset, sets of results either more often favor Random Effects than they do the Birge Ratio, or the two models are about even. Random Effects outperforming the Birge Ratio in terms of the total log-likelihood does not seem to be solely driven by outliers.
 
 
 %TODO: cite the "two groups that should meet" paper's results on PDG data
@@ -979,7 +1140,7 @@ Let's now directly apply our different inference methods to this PDG dataset. Be
 \begin{itemize}
 
 \item
-  For Random Effects and the Birge Ratio, what is the distribution of $\tau$'s and $\hat c$'s?
+  For Random Effects and the Birge Ratio, what is the distribution of $\hat\tau$'s and $\hat c$'s?
 \item
   How much wider/narrower are intervals from different methods?
 \item
@@ -990,7 +1151,7 @@ Let's now directly apply our different inference methods to this PDG dataset. Be
 
 Let's perform an evaluation of different methods, using these standardized residuals to create synthetic data. In practice, for a fixed particle property, we don't expect the measurements to come from a distribution like that shown in \ref{pdg-std-residuals}. Some particle properties have measurements showing large systematic errors and severe underestimation of $\sigma_i$, while others do not.
 
-\section{Simulation study}\label{simulation-study}
+\section{Simulation study}\label{sec:simulation}
 
 Let's do some simulations to benchmark the Sign Test (ST) against RE and BR. In every simulation, we will have these parameters:
 
@@ -1027,7 +1188,7 @@ For $n=10$, for example, this means targeting a coverage of $0.891$ (narrower sy
 
 For a choice of $\alpha$, we use the corresponding $z_{\alpha/2}$ to expand the intervals of the Random Effects and Birge methods. See Table \ref{tab:table-n} for our choices of $n$ and the corresponding target level, tail probability, and $z$-score.
 
-\begin{table}[H]
+\begin{table}[htbp]
 \centering
 \caption{Chosen level and corresponding $\alpha/2$ tail probability and $z$-score for different $n$. $n$ is evenly spaced on a logarithmic scale.}
 \label{tab:table-n}
@@ -1099,7 +1260,7 @@ This is like Random Effects, but where the systematic errors are correlated betw
 
 \subsection{Simulation results}\label{simulation-results}
 
-\begin{figure}[h]
+\begin{figure}[htbp]
 \centering
 \includegraphics[width=\textwidth]{figs/performance_random_effects.pdf}
 \includegraphics[width=\textwidth]{figs/performance_birge.pdf}
@@ -1121,7 +1282,7 @@ We show results for the settings satisfying our assumptions (Random Effects, Bir
   Under Random Effects with Outliers, which satisfies the assumptions of neither RE nor BR, BR works poorly, while RE is fairly competitive with ST (though it yields intervals larger by orders of magnitude for large $n$ with $\tau>1$). This difficulty in this setting is outliers, especially at large $n$, which pull or greatly expand the RE and BR intervals. As expected, ST still achieves perfect coverage in this setting. In general, ST is robust to outliers as it only depends on the ranking of the experiments, not their relative magnitudes.
 \end{itemize}
 
-\begin{figure}[h]
+\begin{figure}[htbp]
 \centering
 \includegraphics[width=\textwidth]{figs/performance_adversarial.pdf}
 \includegraphics[width=\textwidth]{figs/performance_random_effects_corr.pdf}
@@ -1148,6 +1309,62 @@ But when systematic errors are large, or systematic errors are within the same o
 
 This parallels results from nonparametric statistics that show nonparametric methods like the Sign Test and Signed-Rank Test don't sacrifice much efficiency over methods like a $t$-test which make stronger assumptions \citep{conover1999practical}.
 
+\section{Real-world performance}\label{sec:realworld}
+
+We have just performed a simulation study to examine how different methods perform under different assumed data-generating processes. However, when doing a real meta-analysis, none of the above assumed data-generating processes will be true. To get a more realistic handle on the performance of the different methods above, we can examine whether or not the different methods can recover, using old studies, values $\theta$ which now have precise knowledge of. We will use the datasets described in Section \ref{sec:historical-studies} towards this purpose.
+
+To our knowledge, such an evaluation of meta-analysis methods has not been done before. This is not surprising, because the modern development of meta-analysis has mostly been in medicine and the social sciences, where ground truths are either too difficult to obtain or simply not well-defined (e.g.~a treatment effect will vary between different populations, so what would the ``ground truth'' treatment effect be?). In the physical sciences, in contrast, it is typically easy to imagine that there is a ``ground truth,'' and the improvement in techniques over time can offer improvements of orders of magnitude in our uncertainty about it.
+
+Note that, because of the same differences that make this study possible in the physical sciences but not in social science and medicine, this section's results cannot automatically be applied to meta-analysis in social science and medicine.
+
+\subsection{Particle Data Group, 1970}
+
+This is the dataset shown in Figure \ref{fig:particle}. We have enough data here to take quite a close, quantitative look at the performance of the different methods. This is how we shall proceed:
+\begin{enumerate}
+  \item For a given $n$, consider all particle properties with $N\geq n$ results.
+  \item For a given particle property, there are $\binom{N}{n}$ possible combinations of $n$ results. Each combination forms a dataset of $n$ results with a corresponding ground truth.
+  \item For each of the combinations (or a random sampling of them if there are many), we can apply the methods, and compute various statistics. For the purposes of this section, the interval yielded by a method ``contains the ground truth'' if it overlaps with the 2025 $2\sigma$ interval for the corresponding particle property.
+  \item Average first over the combinations within each particle property, then over the particle properties. (If we averaged over all combinations together, datasets with large $N$ would dominate the others in the results for small $n$ values).
+\end{enumerate}
+This way, for our evaluation at, say, $n=3$, we can use datasets like \texttt{M018W1} with many more than 3 results. Thus our conclusions for any $n$ will be based on a larger and more varied set of datasets and will be more robust.
+
+\begin{figure}[htbp]
+  \includegraphics[width=\textwidth]{figs/pdg1970_cov_birge.pdf}
+\caption{
+Top: Coverage comparison of the different variations of the Birge Ratio method discussed in Section \ref{sec:birge} on the 1970 PDG dataset, with the Fixed Effect result for reference. Bottom: Average width of intervals from the different methods compared to Fixed Effect. None of the methods achieve target coverage for any value of $n$, and coverage decreases as $n$ increases.
+}\label{fig:pdg1970-cov-birge}
+\end{figure}
+
+Figure \ref{fig:pdg1970-cov-birge} shows the coverage achieved by the Birge Ratio and PDG's and CODATA's variations on it:
+\begin{itemize}
+  \item None of Birge Ratio methods achieve target coverage for any $n$. In this experiment, target coverage is $0.6827$ ($1\sigma$), and coverage for all the methods drops below $0.4$ for $n=10$. Coverage is quite close to target for the standard method and PDG's for $n$ from 2 to 3.
+  \item Among the variations on the Birge Ratio, PDG offers the highest coverage. This is perhaps unsurprising, as their heuristic to exclude high-$\sigma_i$ data when fitting the scaling factor is designed for their dataset, where experiments may sometimes have $\sigma_i$'s at different orders of magnitude.
+  \item For small $n$, CODATA's heuristic for choosing the scaling factor results in intervals almost as narrow as those from Fixed Effect. This is because their heuristic is to scale the $\sigma_i$'s up until the largest is at most $2\sigma_i$. For small $n$ and a moderate scaling factor $c$ (say, $c=1.5$), we are unlikely to have any residuals above $2\sigma_i$ ($1.33c\sigma$), so we will not scale and will simply yield a Fixed Effect estimate.
+\end{itemize}
+
+\begin{figure}[htbp]
+  \includegraphics[width=\textwidth]{figs/pdg1970_cov_re.pdf}
+\caption{
+Top: Coverage comparison of the different variations of the Random Effects method discussed in Section \ref{sec:re} on the 1970 PDG dataset, with the Fixed Effect result for reference. Bottom: Average width of intervals from the different methods compared to Fixed Effect. We see that coverage decreases as $n$ increases.
+}\label{fig:pdg1970-cov-re}
+\end{figure}
+
+Figure \ref{fig:pdg1970-cov-re} shows results for a few methods for Random Effects inference:
+\begin{itemize}
+  \item For $n>2$, none of Random Effects methods achieve target coverage. In this experiment, target coverage is $0.6827$ ($1\sigma$), and coverage for all the methods drops below $0.6$ and then below $0.5$ for $n=10$. Coverage is quite close to target for the DL and HKSJ for $n$ from 2 to 3.
+  \item Surprisingly, HKSJ holds no clear advantage in coverage over DL, even though (as expected) it tends to yield wider intervals.
+\end{itemize}
+
+\begin{figure}[htbp]
+  \includegraphics[width=\textwidth]{figs/pdg1970_cov_nonparam.pdf}
+  \caption{
+Coverage comparison of the nonparametric methods presented in Section \ref{sec:methods} on the 1970 PDG dataset. Solid lines are achieved coverages, dashed lines are target coverages---these vary with $n$ due to the discreteness of the methods. ST: Sign Test. SRT: Signed-Rank Test. ST$_{\rho=0.1}$ indicates the Sign Test with the CDF modified to accomodate the events $(y_i>\theta)$ and $(y_j>\theta)$ having correlation $\rho=0.1$. ST and SRT both under-cover, though SRT is better. Incorporating correlation using ST$_\rho=0.1$ yields coverage exceeding or closer to matching its target. The overlap between ST and ST$_\rho=0.1$ for n from 3 to 7 is because both methods yield intervals based on quantiles of the points. For $n=3$, they will yield the same interval from the smallest value to the biggest value, and therefore achieve the same coverage, but ST will call it a 75\% interval and ST$_\rho=0.1$ will call it a 67.5\% interval.
+}\label{fig:pdg1970-cov-nonparam}
+\end{figure}
+
+
+Figure \ref{fig:pdg1970-cov-nonparam} shows results for the Sign Test (Section \ref{sec:st}), Signed-Rank Test (Section \ref{sec:srt}), and the Sign Test modified to allow for correlations between the results. We see that both the Sign Test and the Signed-Rank Test consistently under-cover (i.e.~they do not contain the ground truth value as often as they should if their assumptions are true). Interestingly, even though its assumptions are stronger, the Signed-Rank Test performs better, with gaps in coverage of at most about 0.05. We also see that the correlation-modified Sign Test at times exceeds its target coverage and never falls nearly as far short of its target as the Sign Test, pointing towards the possible practical utility of this modification.
+
 \section{Results on real data}\label{results-on-real-data}
 
 \subsection{CODATA: physical constants}\label{codata-physical-constants}
@@ -1156,9 +1373,9 @@ We ought to run a comparison on some real data. Let's see what happens with CODA
 
 \subsubsection{Gravitational constant}\label{gravitational-constant}
 
-\begin{figure}[H]
+\begin{figure}[htpb]
 \centering
-\includegraphics[width=\textwidth]{figs/G0.pdf}
+\includegraphics[width=0.5\textwidth]{figs/G0.pdf}
 \label{fig:G}
 \caption{Results of different aggregation methods for estimates of the gravitational constant $G$ \cite[Table XXIX]{tiesinga2021codata}. Error bars are $1\sigma$ intervals using the $sigma_i$'s reported by each study.}
 \end{figure}
@@ -1179,9 +1396,9 @@ The CODATA and BR intervals are pulled to the right by the small $\sigma_i$'s on
 
 \subsubsection{Planck constant}\label{planck-constant}
 
-\begin{figure}[H]
+\begin{figure}[htpb]
 \centering
-\includegraphics{figs/h0.pdf}
+\includegraphics[width=0.5\textwidth]{figs/h0.pdf}
 \label{fig:h}
 \caption{Results of different aggregation methods for estimates of the Planck constant $h$ \cite[Table 26]{mohr2012codata}. Error bars are $1\sigma$ intervals using the $sigma_i$'s reported by each study.}
 \end{figure}
@@ -1194,7 +1411,7 @@ We see again that the CODATA interval is wider than that given by our BR---this 
 
 \subsection{Targeting the same coverage level on real data}\label{targeting-the-same-coverage-level-on-real-data}
 
-\begin{figure}[h]
+\begin{figure}[htbp]
 \centering
 \includegraphics{figs/G1.pdf}
 \includegraphics{figs/h1.pdf}
@@ -1208,32 +1425,45 @@ We see again that the CODATA interval is wider than that given by our BR---this 
 
 \section{Discussion}\label{discussion-2}
 
-The Sign Test is strong because it:
+\subsection{Is unaccounted-for error additive or multiplicative?}
+A significant tension in the literature is whether unaccounted-for errors should be modeled as additive (true variance is $\sigma_i^2+\tau^2$) or multiplicative (true variance is $c^2\sigma_i^2$). The physics literature tends to favor the multiplicative model and its corresponding Birge Ratio method(s), while the meta-analysis literature as a whole favors the additive model and Random Effects method(s). Here is a summary of our results:
 
 \begin{itemize}
-\item
-  Makes weaker assumptions which are implied by many existing common assumptions.
-\item
-  Yields confidence intervals which exactly achieve their nominal coverage level for any value of $n$ and for any data-generating process which satisfies the relatively weak assumptions.
-\item
-  Is insensitive to problems in the $\sigma_i$ uncertainties provided for each underlying estimate.
-\item
-  Is robust to outliers, because it only depends on the ranking of the $y_i$'s, not their relative magnitudes or residuals.
-\item
-  Relies on fairly simple math, making its justification, implementation, and interpretation easy for non-statisticians.
+  \item In Section \ref{sec:assumptions}, every analysis and model comparison on almost every dataset favors the Random Effects model, including datasets from the Particle Data Group and datasets with or without ground truths. There is no obvious difference between the physical and non-physical datasets.
+  \item In Section \ref{sec:simulation}, the Birge Ratio method does not work well on data from Random Effects, but Random Effects works well on data from the Birge Ratio.
+  \item In Section \ref{sec:realworld}, we see that the Random Effects method is closer to achieving coverage on the 1970 PDG dataset than the Birge Ratio is.
 \end{itemize}
+So every sign points towards Random Effects being better than the Birge Ratio, both in terms of the validity of its assumptions and in terms of actual performance in inference.
 
-It is weak in that it:
-
+\subsection{Nonparametric methods for meta-analysis}
+In Sections \ref{sec:st} and \ref{sec:srt}, we introduced for the first time inversions of the Sign Test and Signed-Rank Tests as methods for meta-analysis. These have some good properties in this setting:
 \begin{itemize}
-\item
-  Cannot exactly achieve an arbitrary target coverage level for finite $n$ due to the discreteness of the Binomial distribution. (But it will be conservative, and anyway for any $n$ one can pick from a set of coverage levels which can be achieved exactly).
-\item
-  Yields wider intervals than needed if we know more about the data-generating process---methods tailored to that DGP can achieve coverage with narrower intervals.
-\item
-  Does not take advantage of the information present in the $\sigma_i$'s.
+\item Make weaker assumptions which are implied by many existing common assumptions.
+\item Yield confidence intervals which exactly achieve their nominal coverage level for any value of $n$ and for any data-generating process which satisfies the relatively weak assumptions.
+\item Are insensitive to problems in the $\sigma_i$ uncertainties provided for each underlying estimate.
+\item Are robust to outliers, because they don't make a light-tailed distributional assumption.
+\end{itemize}
+In addition, the Sign Test in particular relies on fairly simple math, making its justification, implementation, and interpretation easy for non-statisticians.
+
+In Sections \ref{sec:simulation} and \ref{sec:realworld}, we saw that both of these methods yield intervals which more consistently achieve the desired level of coverage than others. Of course, this comes at the cost of wider intervals, but this is partly because the intervals given by other methods are just unrealistically narrow.
+
+However, both of these methods have some limitations:
+\begin{itemize}
+\item Even though they can exactly achieve some coverage levels, neither can exactly achieve an arbitrary target coverage level for finite $n$ due to the discreteness of the underlying distributions. This problem is much worse for the Sign Test than for the Signed-Rank Test. Though we do discuss in Section \ref{sec:st} some approaches to mitigate it.
+\item Both will yield wider intervals than needed if we know more about the data-generating process---methods tailored to that DGP can achieve coverage with narrower intervals. Though we demonstrate in Section \ref{sec:simulation} that, in many cases, the gain is not much.
+\item Neither takes advantage of the information present in the $\sigma_i$'s.
+\item Even the weaker assumptions made by these methods do not hold in real-world data. In particular, in Section \ref{sec:historical-assumptions-check}, we were able to detect violations of the independence assumption in a real-world dataset. However, as we demonstrate in Sections \ref{sec:simulation} and \ref{sec:realworld}, this can accomodated with a small modification to the Sign Test.
 \end{itemize}
 
+\section*{Acknowledgements}
+
+The parts of this study relying on real-world data incorporate thousands of scientific results obtained by thousands of authors. Though we cannot cite them all, this work would not have been possible without them.
+
+We thank Dean Robinson and Ben Nachman for helpful communication about PDG data, and the PDG as a whole for their carefully documented datasets and machine-readable data. We also thank Rose Baker for providing the datasets from \citet{baker2013meta}.
+
+\twocolumn
+\footnotesize
 \bibliography{references}
+\normalsize
 
 \end{document}

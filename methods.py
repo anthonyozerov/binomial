@@ -56,6 +56,19 @@ def errscale_test(values, sigmas):
     return p
 
 
+def fixed_effect(values, sigmas, coverage=None, zalpha=None):
+    if zalpha is None:
+        # calculate critical value based on desired coverage
+        tail_prob = (1 - coverage) / 2
+        zalpha = np.abs(norm.ppf(tail_prob))
+    
+    w = 1 / sigmas**2
+    yhat = np.sum(w * values) / np.sum(w)
+    sigma = np.sqrt(1 / np.sum(w))
+    interval = [yhat - zalpha * sigma, yhat + zalpha * sigma]
+    return interval, yhat, sigma
+
+
 def random_effects_dl_base(values, sigmas):
     """
     Calculate the base fixed-effects weighted mean, random-effects weights,
@@ -195,7 +208,9 @@ def random_effects_hksj(values, sigmas, coverage=None, talpha=None):
     muhat, wstar, tau2 = random_effects_dl_base(values, sigmas)
 
     # modified variance estimator specific to HKSJ method
-    sigma2 = np.sum(wstar * (values - muhat) ** 2) / (np.sum(wstar) * df)
+    Qstar = np.sum(wstar * (values - muhat) ** 2) / np.sum(wstar)
+    sigma2 = Qstar/df
+    # sigma2 = np.sum(wstar * (values - muhat) ** 2) / (np.sum(wstar) * df)
     sigma = np.sqrt(sigma2)
 
     # construct confidence interval using t-distribution
@@ -239,9 +254,9 @@ def random_effects_mle(values, sigmas, coverage=None, zalpha=None, truth=None):
         zalpha = np.abs(norm.ppf(tail_prob))
 
     sigmas2 = sigmas**2
-    tau2 = 0
+    tau2 = np.var(values)
 
-    for i in range(40):
+    for i in range(100):
         w = 1 / (sigmas2 + tau2)
         muhat = np.sum(w * values) / np.sum(w) if truth is None else truth
         tau2 = np.sum(w**2 * ((values - muhat)**2 - sigmas2)) / np.sum(w**2)
@@ -252,7 +267,7 @@ def random_effects_mle(values, sigmas, coverage=None, zalpha=None, truth=None):
 
     return interval, muhat, sigma, np.sqrt(tau2)
 
-def birge(values, sigmas, coverage=None, zalpha=None, pdg=False, codata=False, truth=None):
+def birge(values, sigmas, coverage=None, zalpha=None, pdg=False, codata=False, mle=False, truth=None):
     """
     Compute confidence intervals using Birge ratio model.
 
@@ -307,11 +322,16 @@ def birge(values, sigmas, coverage=None, zalpha=None, pdg=False, codata=False, t
             # in calculation of chat
             thresh = 3 * np.sqrt(n) * u
             good = sigmas < thresh
+            if np.sum(good) <= 1:
+                good = np.ones(n, dtype=bool)
         else:
             good = np.ones(n, dtype=bool)
         chi2 = np.sum((values[good] - wm) ** 2 / sigmas[good]**2)
         # calculate Birge ratio
-        chat2 = chi2 / (np.sum(good) - 1)
+        if not mle:
+            chat2 = chi2 / (np.sum(good) - 1)
+        else:
+            chat2 = chi2 / np.sum(good)
         chat = np.sqrt(chat2)
         # ensure the inflation factor is at least 1
         chat = np.max((1, chat))
@@ -327,6 +347,7 @@ def birge(values, sigmas, coverage=None, zalpha=None, pdg=False, codata=False, t
 
     # construct confidence interval
     interval = [wm - zalpha * sigma, wm + zalpha * sigma]
+    # TODO: MAKE A t-VERSION AS DESCRIBED BY BAKER 2013
 
     return interval, wm, sigma, chat
 
@@ -380,7 +401,7 @@ def vniim(values, sigmas, coverage=None, zalpha=None, tol=1e-5, max_iter=100):
         
 
 
-def binomial_method(values, p=0.5, target=0.15865, which="lower", cdf=None):
+def binomial_method(values, p=0.5, coverage=0.6827, cdf=None, shrink=None):
     """
     Compute confidence intervals using order statistics and the binomial distribution.
 
@@ -390,11 +411,11 @@ def binomial_method(values, p=0.5, target=0.15865, which="lower", cdf=None):
     Parameters:
     -----------
     values : array-like
-        The SORTED effect estimates from individual studies
+        The effect estimates from individual studies
     p : float, default=0.5
         The probability parameter for the binomial distribution
-    target : float, default=0.15865
-        The target tail probability (default corresponds to 1-sigma coverage)
+    coverage : float, default=0.6827
+        The target coverage probability (default corresponds to 1-sigma coverage)
     which : str, default="lower"
         Specifies whether to compute the lower or upper bound
     cdf : array-like, optional
@@ -407,22 +428,105 @@ def binomial_method(values, p=0.5, target=0.15865, which="lower", cdf=None):
     prob : float
         The actual probability achieved for the bound
     """
+    tail_prob = (1 - coverage) / 2
 
-    assert which in ["lower", "upper"]
     n = len(values)
     if cdf is None:
         # compute binomial CDF if not provided
         cdf = binom.cdf(np.arange(n + 1), n, p)
     assert len(cdf) == n + 1
 
-    if which == "lower":
-        # find index where CDF exceeds target probability
-        idx = np.argmax(cdf > target) - 1
-        return values[idx], cdf[idx]
-    elif which == "upper":
-        # find index where CDF reaches or exceeds 1-target
-        idx = np.argmax(cdf >= 1 - target)
-        return values[idx], 1 - cdf[idx]
+    # check that values are sorted (O(n))
+    # if not sorted, sort them (O(n log n))
+    if not np.all(values[:-1] <= values[1:]):
+        values = np.sort(values)
+
+    idx_l = np.argmax(cdf > tail_prob) - 1
+    tail_l = cdf[idx_l]
+    idx_u = np.argmax(cdf >= 1 - tail_prob)
+    tail_u = 1 - cdf[idx_u]
+    assert idx_l <= idx_u, f"idx_l={idx_l} > idx_u={idx_u}"
+
+    nominal_coverage = 1 - tail_l - tail_u
+    assert nominal_coverage >= coverage, f"Nominal coverage {nominal_coverage} is less than target coverage {coverage}"
+    
+
+    bottom = values[idx_l]
+    top = values[idx_u]
+
+    interval = [bottom, top]
+
+    if shrink is None:
+        return interval, nominal_coverage, None
+    if nominal_coverage == coverage:
+        return interval, nominal_coverage, interval
+
+    z_nominal_l = -norm.ppf(tail_l)
+    z_nominal_u = -norm.ppf(tail_u)
+    z_target = -norm.ppf(tail_prob)
+
+    bottom2 = values[idx_l+1]
+    top2 = values[idx_u-1]
+    tail_l2 = cdf[idx_l+1]
+    tail_u2 = 1 - cdf[idx_u-1]
+    z_nominal_l2 = -norm.ppf(tail_l2)
+    z_nominal_u2 = -norm.ppf(tail_u2)
+    assert z_nominal_l2 < z_nominal_l, f"z_nominal_l2={z_nominal_l2} < z_nominal_l={z_nominal_l}"
+    assert z_nominal_u2 < z_nominal_u, f"z_nominal_u2={z_nominal_u2} < z_nominal_u={z_nominal_u}"
+
+    if idx_l + 1 > idx_u - 1:
+        raise NotImplementedError("shrinking not implemented for n=4 50% case")
+    
+    if shrink == 'scale':
+        halfwidth = (top - bottom)/2
+        middle = (bottom+top)/2
+        new_width_b = halfwidth*z_nominal_l/z_target
+        new_width_u = halfwidth*z_nominal_u/z_target
+        bottom_shrink = middle - new_width_b
+        top_shrink = middle + new_width_u
+    elif shrink == 'center':
+        median = values[np.argmin(np.abs(cdf-0.5))]
+        bottom_shrink = median - (median - bottom) * z_target/z_nominal_l
+        top_shrink = median + (top - median) * z_target/z_nominal_u
+    elif shrink == 'cdf-interp':
+        xspace = np.linspace(bottom, top, 100, endpoint=True)
+        # insert original values into xspace
+        xspace = np.unique(np.concatenate([values[idx_l:idx_u+1], xspace]))
+        xspace = np.sort(xspace, kind='mergesort')
+        # print(xspace)
+        cdf_interp = np.interp(xspace, values, cdf[:-1])
+        # print(cdf_interp)
+        bottom_shrink = xspace[np.argmax(cdf_interp > tail_prob) - 1]
+        top_shrink = xspace[np.argmax(cdf_interp >= 1-tail_prob)]
+    elif shrink == 'prob-linear':
+        bottom_shrink = bottom + (bottom2 - bottom) * (tail_prob - tail_l) / (tail_l2 - tail_l)
+        top_shrink = top - (top - top2) * (tail_prob - tail_u) / (tail_u2 - tail_u)
+    elif shrink == 'z-linear':
+        bottom_shrink = bottom + (bottom2 - bottom) * (z_nominal_l - z_target) / (z_nominal_l - z_nominal_l2)
+        top_shrink = top - (top - top2) * (z_nominal_u - z_target) / (z_nominal_u - z_nominal_u2)
+    else:
+        raise ValueError(f"Invalid shrink method: {shrink}")
+    
+
+    interval_shrink = [bottom_shrink, top_shrink]
+    assert interval_shrink[0] >= interval[0], f"interval_shrink={interval_shrink} is wider than interval={interval}"
+    assert interval_shrink[1] <= interval[1], f"interval_shrink={interval_shrink} is wider than interval={interval}"
+
+    
+    return interval, nominal_coverage, interval_shrink
+
+    # if which == "lower":
+    #     # find index where CDF exceeds target probability
+    #     idx = np.argmax(cdf > tail_prob) - 1
+    #     return values[idx], cdf[idx]
+    # elif which == "upper":
+    #     # find index where CDF reaches or exceeds 1-target
+    #     idx = np.argmax(cdf >= 1 - tail_prob)
+    #     return values[idx], 1 - cdf[idx]
+    # elif which == "both":
+    #     idx_l = np.argmax(cdf > tail_prob) - 1
+    #     idx_u = np.argmax(cdf >= 1 - tail_prob)
+    #     return values[idx_l], values[idx_u], cdf[idx_l], cdf[idx_u]
 
 
 # adapted from R wilcox.test
@@ -476,7 +580,7 @@ def sign_rank(values, coverage=0.6827, psignrank=None, qsignrank=None):
     upper = w[qu-1]
     interval = [lower, upper]
     # print(lower, upper)
-    return interval, achieved_alpha/2
+    return interval, 1 - achieved_alpha
 
 
 def binomial_adapt(values, sigmas, p=0.5, coverage=0.6827, cdf=None, which='smallest'):
@@ -686,7 +790,7 @@ def flip_interval(values, coverage=0.6827, mode='median', boot=False, max_iter=1
         iter += 1
     lower = m
     if iter == max_iter:
-        return np.nan, np.nan, np.nan
+        return [np.nan, np.nan], np.nan
     # now we binary search between lower and max(values) for the upper bound
     l = lower
     r = max(values)+range
@@ -702,19 +806,18 @@ def flip_interval(values, coverage=0.6827, mode='median', boot=False, max_iter=1
         iter += 1
     upper = m
     if iter == max_iter:
-        return np.nan, np.nan, np.nan
-    assert 1-(pl+pu) > coverage
+        return [np.nan, np.nan], np.nan
+    assert 1-(pl+pu) >= coverage
 
     return [lower, upper], 1-(pl+pu)
 
 
-def linear_pool(values, sigmas, coverage=0.6827):
+def linear_pool(values, sigmas, coverage=0.6827, gridn=10000):
     n = len(values)
 
-    grid = np.linspace(min(values)-max(sigmas), max(values)+max(sigmas), 10000)
-    probs = np.zeros(len(grid))
-    for i in range(len(grid)):
-        probs[i] = np.mean(np.nan_to_num(norm.cdf(grid[i], loc=values, scale=sigmas), nan=0.0))
+    grid = np.linspace(min(values)-2*max(sigmas), max(values)+2*max(sigmas), gridn)
+    cdfs = norm.cdf(grid[:,np.newaxis], loc=values, scale=sigmas)
+    probs = np.mean(np.nan_to_num(cdfs, nan=0.0), axis=1)
 
     tail_prob = (1 - coverage) / 2
     assert np.any(probs > tail_prob), f'no left tail values > {tail_prob}'
@@ -763,3 +866,27 @@ def birge_forecast(values, sigmas, coverage=0.6827, chat=None):
     interval = [wm - sigma, wm + sigma]
 
     return interval, wm, sigma, chat, np.sqrt(sigma_r2)
+
+
+def boot(values, sigmas, coverage=0.6827, which='normal'):
+    n = len(values)
+    B = 100
+    w = 1/sigmas**2
+    tail_prob = (1-coverage)/2
+
+    ybar = np.sum(values*w)/np.sum(w)
+    sigmahat = np.sqrt(1 / np.sum(w))
+    ybars = np.full(B, np.nan)
+    sigmahats = np.full(B, np.nan)
+    for b in range(B):
+        sample = np.random.choice(n, size=n, replace=True)
+        ybars[b] = np.sum(values[sample]*w[sample])/np.sum(w[sample])
+        sigmahats[b] = np.sqrt(1 / np.sum(w[sample]))
+    if which == 'normal':
+        sigmahat = np.std(ybars)
+        zalpha = np.abs(norm.ppf(tail_prob))
+        return [ybar-zalpha*sigmahat, ybar+zalpha*sigmahat]
+    elif which == 'studentized':
+        tstar = (ybars - ybar)/sigmahats
+        
+        return np.quantile(ybar-tstar*sigmahat,[tail_prob, 1-tail_prob])
