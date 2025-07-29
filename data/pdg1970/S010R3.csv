@@ -1,0 +1,16 @@
+# $K^\pm$ $\Gamma_{12}/\Gamma$
+# $[10^{-2}]$
+# RPP 2024 "ground truth" value: 5.583
+# 1sigma: 0.024
+# PDG ID: S010R3
+# RPP aug. 1970 pg: 24
+# PDG USES CONSTRAINED FIT
+year,author,value,uncertainty
+# 1956,BIRGE,5.7,0.3
+# 1957,ALEXANDER,5.54,0.12
+# 1959,TAYLOR,5.1,0.2
+1961,ROE,5.71,0.15
+1964,CALLAHAN,5.54,0.12
+1964,SHAKLEE,5.1,0.2
+1965,DE MARCO,5.71,0.15
+1965,YOUNG,6.0,0.4

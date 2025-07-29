@@ -1,0 +1,14 @@
+# $\eta(958)$ mass
+# $\mathrm{[MeV]}$
+# RPP 2024 "ground truth" value: 957.78
+# 1sigma: 0.06
+# PDG ID: M002M
+# RPP aug. 1970 pg. 47
+year,author,value,uncertainty
+# 1964,KALBFLEIS,958.0,1.0
+1965,BADIER,957.0,3.0
+1965,TRILLING,960.0,2.0
+1966,COHN,955.0,10.0
+1966,LONDON,959.0,3.0
+1969,MOTT,960.0,5.0
+1969,RITTENBER,957,1

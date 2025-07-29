@@ -1,0 +1,16 @@
+#$\lambda_{+}$ (${K_{\mu3}}^0$ decay $f_{+}$ lin.~dep.)
+#
+# RPP 2024 "ground truth" value: 0.0285
+# 1sigma: 0.0004
+# PDG ID: S013L+E
+# RPP aug. 1970 pg: 31
+# PDG USES CONSTRAINED FIT
+# Note difference in units in RPP 2025
+year,author,value,uncertainty
+1964,LUERS,0.07,0.06
+1965,FISHER,0.15,0.08
+1967,FIRESTONE,-0.01,0.02
+1967,KADYK,0.01,0.015
+1967,LOWYS,0.08,0.09
+1968,ARONSON,0.02,0.013
+1968,BASILE,0.023,0.012

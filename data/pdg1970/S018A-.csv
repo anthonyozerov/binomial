@@ -1,0 +1,12 @@
+# $\Lambda\to p\pi^-, \alpha_-$ param.
+#
+# RPP 2024 "ground truth" value: 0.749
+# 1sigma: 0.008
+# PDG ID: S018A-
+# RPP aug. 1970 pg: 37
+year,author,value,uncertainty
+1963,CRONIN,0.62,0.07
+# 1966,BERGE,0.663,0.022
+1967,OVERSETH,0.645,0.017
+# 1968,MERILL,0.747,0.086
+1969,DAUBER,0.67,0.06

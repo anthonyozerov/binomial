@@ -1,0 +1,13 @@
+# $f_1(1285)$ mass
+# $\mathrm{[MeV]}$
+# RPP 2024 "ground truth" value: 23.0
+# 1sigma: 1.1
+# PDG ID: M008W
+# RPP aug. 1970 pg. 59
+# note it was called D(1285) in RPP 1970
+year,author,value,uncertainty
+1967,DAHL,35.0,10.0
+1968,D.ANDLAU,30,5
+1969,CAMPBELL,30.0,15.0
+1969,LORSTAD,60,15
+# 1969,OTWINOWSK,52.0,29.0

@@ -1,0 +1,11 @@
+# $K^\star_2(1430)$ (neutral) width
+# $\mathrm{[MeV]}$
+# RPP 2024 "ground truth" value: 109
+# 1sigma: 5
+# PDG ID: M022W4
+# RPP aug. 1970 pg. 80
+year,author,value,uncertainty
+1967,DAHL,61.0,24.0
+1968,KANG,116.0,17.0
+1969,BASSOMPIE,110,21
+1969,DAVIS,101,10

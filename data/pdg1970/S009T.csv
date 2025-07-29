@@ -1,0 +1,18 @@
+# $\pi^0$ lifetime
+# $\mathrm{[10^{-16}s]}$
+# RPP 2024 "ground truth" value: 0.843
+# 1sigma: 0.013
+# PDG ID: S009D
+# RPP aug. 1970 pg: 23
+# note difference in oom between RPP 1970 and 2025
+year,author,value,uncertainty
+# 1961,GLASSER,1.9,0.5
+# 1962,TIETGE,2.3,1.1
+# 1963,KOLLER,2.8,0.9
+1963,VON DARDE,1.05,0.18
+# 1964,SHWE,1.7,0.5
+1965,BELLETTIN,0.730,0.105
+# 1965,EVANS,1.6,0.6
+1966,STAMER,1.0,0.5
+# 1968,BRAUNSCHW,0.6,0.7
+1970,BELLETTIN,0.56,0.06

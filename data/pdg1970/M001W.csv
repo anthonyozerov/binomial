@@ -1,0 +1,13 @@
+# $\omega(782)$ width
+# $\mathrm{[MeV]}$
+# RPP 2024 "ground truth" value: 8.68
+# 1sigma: 0.13
+# PDG ID: M001W
+# RPP aug. 1970 pg. 45
+year,author,value,uncertainty
+1963,ARMENTERO,9.0,3.0
+1965,MILLER D,13.4,2.0
+# 1967,BARASH,12.3,2.0
+1969,AUGUSTI,16.2,3.2
+1970,ABRAMOVIC,8.8,3.0
+1970,ATHERTON,11.2,2.7

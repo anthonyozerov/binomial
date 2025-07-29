@@ -1,0 +1,13 @@
+# $K^\star_2(1430)$ width (charged, final state $K\pi$)
+# $\mathrm{[MeV]}$
+# RPP 2024 "ground truth" value: 100
+# 1sigma: 2.2
+# PDG ID: M022W1
+# RPP aug. 1970 pg. 80
+year,author,value,uncertainty
+1967,DE BAERE,90.0,28.0
+1968,ADERHOLZ,175,57
+1969,BASSOMPIE,123,35
+1969,BISHOP,110.0,25.0
+1969,FRIEDMAN,43,13
+1969,LIND,96,18

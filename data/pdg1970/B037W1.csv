@@ -1,0 +1,11 @@
+# $\Lambda(1405)$ width
+# $\mathrm{[MeV]}$
+# RPP 2024 "ground truth" value: 50.5
+# 1sigma: 2.0
+# PDG ID: B037W1
+# RPP aug. 1970 pg. 103
+year,author,value,uncertainty
+1965,MUSGRAVE,60.0,20.0
+# 1965,ENGLER,89.0,20.0
+1966,BIRMINGHA,50.0,10.0
+1967,GALTIERI,35.0,8.0

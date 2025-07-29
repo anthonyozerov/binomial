@@ -1,0 +1,12 @@
+# $\phi(1020)$ $\Gamma_8/\Gamma$
+# $\mathrm{[10^{-4}]}$
+# RPP 2024 "ground truth" value: 2.964
+# 1sigma: 0.033
+# PDG ID: M004R16
+# RPP aug. 1970 pg. 52
+year,author,value,uncertainty
+1968,ASTVACATU,6.6,3.6
+1968,BINNIE,7.2,3.9
+1968,BOLLINI,6.1,2.6
+# 1968,BALAKIN,3.4,0.4 # PDG 2025 includes a "1971 BALAKIN"
+1970,BIZOT,3.45,0.27

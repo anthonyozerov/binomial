@@ -1,0 +1,16 @@
+# $\Sigma^-$ $\Gamma_{3}/\Gamma_1$
+# $[10^{-3}]$
+# RPP 2024 "ground truth" value: 1.019
+# 1sigma: 0.035
+# PDG ID: S020R2
+# RPP aug. 1970 pg: 39
+# PDG USES CONSTRAINED FIT
+year,author,value,uncertainty
+1964,MURPHY,1.0,0.4
+1964,NAUENBERG,1.37,0.34
+1964,MILLER,1.15,0.4
+1964,COURANT,1.4,0.3
+# 1968,BIERMAN,1.11,0.09
+# 1968,SECHIZOR,1.11,0.15
+1969,ANG,1.02,0.08
+1969,NORTON,0.97,0.13

@@ -1,0 +1,12 @@
+# $\Sigma^+$ magnetic moment
+# $[\mu_N]$
+# RPP 2024 "ground truth" value: 2.458
+# 1sigma: 0.010
+# PDG ID: S019MM
+# RPP aug. 1970 pg: 38
+year,author,value,uncertainty
+1966,COOK,1.5,1.1
+1967,KOTELCHUC,3.5,1.5
+1967,SULLIVAN,3.0,1.2
+1968,COMBE,3.5,1.2
+1968,MAST,2.1,1.0

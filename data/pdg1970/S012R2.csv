@@ -1,0 +1,13 @@
+# $K^0_S$ $\Gamma_2/\Gamma$
+#
+# RPP 2024 "ground truth" value: 0.3069
+# 1sigma: 0.0005
+# PDG ID: S012R2
+# RPP aug. 1970 pg: 28
+# PDG USES CONSTRAINED FIT
+year,author,value,uncertainty
+1959,CRAWFORD,0.27,0.11
+1960,BAGLIN,0.26,0.06
+1961,BROWN,0.30,0.035
+1963,BROWN,0.335,0.014
+1963,CHRETIEN,0.288,0.021

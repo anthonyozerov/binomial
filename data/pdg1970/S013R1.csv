@@ -1,0 +1,12 @@
+# $K^0_L$ $\Gamma_6/(\Gamma_1+\Gamma_2+\Gamma_7)$
+#
+# RPP 2024 "ground truth" value: 0.2436
+# 1sigma: 0.0018
+# PDG ID: S013R1
+# RPP aug. 1970 pg: 29
+# PDG USES CONSTRAINED FIT
+year,author,value,uncertainty
+1964,ANIKINA,0.24,0.08
+1966,KULYUKINA,0.31,0.06
+1968,BUDAGOV,0.251,0.014
+1968,BUDAGOV,0.277,0.021

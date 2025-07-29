@@ -1,0 +1,12 @@
+# $K^0_L$ $\Gamma_8/(\Gamma_1+\Gamma_2+\Gamma_7)$
+# $[10^{-3}]$
+# RPP 2024 "ground truth" value: 2.454
+# 1sigma: 0.011
+# PDG ID: S013R9
+# RPP aug. 1970 pg: 30
+# PDG USES CONSTRAINED FIT
+year,author,value,uncertainty
+1964,CHRISTENS,2.0,0.4
+1965,GALBRAITH,2.08,0.35
+1966,BASILE,1.93,0.26
+1966,BOTT-BODE,1.993,0.080

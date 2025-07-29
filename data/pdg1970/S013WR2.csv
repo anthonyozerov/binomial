@@ -1,0 +1,12 @@
+# $K^0_L$ $\Gamma_7$
+# $[10^6 \mathrm{s}^{-1}]$
+# RPP 2024 "ground truth" value: 2.451
+# 1sigma: 0.015
+# PDG ID: S013W2
+# RPP aug. 1970 pg: 29
+# PDG USES CONSTRAINED FIT
+year,author,value,uncertainty
+1965,ANDERSON,3.26,0.77
+1965,FRANZINI,1.4,0.4
+1966,BEHR,2.62,0.28
+1966,HILL,2.54,0.43

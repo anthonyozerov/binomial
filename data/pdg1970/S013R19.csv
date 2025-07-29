@@ -1,0 +1,13 @@
+# $K^0_L$ $\Gamma_9/\Gamma_6$
+# $[10^{-2}]$
+# RPP 2024 "ground truth" value: 0.443
+# 1sigma: 0.004
+# PDG ID: S013R19
+# RPP aug. 1970 pg: 30
+# PDG USES CONSTRAINED FIT
+year,author,value,uncertainty
+# 1967,CRONIN,1.89,0.31
+# 1967,CRONIN,1.36,0.18
+1968,BANNER,0.46,0.11
+1968,BUDAGOV,0.45,0.18
+1969,CENCE,1.31,0.31

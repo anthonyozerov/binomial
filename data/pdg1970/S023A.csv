@@ -1,0 +1,13 @@
+# $\alpha$ for \Xi^0\to\lambda\pi^-$ decay
+#
+# RPP 2024 "ground truth" value: -0.348
+# 1sigma: 0.009
+# PDG ID: S023A
+# RPP aug. 1970 pg: 41
+# PDG USES EVALUATION
+year,author,value,uncertainty
+1965,PJERROU,-0.09,0.46
+1966,BERGE,-0.13,0.17
+1966,LONDON,-0.2,0.4
+# 1966,MERRILL,-0.33,0.11
+1969,DAUBER,-0.43,0.09

@@ -1,0 +1,12 @@
+# $b_1(1235)$ mass
+# $\mathrm{[MeV]}$
+# RPP 2024 "ground truth" value: 1229.5
+# 1sigma: 3.2
+# PDG ID: M011M
+# RPP aug. 1970 pg. 58
+year,author,value,uncertainty
+1967,BALTAY,1200,20
+1968,BOESEBECK,1259.0,27.0
+1968,CHUNG,1220,20
+1969,BIZZARRI,1245,10
+# 1970,CASO,1277.0,17.0

@@ -1,0 +1,12 @@
+# $\Lambda$ magnetic moment
+# $[\mu_N]$
+# RPP 2024 "ground truth" value: -0.613
+# 1sigma: 0.004
+# PDG ID: S018MM
+# RPP aug. 1970 pg: 36
+year,author,value,uncertainty
+1962,COOL,-1.5,0.5
+1963,KERNAN,0.0,0.6
+1964,ANDERSON,-1.39,0.72
+1965,CHARRIERE,-0.5,0.28
+1965,HILL,-0.77,0.27

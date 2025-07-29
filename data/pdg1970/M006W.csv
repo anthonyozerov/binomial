@@ -1,0 +1,12 @@
+# $f_1(1420)$ width
+# $\mathrm{[MeV]}$
+# RPP 2024 "ground truth" value: 56.7
+# 1sigma: 3.3
+# PDG ID: M006W
+# RPP aug. 1970 pg. 65
+# note it was called E(1422) in RPP 1970
+year,author,value,uncertainty
+1967,BAILLON,80,10
+# 1967,DAHL,60,20
+1967,FRENCH,45,20
+1969,LORSTAD,60,20

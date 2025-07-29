@@ -1,0 +1,12 @@
+# $\eta(958)$ $\Gamma(\mathrm{neutrals})/\Gamma$
+#
+# RPP 2024 "ground truth" value: 0.185
+# 1sigma: 0.004
+# PDG ID: M002R5
+# RPP aug. 1970 pg. 48
+# RPP 2025 USES CONSTRAINED FIT
+year,author,value,uncertainty
+# 1964,KALBFLEIS,0.25,0.05
+1965,BADIER,0.24,0.17
+1966,LONDON,0.3,0.1
+1969,RITTENBERG,0.189,0.026

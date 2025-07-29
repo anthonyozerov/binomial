@@ -1,0 +1,15 @@
+# $\phi(1020)$ width
+# $\mathrm{[MeV]}$
+# RPP 2024 "ground truth" value: 4.249
+# 1sigma: 0.013
+# PDG ID: M004M
+# RPP aug. 1970 pg. 52
+year,author,value,uncertainty
+1963,ARMENTERO,3.4,1.7
+1965,MILLER D,3.5,1.0
+1966,LONDON,6.0,4.0
+1967,ABRAMS,1.8,2.3
+# 1968,MOSTEK,4.5,2.5
+# 1970,BIZOT,4.09,0.29
+# 1969,BALAKIN,4.1,0.5 # PDG 2025 includes a "1971 BALAKIN"
+1970,HYAMS,3.3,1.2

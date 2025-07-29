@@ -1,0 +1,17 @@
+# $\Sigma^-$ lifetime
+# $[10^{-10}s]$
+# RPP 2024 "ground truth" value: 1.479
+# 1sigma: 0.011
+# PDG ID: S020T
+# RPP aug. 1970 pg: 39
+year,author,value,uncertainty
+1958,BROWN,1.67,0.34
+1958,EISLER,1.89,0.29
+1961,CHIESA,1.35,0.25
+1961,BARKAS,1.75,0.35
+# 1962,HUMPHREY,1.58,0.06
+# 1966,CHANG,1.666,0.075
+# 1966,CHIEN,2.08,0.22
+# 1966,CHIEN,1.46,0.31
+# 1968,WHITESIDE,1.38,0.07
+# 1969,BARLOUTAU,1.472,0.016

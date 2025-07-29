@@ -1,0 +1,12 @@
+# $K^\pm$ $\Gamma_{3}/\Gamma_2$
+#
+# RPP 2024 "ground truth" value: 0.0798
+# 1sigma: 0.0008
+# PDG ID: S010R25
+# RPP aug. 1970 pg: 25
+# PDG USES CONSTRAINED FIT
+year,author,value,uncertainty
+1967,AUERBACH,0.0797,0.0054
+1968,BOTTERIL,0.0775,0.0033
+1968,GARLAND,0.069,0.006
+1969,ZELLER,0.069,0.006

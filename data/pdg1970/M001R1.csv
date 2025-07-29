@@ -1,0 +1,17 @@
+# $\omega(782)$ $(\Gamma_{2}+\Gamma_{4})/\Gamma_{1}$
+#
+# RPP 2024 "ground truth" value: 0.102
+# 1sigma: 0.008
+# PDG ID: M001R1
+# RPP aug. 1970 pg. 46
+# note it was called omega(784) in RPP 1970
+# 2025 RPP USES CONSTRAINED FIT
+year,author,value,uncertainty
+1963,ARMENTERO,0.17,0.04
+1963,BUSCHBECK,0.11,0.02
+# 1964,KRAEMER,0.08,0.03
+1966,ALFF-STEI,0.10,0.04
+# 1966,DIGIUGNO,0.134,0.026
+# 1966,FLATTE,0.097,0.016
+# 1966,JAMES,0.06,0.03
+# 1967,BARASH,0.10,0.03

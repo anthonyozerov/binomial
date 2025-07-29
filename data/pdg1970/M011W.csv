@@ -1,0 +1,12 @@
+# $b_1(1235)$ width
+# $\mathrm{[MeV]}$
+# RPP 2024 "ground truth" value: 142
+# 1sigma: 9
+# PDG ID: M011W
+# RPP aug. 1970 pg. 58
+year,author,value,uncertainty
+1963,ABOLINS,100.0,20.0
+1967,BALTAY,100,30
+1968,BOESEBECK,203,75
+1968,CHUNG,150,20
+1969,BIZZARRI,83,12

@@ -1,0 +1,13 @@
+# $\Lambda$ $\Gamma_{2}/(\Gamma_1+\Gamma_2)$
+#
+# RPP 2024 "ground truth" value: 0.359
+# 1sigma: 0.005
+# PDG ID: S018R2
+# RPP aug. 1970 pg: 37
+# PDG USES CONSTRAINED FIT
+year,author,value,uncertainty
+1957,EISLER,0.23,0.09
+1959,CRAWFORD,0.43,0.14
+1960,BAGLIN,0.28,0.08
+# 1963,BROWN,0.35,0.05
+# 1963,CHRETIEN,0.291,0.034

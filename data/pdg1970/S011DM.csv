@@ -1,0 +1,13 @@
+# $m_{K^0}-m_{K^\pm}$
+# $\mathrm{[MeV]}$
+# RPP 2024 "ground truth" value: 3.934
+# 1sigma: 0.020
+# PDG ID: S011DM
+# RPP aug. 1970 pg: 27
+# PDG USES CONSTRAINED FIT
+year,author,value,uncertainty
+1959,ROSENFELD,3.9,0.6
+1959,CRAWFORD,5.4,1.1
+1965,BURNSTEIN,3.90,0.25
+1965,KIM,3.71,0.35
+1958,HILL,3.95,0.21

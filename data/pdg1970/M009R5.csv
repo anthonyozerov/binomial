@@ -1,0 +1,13 @@
+# $\rho(770)$ $\Gamma_{11}/\Gamma_{6}$
+# $[10^{-4}]$
+# RPP 2024 "ground truth" value: 0.460
+# 1sigma: 0.028
+# PDG ID: M009R5
+# RPP aug. 1970 pg. 45
+# note it was called rho(765) in RPP 1970
+# note change of units from 1970 to 2025
+# 2025 RPP USES CONSTRAINED FIT
+year,author,value,uncertainty
+1967,HYAMS,0.97,0.32
+1969,ROTHWELL,0.82,0.26
+1969,WEHMANN,0.56,0.15

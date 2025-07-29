@@ -1,0 +1,10 @@
+# $K_2(1770)$ mass
+# $\mathrm{[MeV]}$
+# RPP 2024 "ground truth" value: 1773
+# 1sigma: 8
+# PDG ID: M023M
+# RPP aug. 1970 pg. 82
+year,author,value,uncertainty
+1967,JOBES,1760.0,15.0
+1968,BARTSCH,1785.0,12.0
+1970,AGUILAR,1745.0,20.0

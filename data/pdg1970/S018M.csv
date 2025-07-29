@@ -1,0 +1,16 @@
+# $\Lambda$ mass
+# $\mathrm{[MeV]}$
+# RPP 2024 "ground truth" value: 1115.683
+# 1sigma: 0.006
+# PDG ID: S018M
+# RPP aug. 1970 pg: 36
+# PDG USES FIT
+year,author,value,uncertainty
+1963,BHOWMIK,1115.44,0.12
+# 1965,BALTAY,1115.86,0.09
+1965,SCHMIDT,1115.63,0.07
+# 1966,CHIEN,1115.74,0.04
+# 1966,CHIEN,1115.69,0.05
+1966,LONDON,1115.6,0.4
+# 1967,BADIER,1116.0,0.2
+1967,MAYEUR,1115.39,0.12

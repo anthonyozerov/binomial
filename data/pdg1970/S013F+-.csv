@@ -1,0 +1,17 @@
+# $K^0_L$ $\phi_{+-}$, $\eta_{+-}$ phase
+# $[^\circ]$
+# RPP 2024 "ground truth" value: 43.4
+# 1sigma: 0.5
+# PDG ID: S013F+-
+# RPP aug. 1970 pg: 32
+# PDG USES FIT
+year,author,value,uncertainty
+1965,FITCH,45.0,50.0
+1966,FIRESTONE,30.0,45.0
+1967,BOTT-BODE,70.0,21.0
+1967,MISCHKE,25.0,35.0
+# 1968,BENNETT,51.0,11.0
+1969,BENNETT,34.9,10.0
+1969,BOHM,41,15
+1969,FAISSNER,49.3,8.5
+1969,JENSEN,40.0,12.5
