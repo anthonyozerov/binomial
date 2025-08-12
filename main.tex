@@ -167,10 +167,8 @@ This is the problem we will consider in this paper. In some cases, we will suppo
 
 \subsection{History}\label{sec:history}
 
-The core statistical methods to aggregate data from different observations, and eventually different studies, developed first in the physical sciences. The method of ``least-squares'' (i.e., minimizing the sum of squared residuals to obtain a best-fit) was hinted at in the context of astronomy by Roger Cotes in his posthumously published \emph{Opera Miscellanea} \citeyearpar{cotes1722opera}.\footnote{He described that to calculate the position of an object from several observations with different errors, one must take the center of the positions as weighted by the inverse of the ``limits of the errors.'' This is the original text:
-  \begin{quote}Ad eundem fere modum in aliis casibus Limites inveniuntur Errorum qui ex minus accuratis observationibus ortum ducunt, quin \& Positiones ad Observandum commodissimae deprehenduntur: ut mihi vix quidquam ulterius desiderari videatur postquam ostensum fuerit qua ratione Probabilitas maxima in his rebus haberi possit, ubi diversae Observationes, in eundem finem institutae, paullulum diversas ab invicem conclusiones exhibent. Id autem fiet ad modum sequentis Exempli. Sit p locus Objecti alicujus ex Observatione prima definitus, q, r, s ejusdem Objecti loca ex Observationibus subsequentibus; sint insuper P, Q, R, S pondera reciproce proportionalia spatiis Evagationum, per quae se diffundere possint Errores ex Observationibus singulis prodeuntes, quaeque dantur ex datis Errorum Limitibus; \& ad puncta p, q, r, s posita intelligantur pondera P, Q, R, S \& inveniatur eorum gravitatis centrum Z: dico punctum Z fore Locum Objecti maxime probabilem, qui pro vero ejus loco tutissime haberi potest.
-  
-  \hfill-- \citet[Aestimatio Errorum in Mixta Mathesi, pg. 22]{cotes1722opera}\end{quote}}
+The core statistical methods to aggregate data from different observations, and eventually different studies, developed first in the physical sciences. The method of ``least-squares'' (i.e., minimizing the sum of squared residuals to obtain a best-fit) was hinted at in the context of astronomy by Roger Cotes in his posthumously published \emph{Opera Miscellanea} \citeyearpar{cotes1722opera}.\footnote{He described that to calculate the position of an object from several observations with different errors, one must take the center of the positions as weighted by the inverse of the ``limits of the errors.'' This is the original text, which the present writer cannot read:
+  \begin{quote}Ad eundem fere modum in aliis casibus Limites inveniuntur Errorum qui ex minus accuratis observationibus ortum ducunt, quin \& Positiones ad Observandum commodissimae deprehenduntur: ut mihi vix quidquam ulterius desiderari videatur postquam ostensum fuerit qua ratione Probabilitas maxima in his rebus haberi possit, ubi diversae Observationes, in eundem finem institutae, paullulum diversas ab invicem conclusiones exhibent. Id autem fiet ad modum sequentis Exempli. Sit p locus Objecti alicujus ex Observatione prima definitus, q, r, s ejusdem Objecti loca ex Observationibus subsequentibus; sint insuper P, Q, R, S pondera reciproce proportionalia spatiis Evagationum, per quae se diffundere possint Errores ex Observationibus singulis prodeuntes, quaeque dantur ex datis Errorum Limitibus; \& ad puncta p, q, r, s posita intelligantur pondera P, Q, R, S \& inveniatur eorum gravitatis centrum Z: dico punctum Z fore Locum Objecti maxime probabilem, qui pro vero ejus loco tutissime haberi potest. \hfill-- \citet[Aestimatio Errorum in Mixta Mathesi, pg. 22]{cotes1722opera}\end{quote}}
 Astronomy was indeed a core motiving science for these developments through the 19th century. The simple observational problem of recording the position of an object (say, a planet or asteroid) across multiple days, then computing its orbit, requires combining multiple noisy estimates. Least squares was formalized by \citet[art. 179]{gauss1857theory} and stated in a more recognizable, modern form for simple one-dimensional experiment- or observation-aggregating by \citet[art. 69-71]{airy1861algebraical}. Effectively, this was the Fixed Effect model and method described below, which does not account for any systematic error not modeled by the given $\sigma_i$'s.
 
 As early as 1881, we see FW Clarke, a chemist, using least-squares to aggregate measurements of atomic weights reported by different experimenters who used different methods \citep{clarke1881abstract}. What is lacking from Clarke's work, though, is a statistical evaluation of systematic errors---we see several weighted means with quoted uncertainties that are far too low when considering the spread of the different experimenters' results.\footnote{Consider the following results quoted for the atomic weight of chromium:
@@ -188,7 +186,6 @@ By the early 20th century, measurements and estimates of various physical consta
 In Birge's pioneering work \citeyearpar{birge1929probable}, it is apparent that much of the difficulty lay in interpreting the uncertainties which experimental results reported in diverse ways:
 \begin{quote}
   One of the greatest difficulties in the present work has been the proper weighting of various results, one of which is stated in terms of ``limit of error,'' another in terms of a ``probable error,'' another possibly with the error undefined, and still another with no definite statement as to accuracy. This is quite aside from the reliability or correctness of the method used by each investigator in arriving at his stated error.
-
   \hfill -- \cite{birge1929probable}
 \end{quote} 
 
@@ -873,7 +870,7 @@ The key difficulty with such an empirical analysis is that there are few quantit
 In this section, we are not interested in directly evaluating the performance of the methods presented in Section \ref{sec:methods}. Only the validity of their assumptions. After this section, and the simulation study, we will return to such of these datasets as have ground truths and conduct a direct performance evaluation. This way, we will have insights from the simulation study to frame our discussion.
 
 
-\subsection{Data}
+\subsection{Data}\label{sec:data}
 
 We use datasets of two types for our study: collections of results with and without ground truths $\theta$. The most informative sort of dataset is a collection of results all trying to measure the same quantity, with an associated ground truth: we can directly observe the empirical distribution of results around the ground truth, and measure how much bias or correlation there is. To do this we need quantities where (a) we have a ground truth and (b) several studies have tried to measure them. However, humans typically do not tend to perform many independent studies measuring quantities which are known exactly, so such such datasets are hard to come by.
 
@@ -955,7 +952,7 @@ Note that \citet{clarke1910recalculation} reports uncertainties in terms of ``pr
 
 \begin{figure}[htbp]
   \includegraphics[width=\textwidth]{figs/particles.pdf}
-  \caption{The 80 particle physics datasets obtained from \citet{roos1970review}. In each plot, results are arranged in order of publication, with more recent results lower. Shaded regions are the $1\sigma$ intervals indicated by \citet{navas2024review}. Stars below plots indicate the significance of (bottom-left) the binomial $p$-value and (bottom-right) the signed-rank test $p$-value. [$\ast\ast\ast\rightarrow p\leq 0.001$; $\ast\ast\rightarrow p\leq 0.01$; $\ast\rightarrow p\leq0.05$]. Details for these tests are in the text in Section \ref{sec:historical-assumptions-check} and in Table \ref{tab:hist-sym} (where an uncertain ground truth leads to multiple $p$-values as described in Table \ref{tab:hist-sym}, this figure shows the smaller). The datasets tend to show a narrowing of uncertainty and convergence to the truth over time. Some indicate possible violation of the symmetry assumptions, with \texttt{M005M} (measurements of the mass of $f_2(1270)$) especially notable in this respect.}
+  \caption{The 80 particle physics datasets obtained from \citet{roos1970review}. In each plot, results are arranged in order of publication, with more recent results lower. Shaded regions are the $1\sigma$ intervals indicated by \citet{navas2024review}. Stars below plots indicate the significance of (bottom-left) the binomial $p$-value and (bottom-right) the signed-rank test $p$-value. [$\ast\ast\ast\rightarrow p\leq 0.001$; $\ast\ast\rightarrow p\leq 0.01$; $\ast\rightarrow p\leq0.05$]. Details for these tests are in the text in Section \ref{sec:symmetry} and in Table \ref{tab:hist-sym} (where an uncertain ground truth leads to multiple $p$-values as described in Table \ref{tab:hist-sym}, this figure shows the smaller). The datasets tend to show a narrowing of uncertainty and convergence to the truth over time. Some indicate possible violation of the symmetry assumptions, with \texttt{M005M} (measurements of the mass of $f_2(1270)$) especially notable in this respect.}
   \label{fig:particle}
 \end{figure}
 
@@ -987,7 +984,7 @@ Some notes on this dataset to be aware of:
 \end{itemize}
 The stricter inclusion criteria of our PDG 2025 dataset are designed to avoid these issues.\footnote{Our stricter criteria are only possible because PDG now provides machine-readable data on all underlying results considered in the RPP, which allows us to automatically collect and filter a very large dataset without manual effort. This was not the case in 2011.} Nonetheless, we include this dataset for closer comparison with prior work and to examine how much these considerations may make results differ.
 
-Finally, also for closer comparison with prior work, we obtain from \citet{bailey2017not} a dataset from the 2013 PDG RPP. This dataset includes all experiments listed (even those not included in an average) except those which were ``obviously not independent,'' and completed using older editions when the 2013 RPP dropped old data \citep[sec.~2.2]{bailey2017not}. Also, as done by \citet{bailey2017not}, we include a subset of this dataset containing only data for stable particles and experiments since 2000. A full description of these datasets can be found in \citet[sec.~2.1-2.3, 3.4]{bailey2017not}, and complete references for data sources are in the supplementary material \citep{bailey2016data}.
+Finally, also for closer comparison with prior work, we obtain from \citet{bailey2017not} a dataset from the 2013 PDG RPP. This dataset includes all experiments listed (even those not included in an average) except those which were ``obviously not independent,'' and it was completed using older editions when the 2013 RPP dropped old data \citep[sec.~2.2]{bailey2017not}. Also, as done by \citet{bailey2017not}, we include a subset of this dataset containing only data for stable particles and experiments since 2000. A full description of these datasets can be found in \citet[sec.~2.1-2.3, 3.4]{bailey2017not}, and complete references for data sources are in the supplementary material \citep{bailey2016data}.
 
 % We also separately include the 1970 PDG dataset described in Section \ref{sec:pdg1970} to investigate how similar it is to the full 2025 dataset. This is a useful check to see whether our results in Sections \ref{sec:historical-assumptions-check} and \ref{sec:realworld} might generalize to present-day PDG data.
 
@@ -996,6 +993,10 @@ Finally, also for closer comparison with prior work, we obtain from \citet{baile
 To both ensure the consistency of measurement standards and evaluate the competency of national measurement laboratories, BIPM organizes ``key comparisons,'' where a number of laboratories measure the same quantity. We have obtained a subset of key comparisons on measurements of radionuclide activity whose digitization is described in \cite{coulon2021digitalization}.
 
 We obtain another set of interlaboratory comparisons from \citet{bailey2017not} containing interlaboratory studies from several sources, and a subset only containing key comparisons. A full description of these datasets can be found in \citet[sec.~2.1-2.3, 3.4]{bailey2017not}, and complete references for data sources are in the supplementary material \citep{bailey2016data}.
+
+\subsubsection{Nuclear physics}
+
+We from from \citet{bailey2017not} a dataset of nuclear physics measurements from the BIPM Table of Radionuclides. A full description can be found in \citet[sec.~2.1-2.2, 3.4]{bailey2017not}, and complete references are in the supplementary material \citep{bailey2016data}.
 
 \subsubsection{Psychology replications}
 
@@ -1009,18 +1010,7 @@ We obtain from \citet{baker2013meta} a set of 14 meta-analyses of a total of 551
 
 We obtain another dataset from \citet{bailey2017not} containing a subset of medical meta-analyses from the Cochrane database. A full description can be found in \citet[sec.~2.1-2.3]{bailey2017not}, and complete references for data sources are in the supplementary material \citep{bailey2016data}.
 
-\paragraph{Bailey 2017} We obtain several datasets from \citet{bailey2017not}. These are:
-\begin{itemize}
-  \item 
-  \item
-  \item Nuclear physics measurements from the BIPM Table of Radionuclides.
-  \item 
-\end{itemize}
-A full description of these datasets can be found in \citet[sec.~2.1-2.2, 3.4]{bailey2017not}, and complete references are in the supplementary material \citep{bailey2016data}.
-
-% \subsection{Historical studies with modern ground truth}\label{sec:historical-studies}
-
-\subsection{Symmetry}\label{sec:historical-assumptions-check}
+\subsection{Symmetry}\label{sec:symmetry}
 
 \begin{table}[htbp]
   \centering
@@ -1058,38 +1048,55 @@ Normalized differences of pairs are simple. For each quantity with measurements 
 \begin{equation}\label{eq:zij}
   z_{ij}=\frac{|y_i-y_j|}{\sqrt{\sigma_i^2+\sigma_j^2}}
 \end{equation}
-If for an arbitrary $\mu$ ($\mu$ doesn't have to be the ``truth'' $\theta$) we have that $y_i\overset{\mathrm{ind}}{\sim}\mathcal{N}(\mu,\sigma_i^2)$ for all $i$, then $z_{ij}\sim|\mathcal{N}(0,1)|$ for all $i,j$.
+If for an arbitrary $\mu$ ($\mu$ doesn't have to be the ``truth'' $\theta$) we have that $y_i\overset{\mathrm{ind}}{\sim}\mathcal{N}(\mu,\sigma_i^2)$ for all $i$, then $z_{ij}\sim|\mathcal{N}(0,1)|$ for all $i,j$. \citet{bailey2017not} and \citet{jeng2007bandwagon} perform analyses using these $z_{ij}$ values.
 
-The next approach is normalized differences from a weighted mean. These are, as defined by \citet[eq.~3.3]{bailey2017not}:
+The next approach is normalized differences from a weighted mean. These are, as defined by \citet[eq.~3.3]{bailey2017not} and \citet[eq.~9]{roos1975new}:
 \begin{equation}\label{eq:hi}
   h_i=\frac{|y_i-\bar{y}|}{\sqrt{\sigma_i^2+\sigma_{\bar{y}}^2}},
 \end{equation}
-where $\bar{y}$ and $\sigma_{\bar{y}}$ are defined in Equations \ref{eq:ybar} and \ref{eq:sigmaybar}.\footnote{Note that $\bar{y}$ is the point estimate we would obtain from Fixed Effect (Section \ref{sec:fixed-effect}) or the Birge Ratio (Section \ref{sec:birge}). The Birge Ratio is used by PDG.} The keen reader will note that, because $y_i$ and $\bar{y}$ are correlated, it is not true that if $y_i\overset{\mathrm{ind}}{\sim}\mathcal{N}(\mu,\sigma_i^2)$ then $h_i\sim|\mathcal{N}(0,1)|$. In fact, if we let $S=\sum_{i=1}^n \frac{1}{\sigma_i^2}$ we will have:
+where $\bar{y}$ and $\sigma_{\bar{y}}$ are defined in Equations \ref{eq:ybar} and \ref{eq:sigmaybar}.\footnote{Note that $\bar{y}$ is the point estimate we would obtain from Fixed Effect (Section \ref{sec:fixed-effect}) or the Birge Ratio (Section \ref{sec:birge}). The Birge Ratio is used by PDG.} \citet{roos1975new} directly use these $h_i$ residuals to approximate the distribution $|y_i-\theta|/\sigma_i$, but there are several issues with this approximation. One is that, because $y_i$ and $\bar{y}$ are correlated, it is not true that if $y_i\overset{\mathrm{ind}}{\sim}\mathcal{N}(\mu,\sigma_i^2)$ then $h_i\sim|\mathcal{N}(0,1)|$. In fact, if we let $S=\sum_{i=1}^n \frac{1}{\sigma_i^2}$ we will have:
 \[y_i-\bar{y}\sim \mathcal{N}\left(0, \sigma_i^2\left(1-\frac{1}{\sigma_i^2S}\right)^2+\frac{S-\frac{1}{\sigma_i^2}}{S^2}\right).\]
-Therefore, let's define a third measure $h^\prime$:
+Therefore, let's define a third measure $h_i^\prime$ which resolves this issue:
 \begin{equation}\label{eq:hiprime}
   h_i^\prime=\frac{|y_i-\bar{y}|}{\sqrt{\sigma_i^2\left(1-\frac{1}{\sigma_i^2S}\right)^2+\frac{S-\frac{1}{\sigma_i^2}}{S^2}}},
 \end{equation}
 If for an arbitrary $\mu$ we have that $y_i\overset{\mathrm{ind}}{\sim}\mathcal{N}(\mu,\sigma_i^2)$ for all $i$, we will now have $h_i^\prime\sim|\mathcal{N}(0,1)|$ for all $i$.
 
-When collecting all $z_{ij}$ or $h_i$ in a particular dataset of measurements of quantities and building an empirical distribution, we must consider how to weight them \citep[sec.~3.3]{bailey2017not}. We choose weights such that every \textit{quantity} in a dataset has equal weight---our interest in this study is on the level of meta-analyses, not on the level of individual measurements like \citet{bailey2017not}, who weights such that every \textit{measurement} has equal weight.
+When collecting all $z_{ij}$ or $h_i$ in a particular dataset of measurements of quantities and building an empirical distribution, we must consider how to weigh them \citep[sec.~3.3]{bailey2017not}. We choose weights such that every \textit{quantity} in a dataset has equal weight---our interest in this study is on the level of meta-analyses, not on the level of individual measurements like \citet{bailey2017not}, who sets weights such that every \textit{measurement} has equal weight.
 
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=\textwidth]{figs/measurement_dist.pdf}
-  \caption{Distributions of the absolute value of the residuals of individual experiments between each other in pairs ($z_{ij}$: Equation \ref{eq:zij}) and a common reference value ($h_i,h_i^\prime,h_i^\star$: Equations \ref{eq:hi}, \ref{eq:hiprime}, \ref{eq:histar}). The black line corresponds to a folded Standard Normal. All of the datasets show much more mass in the tail than a Standard Normal distribution would have. The $z_{ij}$ lines in the panels with ``Bailey'' data are essentially a reproduction of \citet[fig.~2]{bailey2017not}, though weighting by quantity instead of by measurement.}
+  \caption{Distributions of the absolute value of the residuals of individual experiments between each other in pairs ($z_{ij}$: Equation \ref{eq:zij}), to a weighted mean ($h_i,h_i^\prime$: Equations \ref{eq:hi} and \ref{eq:hiprime}), and to a ground truth ($h_i^\star$: Equation \ref{eq:histar}). The black line corresponds to a folded Standard Normal. All of the datasets show much more mass in the tail than a Standard Normal distribution would have. The $z_{ij}$ lines in the panels with ``Bailey'' data are essentially a reproduction of \citet[fig.~2]{bailey2017not}, though weighting by quantity instead of by measurement.}
   \label{fig:measurement-dist}
 \end{figure}
 
-We show results for the distributions of $z_{ij}$, $h_i$ and $h^\prime$ in our datasets in Figure \ref{fig:measurement-dist}. As we can see, none of the datasets quite follow a Standard Normal distribution. The distributions are wider than an $\mathcal{N}(0,1)$ distribution, even though if it were true that $y_i\overset{ind}{\sim} \mathcal{N}(\mu,\sigma_i^2)$, the result for $z_{ij}$ and $h_i^\prime$ should be $|\mathcal{N}(0,1)|$. What can we conclude from this? Intuitively, there are unaccounted-for errors at play which make the $y_i$'s more than the given $\sigma_i$'s and a Normal assumption would suggest. Note that including the systematic errors given in the PDG datasets brings them much closer to a Normal distribution, but there is still some overdispersion. The radionuclide, psychology, and medical datasets have more overdispersion than the PDG when systematic errors are included.
+We show results for the distributions of $z_{ij}$, $h_i$ and $h_i^\prime$ in our datasets in Figure \ref{fig:measurement-dist}. As we can see, none of the datasets quite follow a Standard Normal distribution. The distributions are wider than an $\mathcal{N}(0,1)$ distribution, even though if it were true that $y_i\overset{ind}{\sim} \mathcal{N}(\mu,\sigma_i^2)$, the result for $z_{ij}$ and $h_i^\prime$ should be $|\mathcal{N}(0,1)|$. What can we conclude from this? Intuitively, there are unaccounted-for errors at play which make the $y_i$'s more widely dispersed than the given $\sigma_i$'s and a Normal assumption would suggest. Note that including the systematic errors given in the PDG datasets brings them much closer to a Normal distribution, but there is still some overdispersion. The radionuclide, psychology, and medical datasets have more overdispersion than the PDG when systematic errors are included.
 
 What does this overdispersion mean in practice? The assumption $y_i\overset{ind}{\sim} \mathcal{N}(\mu,\sigma_i^2)$ is exactly the Fixed Effect assumption, where there is no systematic error. Therefore, in any of these datasets, performing inference under Fixed Effect assumptions would be suspect.
 
-A critique of this analysis, and of similar analyses performed in prior work, is that it effectively measures the dispersion of the $y_i$ values around each other, not around the truth $\theta$. Fortunately, we have some datasets with ground truths. In these datasets, we can form the following measure:
+A critique of any analysis of the $z_{ij}$'s, $h_i$'s, or $h_i^\prime$'s is that it effectively measures the dispersion of the $y_i$ values around each other, not around the truth $\theta$. Other works do not explicitly use these, but measure dispersion of the $y_i$ values around a reference value which has a large uncertainty \citep{chen2003non} or is itself calculated from the $y_i$ values or a subset of them \citep{hanson2007lessons}. \citet{bukhvostov1973statistical,bukhvostov1997probability}, in his analysis of PDG data, attempts to avoid these issues by using old PDG values with newer ones as ground truths.\footnote{These articles face two issues:
+\begin{itemize}
+  \item They only heuristically take into account the uncertainty in the ``ground truth'' by excluding experimental results with relatively narrow uncertainties.
+  \item There is no attempt to ensure that the experimental results are not included in the calculation for the ``ground truth.'' 
+\end{itemize}} \citet[sec.~4]{shlyakhter1994improved} offers such an analysis in the context of forecasting, because for (relatively) short-term economic and demographic projections, the passage of time realizes a ground truth.
+Our datasets with ground truths allow us to make our own attempt at this. In these datasets, we form the following measure:
 \begin{equation}\label{eq:histar}
   h^\star_i = \frac{|y_i-\theta|}{\sqrt{\sigma_i^2+\sigma_\theta^2}},
 \end{equation}
-where $\sigma_\theta$ is our standard deviation for $\theta$, which may be zero. We show results for $h^\star_i$ for the historical, chemical, and PDG 1970 datasets in Figure \ref{fig:measurement-dist}. We see that the tails observed for $h^\star_i$ yield qualitatively similar results, which gives us some confidence in using the other measures to get an idea of the distribution around $\theta$. The only major difference is observed in the chemical dataset, where the relatively large $\sigma_\theta$ (see Figure \ref{fig:chemical}) yields smaller residuals. In the PDG 1970 dataset, we see an even heavier tail in $h^\star_i$ than in the other mesaures. As discussed by \citet[sec.~3.6]{bailey2017not}, positive correlations among measurements which will cause lighter tails in the measures which don't use an external reference value---we detect correlations in Section \ref{sec:independence}, so this may be the reason.
+where $\sigma_\theta$ is our standard deviation for $\theta$, which is typically much smaller than $\sigma_i^2$ and may be zero. We show results for $h^\star_i$ for the historical, chemical, and PDG 1970 datasets in Figure \ref{fig:measurement-dist}. We see that the tails observed for $h^\star_i$ yield qualitatively similar results, which gives us some confidence in using the other measures to get an idea of the distribution around $\theta$. The only major difference is observed in the chemical dataset, where the relatively large $\sigma_\theta$ (see Figure \ref{fig:chemical}) yields smaller residuals. In the PDG 1970 dataset, we see an even heavier tail in $h^\star_i$ than in the other mesaures. As discussed by \citet[sec.~3.6]{bailey2017not}, positive correlations among measurements which will cause lighter tails in the measures which don't use an external reference value---we detect correlations in Section \ref{sec:independence}, so this may be the reason.
+
+Stepping away from meta-analysis for a moment, we can consider the implications for science in general. Most of the time, we do not have multiple studies estimating the same quantity, so we can't empirically see any unaccounted-for errors. Supposing that the measurements in our datasets are somewhat representative of results obtained in science, we must be careful when offering support for claims via hypothesis tests or posterior probabilities when using a Normal error model, especially when we make claims about very small probabilities in the tail of the distribution. In high-energy physics, a $5\sigma$ criterion $(p=0.00000029)$ is commonly used to make claims of discovery---this is much stricter than the $p=0.05$ convention commonly used in other fields.\footnote{\citet[sec.~3]{dorigo2015extraordinary} offers an account of how this $5\sigma$ standard arose.} Looking at Figure \ref{fig:measurement-dist}, we can repeat the observation of \citet{bailey2017not} that differences between results or between results and a ground truth at the ``$5\sigma$'' level can happen at rates from $0.001$ to upwards of $0.01$. This is because it is simply not true that, when a study gives $(y_i,\sigma_i)$, $y_i$ was really sampled from $\mathcal{N}(\theta,\sigma_i^2)$.
+
+How can such heavy tails arise? \citet{dorigo2015extraordinary} and \citet[sec.~4.2-4.3]{bailey2017not} both discuss this question. As observed by \citet{bailey2017not}, tails of the form observed in Figure \ref{fig:measurement-dist} cannot be produced by a simple multiplicative underestimation of uncertainties as suggested by BR: the model $y_i\sim\mathcal{N}(\theta,c\sigma_i^2)$. A Normal distribution would imply subgaussian tails, but Figure \ref{fig:measurement-dist} shows that tail probabilities decrease at an exponential or even slower-than-exponential rate.
+
+Somewhat counterintuitively, the observed tails do not rule out the RE model $y_i\sim\mathcal{N}(\theta,\sigma_i^2+\tau^2)$ if the $\tau$ relative to $\sigma_i$ is allowed to vary across measurements (which must happen when the $\sigma_i$'s are unequal) or across quantities. Figure \ref{fig:measurement-dist-synth} shows results for a synthetic version of the PDG 2025 (stat+syst) dataset, where we have resampled points $y_i$ from a Normal distribution around zero using the given $\sigma_i$'s with $\tau$ set to half of the median $\sigma_i$ in the quantity. As we can see, this model is quite capable of generating tails like those we see in Figure \ref{fig:measurement-dist}. Even though the underlying distribution is Normal, the varying ratio of the true standard deviation to $\sigma_i$ frequently creates large residuals when the true standard deviation is relatively large.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.5\textwidth]{figs/measurement_dist_synth.pdf}
+  \caption{In PDG 2025 (stat+syst), the distributions of the absolute value of the residuals of individual experiments between each other in pairs ($z_{ij}$: Equation \ref{eq:zij}), to a weighted mean ($h_i,h_i^\prime$: Equations \ref{eq:hi} and \ref{eq:hiprime}), and to a ground truth ($h_i^\star$: Equation \ref{eq:histar}). The solid lines are the same as in the PDG 2025 (stat+syst) panel in Figure \ref{fig:measurement-dist}. The dashed lines are for synthetic data where $y_i$ is resampled from a Normal distribution around zero using the given $\sigma_i$'s and with $\tau$ set to half of the median $\sigma_i$ in the quantity. The black line corresponds to a folded Standard Normal. We see that a Random Effects model is able to produce fairly similar tails to those observed, even though the underlying distribution is Normal.}\label{fig:measurement-dist-synth}
+\end{figure}
 
 % \subsubsection{Distribution of measurements}\label{distribution-of-measurements}
 
@@ -1102,17 +1109,17 @@ where $\sigma_\theta$ is our standard deviation for $\theta$, which may be zero.
 
 % The Fixed Effect assumptions is suspect because the datasets indeed have unaccounted-for errors. But how many sets of results have these? Let's go back to the full, unstandardized dataset and examine what values of $\hat c$ and $\hat \tau$ are achieved by the Birge Ratio method and Random Effects in PDG data. Figure \ref{fig:pdg-birge-re} displays this result. Even if there is no unaccounted-for error, it is still possible for $\hat c$ or $\hat \tau$ to be larger than 1 and 0 by random chance. Thus we have added a control to Figure \ref{fig:pdg-birge-re} displaying histograms for $\hat c$ and $\hat \tau$ obtained by resampling the whole dataset according to $y_i\overset{\mathrm{ind}}{\sim}\mathcal{N}(0, \sigma_i)$.\footnote{The calculations of $\hat c$ and $\hat \tau$ are invariant to a shift in the mean, so we don't need to know $\theta$ to perform this resampling experiment.} This creates a hypothetical PDG dataset with no unaccounted-for errors.
 
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=\textwidth]{figs/pdg_birge_re.pdf}
-\caption{Within the PDG dataset, these are the empirical distributions of (left) the Birge Ratio $\hat c$ and (right) the $\hat\tau$ systematic error term from Random Effects. For both, we see that most sets of measurements ($57\%$) have a Birge Ratio $\hat c=1$ (no systematic error), and most ($75\%$)have a $\hat\tau=0$, indicating no (or low) unaccounted-for errors. However, judging by the control, this is a less than we would expect if the PDG data had no unaccounted-for error. Likewise, in the case of measurements with $\hat c>1$ or $\hat\tau>0$, we see that the PDG tends towards larger values of $\hat c$ and $\hat\tau$ than the control.
-}
-\label{fig:pdg-birge-re}
-\end{figure}
+% \begin{figure}[htbp]
+% \centering
+% \includegraphics[width=\textwidth]{figs/pdg_birge_re.pdf}
+% \caption{Within the PDG dataset, these are the empirical distributions of (left) the Birge Ratio $\hat c$ and (right) the $\hat\tau$ systematic error term from Random Effects. For both, we see that most sets of measurements ($57\%$) have a Birge Ratio $\hat c=1$ (no systematic error), and most ($75\%$)have a $\hat\tau=0$, indicating no (or low) unaccounted-for errors. However, judging by the control, this is a less than we would expect if the PDG data had no unaccounted-for error. Likewise, in the case of measurements with $\hat c>1$ or $\hat\tau>0$, we see that the PDG tends towards larger values of $\hat c$ and $\hat\tau$ than the control.
+% }
+% \label{fig:pdg-birge-re}
+% \end{figure}
 
-Again, we see some more mass in the rightwards part of the distribution than we would expect under the Fixed Effects model $y_i\overset{\mathrm{ind}}{\sim}\mathcal{N}(0, \sigma_i)$. We also see, in the non-control, a slightly higher rate of $\hat c >1$ and $\hat \tau > 0$. This again points us to the idea that the PDG data has some unaccounted-for errors, and thus the Fixed Effects model ought not to be used.
+% Again, we see some more mass in the rightwards part of the distribution than we would expect under the Fixed Effects model $y_i\overset{\mathrm{ind}}{\sim}\mathcal{N}(0, \sigma_i)$. We also see, in the non-control, a slightly higher rate of $\hat c >1$ and $\hat \tau > 0$. This again points us to the idea that the PDG data has some unaccounted-for errors, and thus the Fixed Effects model ought not to be used.
 
-Thankfully, PDG does not use Fixed Effects to do inference. Instead, they use the Birge Ratio method described above. In the next section, we will use the PDG dataset to quantitatively compare different models.
+% Thankfully, PDG does not use Fixed Effects to do inference. Instead, they use the Birge Ratio method described above. In the next section, we will use the PDG dataset to quantitatively compare different models.
 
 \subsection{Model comparison}
 
@@ -1418,7 +1425,7 @@ This parallels results from nonparametric statistics that show nonparametric met
 
 \section{Real-world performance}\label{sec:realworld}
 
-We have just performed a simulation study to examine how different methods perform under different assumed data-generating processes. However, when doing a real meta-analysis, none of the above assumed data-generating processes will be true. To get a more realistic handle on the performance of the different methods above, we can examine whether or not the different methods can recover, using old studies, values $\theta$ which now have precise knowledge of. We will use the datasets described in Section \ref{sec:historical-studies} towards this purpose.
+We have just performed a simulation study to examine how different methods perform under different assumed data-generating processes. However, when doing a real meta-analysis, none of the above assumed data-generating processes will be true. To get a more realistic handle on the performance of the different methods above, we can examine whether or not the different methods can recover, using old studies, values $\theta$ which now have precise knowledge of. We will use the datasets with ground truths described in Section \ref{sec:data} towards this purpose.
 
 We note that \citet{stigler1977robust} had a similar idea for studying the performance of robust estimators in statistics: he collected some historical physics datasets and examined how closely different kinds of mean or median estimators could recover the modern value. However, his datasets were largely from a ``one study, multiple measurements'' setting as compared with than our focus on multiple studies.\footnote{His datasets of observations of the transit of Venus from across the globe blur the line.} To our knowledge, such an evaluation of meta-analysis methods has not been done before. This is not surprising, because the modern development of meta-analysis has mostly been in medicine and the social sciences, where ground truths are either too difficult to obtain or simply not well-defined (e.g.~a treatment effect will vary between different populations, so what would the ``ground truth'' treatment effect be?). In the physical sciences, in contrast, it is typically easy to imagine that there is a ``ground truth,'' and the improvement in techniques over time can offer improvements of orders of magnitude in our uncertainty about it.
 
@@ -1579,7 +1586,7 @@ However, both of these methods have some limitations:
 \item Even though they can exactly achieve some coverage levels, neither can exactly achieve an arbitrary target coverage level for finite $n$ due to the discreteness of the underlying distributions. This problem is much worse for the Sign Test than for the Signed-Rank Test. Though we do discuss in Section \ref{sec:st} some approaches to mitigate it.
 \item Both will yield wider intervals than needed if we know more about the data-generating process---methods tailored to that DGP can achieve coverage with narrower intervals. Though we demonstrate in Section \ref{sec:simulation} that, in many cases, the gain is not much.
 \item Neither takes advantage of the information present in the $\sigma_i$'s.
-\item Even the weaker assumptions made by these methods do not hold in real-world data. In particular, in Section \ref{sec:historical-assumptions-check}, we were able to detect violations of the independence assumption in a real-world dataset. However, as we demonstrate in Sections \ref{sec:simulation} and \ref{sec:realworld}, this can accomodated with a small modification to the Sign Test.
+\item Even the weaker assumptions made by these methods do not hold in real-world data. In particular, in Section \ref{sec:independence}, we were able to detect violations of the independence assumption in a real-world dataset. However, as we demonstrate in Sections \ref{sec:simulation} and \ref{sec:realworld}, this can be accomodated with a small modification to the Sign Test.
 \end{itemize}
 
 
