@@ -1,7 +1,9 @@
 import os
+import random
 import numpy as np
 from scipy.stats import betabinom
 from itertools import product
+from pdg_data import load_pdg_data
 
 SETTINGS = [
     "fe",
@@ -24,6 +26,7 @@ TAU_SETTINGS = [
 NOISE_DISTS = [
     "unif",
     "exp",
+    "pdg",
 ]
 
 NS = [3, 4, 6, 8, 10, 12, 15]
@@ -32,12 +35,17 @@ RHOS = [0, 0.1, 0.2]
 T = 16000
 
 
-def simulate(setting, noise_dist, n, tau, rho):
+def simulate(setting, noise_dist, n, tau, rho, empirical_sigmas=None):
     # generate sigma_i's
     if noise_dist == "unif":
         sigmas = np.random.uniform(0.8, 1.2, n)
     elif noise_dist == "exp":
         sigmas = np.random.exponential(1, n)
+    elif noise_dist == "pdg":
+        assert empirical_sigmas is not None
+        sigmas = random.choice(empirical_sigmas)
+        sigmas = np.random.choice(sigmas, size=n, replace=False)
+        sigmas /= np.median(sigmas)
     if setting == "fe" or (setting == "fe-corr" and rho == 0):
         values = np.random.normal(0, sigmas, n)
     elif setting == "fe-corr":
@@ -77,7 +85,7 @@ def simulate(setting, noise_dist, n, tau, rho):
     return values, sigmas
 
 
-def simulate_save(T, setting, noise_dist, n, tau, rho):
+def simulate_save(T, setting, noise_dist, n, tau, rho, empirical_sigmas):
     filename = f"{setting}_{noise_dist}_n={n}"
     if tau is not None:
         filename += f"_tau={tau}"
@@ -91,16 +99,22 @@ def simulate_save(T, setting, noise_dist, n, tau, rho):
         sigmas = np.full((T, n), np.nan)
 
         for t in range(T):
-            values[t, :], sigmas[t, :] = simulate(setting, noise_dist, n, tau, rho)
+            values[t, :], sigmas[t, :] = simulate(setting, noise_dist, n, tau, rho, empirical_sigmas)
         np.savez(filepath, values=values, sigmas=sigmas)
 
 
 if __name__ == "__main__":
     for setting in SETTINGS:
         for noise_dist in NOISE_DISTS:
+            if noise_dist == 'pdg':
+                _, pdg2025_both_dfs, _, _ = load_pdg_data()
             for n, tau, rho in product(NS, TAUS, RHOS):
                 if setting not in TAU_SETTINGS:
                     tau = None
                 if setting not in RHO_SETTINGS:
                     rho = None
-                simulate_save(T, setting, noise_dist, n, tau, rho)
+                if noise_dist == 'pdg':
+                    empirical_sigmas = [list(df.uncertainty) for df in pdg2025_both_dfs if len(df) >= n]
+                else:
+                    empirical_sigmas = None
+                simulate_save(T, setting, noise_dist, n, tau, rho, empirical_sigmas)

@@ -11,6 +11,10 @@ def measurement_dist(
     dfs, thetas=None, sigma_thetas=None, weight="quantity", lists=False
 ):
     assert weight in ["quantity", "measurement"]
+
+    if thetas is not None and sigma_thetas is None:
+        sigma_thetas = np.zeros_like(thetas)
+
     zs = []
     hs = []
     hprimes = []
@@ -102,6 +106,7 @@ ORDER = [
     "manylabs2",
     "baker-medical",
     "bailey-medical",
+    "cochrane-dich",
 ]
 
 if __name__ == "__main__":
@@ -142,11 +147,11 @@ if __name__ == "__main__":
         zspace = np.array(output["zspace"])
 
         probs = np.array(output["pair"])
-        ax.plot(zspace[probs > 0], probs[probs > 0], label=r"$z_{ij}$")
+        ax.plot(zspace[probs > 0], probs[probs > 0], label=r"$z_{ij}$", color='grey')
         probs = np.array(output["h"])
-        ax.plot(zspace[probs > 0], probs[probs > 0], label=r"$h_{i}$")
+        ax.plot(zspace[probs > 0], probs[probs > 0], label=r"$h_{i}$", color='lightblue')
         probs = np.array(output["hprime"])
-        ax.plot(zspace[probs > 0], probs[probs > 0], label=r"$h_{i}^\prime$")
+        ax.plot(zspace[probs > 0], probs[probs > 0], label=r"$h_{i}^\prime$", color='blue')
         if "hstar" in output:
             probs = np.array(output["hstar"])
             ax.plot(
@@ -154,7 +159,7 @@ if __name__ == "__main__":
             )
             legend_ax = ax
         probs = np.array(output["norm"])
-        ax.plot(zspace, probs, label=r"$|\mathcal{N}(0,1)|$", color="black")
+        ax.plot(zspace, probs, label=r"$|\mathcal{N}(0,1)|$", color="black", linestyle="--")
         # ax.legend()
         ax.text(0.95, 0.95, name, transform=ax.transAxes, ha="right", va="top")
         if position % ncol == 0:
@@ -163,9 +168,12 @@ if __name__ == "__main__":
 
         ax.tick_params(which="both", top=True, right=True)
     empty_axs = axs.flatten()[i + 1 :]
+    bottom_axs = axs.flatten()[i + 1 - ncol : i + 1]
     for ax in empty_axs:
         # ax.axis('off')
         ax.set_axis_off()
+    for ax in bottom_axs:
+        ax.xaxis.set_tick_params(labelbottom=True)
     handles, labels = legend_ax.get_legend_handles_labels()
 
     axs.flatten()[-1].legend(
@@ -173,8 +181,8 @@ if __name__ == "__main__":
     )
 
     # fig.legend(handles, labels, loc='lower right')
-    plt.ylim(1e-4, 1)
-    plt.xlim(0, 10)
+    plt.ylim(5e-4, 1)
+    plt.xlim(0, 9)
     plt.yscale("log")
     # plt
     # plt.legend()
