@@ -976,3 +976,45 @@ def interval_score(interval, truth, coverage, percent=False):
         total /= np.abs(truth)
 
     return total
+
+def em_t_location_scale(values, sigmas, nu, 
+                        c_min=1.0,       # constraint: c >= 1
+                        max_iter=200,
+                        tol=1e-8):
+    """
+    EM algorithm for fitting:
+        y_i ~ theta + c * sigma_i * t_nu
+    with known df nu and known scale factors sigma_i,
+    parameters: theta, c (c >= c_min).
+
+    Returns:
+        theta_hat, c_hat, n_iter, converged_flag
+    """
+
+    n = len(values)
+
+    # Initialize theta, c
+    theta = np.median(values)
+    # robust initial scale
+    mad = np.median(np.abs(values - theta)) / 0.6745
+    c = max(c_min, mad / np.median(sigmas))
+
+    for it in range(max_iter):
+        # E-step: compute weights
+        r = (values - theta) / (c * sigmas)
+        w = (nu + 1) / (nu + r**2)
+
+        # M-step: weighted least squares update for theta
+        theta_new = np.sum(w * values / sigmas**2) / np.sum(w / sigmas**2)
+
+        # update c
+        c_new = np.sqrt(np.mean(w * (values - theta_new)**2 / sigmas**2))
+        c_new = max(c_min, c_new)  # enforce constraint
+
+        # Convergence check
+        if abs(theta_new - theta) < tol and abs(c_new - c) < tol:
+            return theta_new, c_new, it + 1, True
+
+        theta, c = theta_new, c_new
+
+    return theta, c, max_iter, False

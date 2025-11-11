@@ -12,6 +12,8 @@
 \usepackage{enumitem}
 \setlist{nosep}
 
+\usepackage[nottoc]{tocbibind}
+
 \usepackage{minted}
 \usepackage{algorithm}
 \usepackage[noend]{algpseudocode}
@@ -102,7 +104,7 @@ We also, of course, have datasets without ground truths $\theta$. These are much
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=\textwidth]{figs/noground_violin.pdf}
+  \includegraphics[width=\textwidth]{../figs/noground_violin.pdf}
   \caption{Summary statistics of the large datasets with no ground truths. If each set of results in each dataset is one meta-analysis, then studying one of these datasets is a meta-meta-analysis. Are we now on the level of meta-meta-meta-analysis?}\label{fig:noground-violin}
 \end{figure}
 
@@ -111,7 +113,7 @@ Figure \ref{fig:noground-violin} provides summary statistics of the datasets des
 \subsubsection{Long-term datasets}
 
 \begin{figure}[htbp]
-  \includegraphics[width=\textwidth]{figs/historical.pdf}
+  \includegraphics[width=\textwidth]{../figs/historical.pdf}
   \caption{The three long-term historical datasets visualized, with the deviation of the result from the true value on the $x$-axis against the year on the $y$-axis. The symmetric logarithmic scale is used for the $x$-axis so that small deviations are still visible. In each dataset, we see the results converging towards the true value over time as experimental or observational techniques improve. We also see a remarkable symmetry in that the results converge towards the true value from both sides---we do not see, for example, results starting low then increasing towards the truth.}
   \label{fig:historical}
 \end{figure}
@@ -151,7 +153,7 @@ We have collected 27 estimates of this distance from \citet{atkins1964determinat
 \subsubsection{Chemical datasets}
 
 \begin{figure}[htbp]
-  \includegraphics[width=\textwidth]{figs/chemical.pdf}
+  \includegraphics[width=\textwidth]{../figs/chemical.pdf}
   \caption{The four chemical datasets obtained from \citet{clarke1910recalculation}. Results are arranged in order of their reported uncertainties. Shaded regions indicate the $1\sigma$ intervals indicated by modern values for their masses. We can see vast underestimations of error in some cases.}
   \label{fig:chemical}
 \end{figure}
@@ -163,7 +165,7 @@ Note that \citet{clarke1910recalculation} reports uncertainties in terms of ``pr
 \subsubsection{Particle physics datasets}\label{sec:pdg1970}
 
 \begin{figure}[htbp]
-  \includegraphics[width=\textwidth]{figs/particles.pdf}
+  \includegraphics[width=\textwidth]{../figs/particles.pdf}
   \caption{The 80 particle physics datasets obtained from \citet{roos1970review}. In each plot, results are arranged in order of publication, with more recent results lower. Shaded regions are the $1\sigma$ intervals indicated by \citet{navas2024review}. Stars below plots indicate the significance of (bottom-left) the binomial $p$-value and (bottom-right) the signed-rank test $p$-value. [$\ast\ast\ast\rightarrow p\leq 0.001$; $\ast\ast\rightarrow p\leq 0.01$; $\ast\rightarrow p\leq0.05$]. Details for these tests are in the text in Section \ref{sec:symmetry} and in Table \ref{tab:hist-sym} (where an uncertain ground truth leads to multiple $p$-values as described in Table \ref{tab:hist-sym}, this figure shows the smaller). The datasets tend to show a narrowing of uncertainty and convergence to the truth over time. Some indicate possible violation of the symmetry assumptions, with \texttt{M005M} (measurements of the mass of $f_2(1270)$) especially notable in this respect.}
   \label{fig:particle}
 \end{figure}
@@ -254,7 +256,7 @@ In this section, we are not interested in directly evaluating the performance of
   \label{tab:hist-sym}
   \smaller
   \begin{tabular}{l|rcccc}
-    \hline Dataset & $n$ & $\#>\theta$ & Prop. $>\theta$ & Prop. $p$-value & Sign-rank $p$-value \\\hline\input{tables/hist-sym.tex}\\\hline
+    \hline Dataset & $n$ & $\#>\theta$ & Prop. $>\theta$ & Prop. $p$-value & Sign-rank $p$-value \\\hline\input{../tables/hist-sym.tex}\\\hline
   \end{tabular}
 \end{table}
 
@@ -302,7 +304,7 @@ When collecting all $z_{ij}$ or $h_i$ in a particular dataset of measurements of
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=\textwidth]{figs/measurement_dist.pdf}
+  \includegraphics[width=\textwidth]{../figs/measurement_dist.pdf}
   \caption{Distributions of the absolute value of the residuals of individual experiments between each other in pairs ($z_{ij}$: Equation \ref{eq:zij}), to a weighted mean ($h_i,h_i^\prime$: Equations \ref{eq:hi} and \ref{eq:hiprime}), and to a ground truth ($h_i^\star$: Equation \ref{eq:histar}). The black line corresponds to a folded Standard Normal. All of the datasets show much more mass in the tail than a Standard Normal distribution would have. The $z_{ij}$ lines in the panels with ``Bailey'' data are essentially a reproduction of \citet[fig.~2]{bailey2017not}, though weighting by quantity instead of by measurement.}
   \label{fig:measurement-dist}
 \end{figure}
@@ -330,7 +332,7 @@ Somewhat counterintuitively, the observed tails do not rule out the RE model $y_
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.5\textwidth]{figs/measurement_dist_synth.pdf}
+  \includegraphics[width=0.5\textwidth]{../figs/measurement_dist_synth.pdf}
   \caption{In PDG 2025 (stat+syst), the distributions of the absolute value of the residuals of individual experiments between each other in pairs ($z_{ij}$: Equation \ref{eq:zij}), to a weighted mean ($h_i,h_i^\prime$: Equations \ref{eq:hi} and \ref{eq:hiprime}), and to a ground truth ($h_i^\star$: Equation \ref{eq:histar}). The solid lines are the same as in the PDG 2025 (stat+syst) panel in Figure \ref{fig:measurement-dist}. The dashed lines are for synthetic data where $y_i$ is resampled from a Normal distribution around zero using the given $\sigma_i$'s and with $\tau$ set to half of the median $\sigma_i$ in the quantity. The black line corresponds to a folded Standard Normal. We see that a Random Effects model is able to produce fairly similar tails to those observed, even though the underlying distribution is Normal.}\label{fig:measurement-dist-synth}
 \end{figure}
 
@@ -354,7 +356,7 @@ Let's examine this in the 1970 PDG dataset. There are a couple of issues that we
 In each replication to obtain our results, we further subsample and only take 40 of the 46 PDG datasets, so that our results can be slightly more robust to the choice of datasets.
 
 \begin{figure}[htbp]
-  \includegraphics[width=\textwidth]{figs/pdg_indep.pdf}
+  \includegraphics[width=\textwidth]{../figs/pdg_indep.pdf}
   \caption{Examination of independence in the 1970 PDG dataset via consecutive over- and under-estimation of $\theta$. The grey results are where $\theta$ is taken as the truth in each dataset, and the black results are where whichever of $\theta$, $\theta-\sigma$, or $\theta+\sigma$ favors $p=0.5$ is taken as the truth (The modern values $\theta$ are not exact. $\sigma$ is that shown in Figure \ref{fig:particle}). Left: one-sided hypothesis tests show consistently low $p$-values for the alternative $p>0.5$. Right: 90\% confidence intervals for $p$, where the median, 0.25, and 0.75 quantiles of the endpoints across replications are shown. Most of the time, $p=0.5$ is excluded. But $p$ is not likely to be much more than $0.5$.}
   \label{fig:pdg-indep}
 \end{figure}
@@ -365,7 +367,7 @@ Let's consider another model. We can ignore the time aspect, and suppose that th
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.7\textwidth]{figs/pdg_rho.pdf}
+  \includegraphics[width=0.7\textwidth]{../figs/pdg_rho.pdf}
   \caption{Posterior distribution for $\rho$ in the 1970 PDG dataset, where we use the prior $\rho\sim\mathrm{Unif}[0,1]$ and suppose that $P(y_i>\theta)=0.5$ and the events $(y_i>\theta)$ within each dataset have correlation $\rho$. The grey result is for $\theta$ being taken as the truth in each dataset, and the black result is for whichever of $\theta$, $\theta-\sigma$, or $\theta+\sigma$ favors $\rho=0$ being taken as the truth (The modern values $\theta$ are not exact. $\sigma$ is that shown in Figure \ref{fig:particle}). This model consistently yields a $\rho$ that is somewhat greater than zero.}
   \label{fig:pdg-rho}
 \end{figure}
@@ -379,7 +381,7 @@ These two results we have obtained, for the probability of consecutive points be
 
 % \begin{figure}[htbp]
 % \centering
-% \includegraphics[width=\textwidth]{figs/noground-std-resids.pdf}
+% \includegraphics[width=\textwidth]{../figs/noground-std-resids.pdf}
 % \caption{Distribution of the absolute value of the residuals of individual experiments standardized using the method described above. The red line is a folded Standard Normal PDF. None of the datasets quite follow a folded Standard Normal distribution, especially evident with extra mass in the tail.}
 % \label{fig:noground-std-resids}
 % \end{figure}
@@ -388,7 +390,7 @@ These two results we have obtained, for the probability of consecutive points be
 
 % \begin{figure}[htbp]
 % \centering
-% \includegraphics[width=\textwidth]{figs/pdg_birge_re.pdf}
+% \includegraphics[width=\textwidth]{../figs/pdg_birge_re.pdf}
 % \caption{Within the PDG dataset, these are the empirical distributions of (left) the Birge Ratio $\hat c$ and (right) the $\hat\tau$ systematic error term from Random Effects. For both, we see that most sets of measurements ($57\%$) have a Birge Ratio $\hat c=1$ (no systematic error), and most ($75\%$)have a $\hat\tau=0$, indicating no (or low) unaccounted-for errors. However, judging by the control, this is a less than we would expect if the PDG data had no unaccounted-for error. Likewise, in the case of measurements with $\hat c>1$ or $\hat\tau>0$, we see that the PDG tends towards larger values of $\hat c$ and $\hat\tau$ than the control.
 % }
 % \label{fig:pdg-birge-re}
@@ -1243,7 +1245,7 @@ Let's now proceed to a direct model comparison for those methods which have well
   \smaller
   \begin{tabular}{lrrrrrrr}
     \hline Dataset & Sets of results & Total $n$ & Birge $\hat\ell$ & RE $\hat\ell$ & FE $\hat\ell$ & $\hat\beta_{\mathrm{MLE}}$ & $\beta$ $95\%$ conf.~int.  \\\hline\hline
-    \input{tables/hist-syst.tex}\\\hline
+    \input{../tables/hist-syst.tex}\\\hline
     \end{tabular}
   \end{table}
 
@@ -1258,9 +1260,9 @@ We should first note that the Birge Ratio and Random Effects models each have on
   \caption{Negative of MLE log-likelihood (totaled across all sets of results in a dataset), as well as the BIC and AIC (averaged across sets of results) for the Birge Ratio (BR), Random Effects (RE), and Fixed Effect (FE) models. Lower is better in each column. The Birge Ratio model is used by PDG. Random Effects is used by BIPM, and in psychology and medical meta-analyses.}
   \label{tab:noground-loglike}
   \smaller
-  \begin{tabular}{l|rrr|rrr|rrr}
+  \begin{tabular}{l|rrrr|rrrr|rrrr}
   \hline & \multicolumn{3}{c|}{Negative log-likelihood} & \multicolumn{3}{c|}{Mean BIC} & \multicolumn{3}{c}{Mean AIC} \\
-  Dataset & BR & RE & FE & BR & RE & FE & BR & RE & FE\\\hline\input{tables/noground-loglike.tex}\\\hline
+  Dataset & BR & RE & FE & BR & RE & FE & BR & RE & FE\\\hline\input{../tables/noground-loglike.tex}\\\hline
   \end{tabular}
 \end{table}
 
@@ -1288,7 +1290,7 @@ Results are shown in Tables \ref{tab:hist-syst} and \ref{tab:noground-bakermodel
   \label{tab:noground-bakermodel}
   \smaller
   \begin{tabular}{l|rr}
-  \hline Dataset & $\hat\beta_{\mathrm{MLE}}$ & $95\%$ conf.~int.\\\hline\input{tables/noground-bakermodel.tex}\\\hline
+  \hline Dataset & $\hat\beta_{\mathrm{MLE}}$ & $95\%$ conf.~int.\\\hline\input{../tables/noground-bakermodel.tex}\\\hline
   \end{tabular}
 \end{table}
 
@@ -1300,7 +1302,7 @@ Of the datasets without ground truth, only the physical science datasets from \c
 \subsubsection{Are outlier quantities driving results?}
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=\textwidth]{figs/noground_loglike_diff.pdf}
+  \includegraphics[width=\textwidth]{../figs/noground_loglike_diff.pdf}
   \caption{Difference in log-likelihoods of the MLEs of the Random Effects and Birge Ratio models for each set of results in each dataset described. Random Effects tends to be favored. The fractions do not add up to 1 because many of the log-likelihoods are equal: this occurs in the case where $\hat\tau_{\mathrm{MLE}}=0$ and $\hat{c}_{\mathrm{MLE}}=1$. It does not appear that outliers are driving the results in Table \ref{tab:noground-loglike}}
   \label{fig:noground-loglike}
 \end{figure}
@@ -1436,9 +1438,9 @@ This is like Random Effects, but where the unaccounted-for errors are correlated
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\textwidth]{figs/performance_random_effects.pdf}
-\includegraphics[width=\textwidth]{figs/performance_birge.pdf}
-\includegraphics[width=\textwidth]{figs/performance_random_effects_outliers.pdf}
+\includegraphics[width=\textwidth]{../figs/performance_random_effects.pdf}
+\includegraphics[width=\textwidth]{../figs/performance_birge.pdf}
+\includegraphics[width=\textwidth]{../figs/performance_random_effects_outliers.pdf}
 \label{fig:sim-results}
 \caption{Simulation results under the three settings satisfying our assumptions. The darkest color is $n=1000$, and the lightest color is $n=3$.}
 \end{figure}
@@ -1458,8 +1460,8 @@ We show results for the settings satisfying our assumptions (Random Effects, Bir
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\textwidth]{figs/performance_adversarial.pdf}
-\includegraphics[width=\textwidth]{figs/performance_random_effects_corr.pdf}
+\includegraphics[width=\textwidth]{../figs/performance_adversarial.pdf}
+\includegraphics[width=\textwidth]{../figs/performance_random_effects_corr.pdf}
 \label{fig:sim-results2}
 \caption{Simulation results under the two settings not satisfying our assumptions. The darkest color is $n=1000$, and the lightest color is $n=3$. Note that in the Correlated Random Effects setting, we don't do simulations for $n>100$ due to computational difficulties.}
 \end{figure}
@@ -1503,7 +1505,7 @@ This is the dataset shown in Figure \ref{fig:particle}. We have enough data here
 This way, for our evaluation at, say, $n=3$, we can use datasets like \texttt{M018W1} with many more than 3 results. Thus our conclusions for any $n$ will be based on a larger and more varied set of datasets and will be more robust.
 
 \begin{figure}[htbp]
-  \includegraphics[width=\textwidth]{figs/pdg1970_cov_birge.pdf}
+  \includegraphics[width=\textwidth]{../figs/pdg1970_cov_birge.pdf}
 \caption{
 Top: Coverage comparison of the different variations of the Birge Ratio method discussed in Section \ref{sec:birge} on the 1970 PDG dataset, with the Fixed Effect result for reference. Bottom: Average width of intervals from the different methods compared to Fixed Effect. None of the methods achieve target coverage for any value of $n$, and coverage decreases as $n$ increases.
 }\label{fig:pdg1970-cov-birge}
@@ -1517,7 +1519,7 @@ Figure \ref{fig:pdg1970-cov-birge} shows the coverage achieved by the Birge Rati
 \end{itemize}
 
 \begin{figure}[htbp]
-  \includegraphics[width=\textwidth]{figs/pdg1970_cov_re.pdf}
+  \includegraphics[width=\textwidth]{../figs/pdg1970_cov_re.pdf}
 \caption{
 Top: Coverage comparison of the different variations of the Random Effects method discussed in Section \ref{sec:re} on the 1970 PDG dataset, with the Fixed Effect result for reference. Bottom: Average width of intervals from the different methods compared to Fixed Effect. We see that coverage decreases as $n$ increases.
 }\label{fig:pdg1970-cov-re}
@@ -1530,7 +1532,7 @@ Figure \ref{fig:pdg1970-cov-re} shows results for a few methods for Random Effec
 \end{itemize}
 
 \begin{figure}[htbp]
-  \includegraphics[width=\textwidth]{figs/pdg1970_cov_nonparam.pdf}
+  \includegraphics[width=\textwidth]{../figs/pdg1970_cov_nonparam.pdf}
   \caption{
 Coverage comparison of the nonparametric methods presented in Section \ref{sec:methods} on the 1970 PDG dataset. Solid lines are achieved coverages, dashed lines are target coverages---these vary with $n$ due to the discreteness of the methods. ST: Sign Test. SRT: Signed-Rank Test. ST$_{\rho=0.1}$ indicates the Sign Test with the CDF modified to accomodate the events $(y_i>\theta)$ and $(y_j>\theta)$ having correlation $\rho=0.1$. ST and SRT both under-cover, though SRT is better. Incorporating correlation using ST$_\rho=0.1$ yields coverage exceeding or closer to matching its target. The overlap between ST and ST$_\rho=0.1$ for n from 3 to 7 is because both methods yield intervals based on quantiles of the points. For $n=3$, they will yield the same interval from the smallest value to the biggest value, and therefore achieve the same coverage, but ST will call it a 75\% interval and ST$_\rho=0.1$ will call it a 67.5\% interval.
 }\label{fig:pdg1970-cov-nonparam}
@@ -1549,7 +1551,7 @@ We ought to run a comparison on some real data. Let's see what happens with CODA
 
 \begin{figure}[htpb]
 \centering
-\includegraphics[width=0.5\textwidth]{figs/G0.pdf}
+\includegraphics[width=0.5\textwidth]{../figs/G0.pdf}
 \label{fig:G}
 \caption{Results of different aggregation methods for estimates of the gravitational constant $G$ \cite[Table XXIX]{tiesinga2021codata}. Error bars are $1\sigma$ intervals using the $sigma_i$'s reported by each study.}
 \end{figure}
@@ -1572,7 +1574,7 @@ The CODATA and BR intervals are pulled to the right by the small $\sigma_i$'s on
 
 \begin{figure}[htpb]
 \centering
-\includegraphics[width=0.5\textwidth]{figs/h0.pdf}
+\includegraphics[width=0.5\textwidth]{../figs/h0.pdf}
 \label{fig:h}
 \caption{Results of different aggregation methods for estimates of the Planck constant $h$ \cite[Table 26]{mohr2012codata}. Error bars are $1\sigma$ intervals using the $sigma_i$'s reported by each study.}
 \end{figure}
@@ -1587,8 +1589,8 @@ We see again that the CODATA interval is wider than that given by our BR---this 
 
 \begin{figure}[htbp]
 \centering
-\includegraphics{figs/G1.pdf}
-\includegraphics{figs/h1.pdf}
+\includegraphics{../figs/G1.pdf}
+\includegraphics{../figs/h1.pdf}
 \label{fig:Gh-wider}
 \caption{Since the Sign Test can target only a discrete set of coverages, for the $G$ data it will (under the assumptions) achieve coverage 79.0\%, and 77.3\% for the $h$ data. For comparison, in this figure the intervals from CODATA, RE, and BR are expanded to target these coverage levels. The CODATA, RE, and BR intervals from \ref{fig:G} and \ref{fig:h} have been scaled them by the corresponding $z_{\alpha/2}$.}
 \end{figure}
