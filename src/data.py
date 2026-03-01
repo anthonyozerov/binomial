@@ -38,20 +38,20 @@ def load_noground_datasets():
     
     # Mapping of dataset names to folder paths
     folder_mapping = {
-        "baker-pdg2011-stat": "data/baker-pdg2011-stat",
-        "baker-pdg2011-both": "data/baker-pdg2011-both",
-        "bailey-pdg": "data/bailey/CsvData/Particle_Data",
-        "bailey-pdg-stable": "data/bailey/CsvData/Particle_Data_Stable",
-        "pdg1970": "data/pdg1970",
-        "bipm-radionuclide": "data/bipm-radionuclide",
-        "bailey-nuclear": "data/bailey/CsvData/Nuclear_Data",
-        "bailey-interlab": "data/bailey/CsvData/Interlab_Data",
-        "bailey-interlab-key": "data/bailey/CsvData/Interlab_Data_Key",
-        "manylabs2": "data/psymetadata",
-        "baker-medical": "data/baker-medical/clean",
-        "bailey-medical": "data/bailey/CsvData/Medical_Data",
-        "bailey-constants": "data/bailey/CsvData/Constants_Data",
-        # "cochrane-dich": "data/cochrane/dich",
+        "baker-pdg2011-stat": "../data/baker-pdg2011-stat",
+        "baker-pdg2011-both": "../data/baker-pdg2011-both",
+        "bailey-pdg": "../data/bailey/CsvData/Particle_Data",
+        "bailey-pdg-stable": "../data/bailey/CsvData/Particle_Data_Stable",
+        "pdg1970": "../data/pdg1970",
+        "bipm-radionuclide": "../data/bipm-radionuclide",
+        "bailey-nuclear": "../data/bailey/CsvData/Nuclear_Data",
+        "bailey-interlab": "../data/bailey/CsvData/Interlab_Data",
+        "bailey-interlab-key": "../data/bailey/CsvData/Interlab_Data_Key",
+        "manylabs2": "../data/psymetadata",
+        "baker-medical": "../data/baker-medical/clean",
+        "bailey-medical": "../data/bailey/CsvData/Medical_Data",
+        "bailey-constants": "../data/bailey/CsvData/Constants_Data",
+        # "cochrane-dich": "../data/cochrane/dich",
     }
     
     # Load datasets directly into dictionaries
@@ -119,27 +119,27 @@ def load_historical_data():
         tuple: (datasets, truths, nice_names)
     """
     # Load datasets
-    c_df = pd.read_csv("data/c.csv", comment="#")
+    c_df = pd.read_csv("../data/c.csv", comment="#")
     
-    c_oldford_df = pd.read_csv("data/c-oldford.csv", comment="#")
+    c_oldford_df = pd.read_csv("../data/c-oldford.csv", comment="#")
     c_oldford_df['value'] = c_oldford_df['speed']
     c_oldford_df['uncertainty'] = c_oldford_df['error'] * (1/0.6745)
     
-    rho_df = pd.read_csv("data/rho.csv", comment="#")
+    rho_df = pd.read_csv("../data/rho.csv", comment="#")
     
-    au_df = pd.read_csv("data/au.csv", comment="#")
+    au_df = pd.read_csv("../data/au.csv", comment="#")
     
-    avogadro_df = pd.read_csv("data/bailey/CsvData/Constants_Data/Avogadro_Number.csv")
+    avogadro_df = pd.read_csv("../data/bailey/CsvData/Constants_Data/Avogadro_Number.csv")
     # remove last row
     avogadro_df = avogadro_df.iloc[:-1]
     
     finestructure_df = pd.read_csv(
-        "data/bailey/CsvData/Constants_Data/Fine_Structure_Constant_Inverse.csv"
+        "../data/bailey/CsvData/Constants_Data/Fine_Structure_Constant_Inverse.csv"
     )
     
-    rydberg_df = pd.read_csv("data/bailey/CsvData/Constants_Data/Rydberg_Constant.csv")
+    rydberg_df = pd.read_csv("../data/bailey/CsvData/Constants_Data/Rydberg_Constant.csv")
     
-    c_bailey_df = pd.read_csv("data/bailey/CsvData/Constants_Data/Speed_of_Light.csv")
+    c_bailey_df = pd.read_csv("../data/bailey/CsvData/Constants_Data/Speed_of_Light.csv")
     
     datasets = {
         "rho": rho_df,
@@ -187,22 +187,22 @@ def load_chemistry_data():
         tuple: (datasets, truths, nice_names)
     """
     # Load datasets
-    ho_df = pd.read_csv("data/clarke/H-O-mass.csv", comment="#")
+    ho_df = pd.read_csv("../data/clarke/H-O-mass.csv", comment="#")
     ho_df["uncertainty"] = ho_df["proberr"] / 0.6745
     
-    agcl_df = pd.read_csv("data/clarke/Ag-Cl-mass.csv", comment="#")
+    agcl_df = pd.read_csv("../data/clarke/Ag-Cl-mass.csv", comment="#")
     agcl_df["uncertainty"] = agcl_df["proberr"] / 0.6745
     
-    agi_df = pd.read_csv("data/clarke/Ag-I-mass.csv", comment="#")
+    agi_df = pd.read_csv("../data/clarke/Ag-I-mass.csv", comment="#")
     agi_df["uncertainty"] = agi_df["proberr"] / 0.6745
     
-    agbr_df = pd.read_csv("data/clarke/Ag-Br-mass.csv", comment="#")
+    agbr_df = pd.read_csv("../data/clarke/Ag-Br-mass.csv", comment="#")
     agbr_df["uncertainty"] = agbr_df["proberr"] / 0.6745
     
     # Commented out datasets
-    # no_df = pd.read_csv("data/clarke/N-mass.csv", comment="#")
+    # no_df = pd.read_csv("../data/clarke/N-mass.csv", comment="#")
     # no_df["uncertainty"] = no_df["proberr"] / 0.6745
-    # co_df = pd.read_csv("data/clarke/C-mass.csv", comment="#")
+    # co_df = pd.read_csv("../data/clarke/C-mass.csv", comment="#")
     # co_df["uncertainty"] = co_df["proberr"] / 0.6745
     
     datasets = {
@@ -245,7 +245,7 @@ def load_particle_data():
     """
     # Get particle keys
     particle_keys = sorted(
-        [f.split(".")[0] for f in os.listdir("data/pdg1970") if f.endswith(".csv")]
+        [f.split(".")[0] for f in os.listdir("../data/pdg1970") if f.endswith(".csv")]
     )
     
     # Load datasets, truths, nice_names, and units
@@ -255,7 +255,7 @@ def load_particle_data():
     units = {}
     
     for p in particle_keys:
-        path = f"data/pdg1970/{p}.csv"
+        path = f"../data/pdg1970/{p}.csv"
         datasets[p] = pd.read_csv(path, comment="#")
         with open(path, "r") as f:
             lines = f.readlines()
