@@ -1,0 +1,258 @@
+\documentclass[12pt]{article}
+% 1in margins
+% \usepackage[margin=1in]{geometry}
+\usepackage{parskip}
+\usepackage[backref=page]{hyperref}
+\usepackage{microtype}
+\usepackage{libertine}
+\usepackage[libertine,cmintegrals,cmbraces,vvarbb]{newtxmath}
+% make caption text smaller
+\usepackage[font={footnotesize},labelfont={bf,it},textfont={it}]{caption}
+
+
+\usepackage{float}
+\usepackage{microtype}
+
+\usepackage{enumitem}
+\setlist{nosep}
+
+\usepackage[nottoc]{tocbibind}
+
+% \usepackage{minted}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+
+\usepackage[scaled=0.95]{inconsolata}
+
+\usepackage{natbib}
+\bibliographystyle{plainnat}
+\renewcommand{\bibsection}{\section{\bibname}} %make bibliography show in TOC
+
+% change the format of the 'cited on'
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd{\BR@backref}{\newblock}{\newblock[Cited on pg.~}{}{}
+\patchcmd{\BR@backref}{\par}{]\par}{}{}
+\makeatother
+
+\usepackage{doi}
+
+\usepackage{siunitx}
+
+% \renewcommand{\listingscaption}{Code Snippet}
+
+\usepackage[font={small},labelfont={bf,it},textfont={it}]{caption}
+
+\renewcommand{\footnoterule}{\vfill\kern -3pt \hrule width 0.4\columnwidth \kern 2.6pt}
+
+\usepackage{relsize}
+\AtBeginEnvironment{quote}{\smaller}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhead{}
+\fancyhead[L]{\rightmark}
+\fancyhead[R]{\thepage}
+\fancyfoot{}
+
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{placeins}
+\usepackage{enumitem}
+\usepackage{bm}
+% \usepackage{amssymb}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\newcommand{\simiid}{\overset{\mathrm{iid}}{\sim}}
+\newcommand{\simind}{\overset{\mathrm{ind}}{\sim}}
+
+
+\title{\vspace{-4em}PDG meta-analysis technical note}
+% \author{Anthony Ozerov}
+
+
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+The Particle Data Group performs averages and fits on results from particle physics studies to create international consensus values and uncertainties for various properties of fundamental particles.
+
+Meta-analysis in this technical note means two things: first, we will study the PDG's data products to effectively perform a meta-analysis of particle physics, and learn things about the practice of particle physics from what we see in PDG data. Second, each PDG average or fit is itself a meta-analysis, and we will carefully examine PDG's methods for this and alternatives.
+\end{abstract}
+
+\tableofcontents
+
+\section{Meta-analysis of PDG data}
+
+The Particle Data Group has published estimates of properties of fundamental particles since 1957. For example, the \emph{top quark} is a fundamental particle, and physicists can measure its mass (a property of the particle). In making their estimates, the PDG uses many different experimental results as input. We will study various properties of these experimental results.
+
+\subsection{Prior work}
+
+We shall first go through some prior work and explain what flaws their analyses have.
+
+\citet{bailey2017not} studies a dataset from the 2013 PDG RPP. This dataset includes all experiments listed (even those not included in an average) except those which were ``obviously not independent,'' and it was completed using older editions when the 2013 RPP dropped old data \citep[sec.~2.2]{bailey2017not}. \citet{bailey2017not} also studies a subset of this dataset containing only data for stable particles and experiments since 2000. A full description of these datasets can be found in \citet[sec.~2.1-2.3, 3.4]{bailey2017not}, and complete references for data sources are in the supplementary material \citep{bailey2016data}.
+
+\citet{baker2013meta} study 20 sets of results from the 2011 PDG RPP. These have a total of 484 underlying measurements. Some notes on their dataset to be aware of:
+\begin{itemize}
+\item The $t\bar{t}$ cross-section dataset described includes results known to PDG to be correlated \citep{pdg2011topquark}.
+\item \citet{baker2013meta} consider the whole set of experiments reported by PDG, instead of just those used in the average. While this yields more data, this makes the dataset unrepresentative of sets of results which the PDG actually uses for averages. For example, some values are excluded from averages by PDG due to not being independent or being included in later results.
+\end{itemize}
+The stricter inclusion criteria of our PDG 2025 dataset, described below, are designed to avoid these issues.
+
+\subsection{Data}
+
+\subsubsection{Modern PDG dataset}
+
+Our key dataset, which we will call \texttt{pdg2025}, will come from the 2025 update to the 2024 RPP. Using the database file provided by the PDG, we consider all of the particle properties for which the PDG reports an average, and extract all of the measurements used by the PDG in that average. We make this choice because of the Particle Data Group's method for choosing which measurements go into in average. They have several reasons for excluding measurements. Here is an abbreviated list:
+
+\begin{quote}
+  \begin{enumerate}
+  \item It is superseded by or included in later results.
+  \item No error is given.
+  \item It involves assumptions we question.
+  \item It has a poor signal-to-noise ratio, low statistical significance, or is otherwise of poorer quality than other data available.
+  \item It is clearly inconsistent with other results that appear to be more reliable.
+  \item It is not independent of other results.
+  \item It is quoted from a preprint or a conference report.\footnote{
+    This exclusion criterion is present since the 1968 edition, with this amusing note:
+    \begin{quote}
+      It sometimes happens that the average (or fitted) value for a particular measured quantity changes by more than one standard deviation between one edition of these tables and the next. [\ldots] The most common reason for this kind of fluctuation is that physicists often report a value and error for a parameter in a conference report or preprint, and then enlarge the error by the time the experiment is published in a journal. This has the effect that when we include the preliminary result in our average, the central value shifts sharply towards this new measurement and the error shrinks. Later, when more reasonable errors are published for the experiment in question, the averaged value will again return close to the old number, which is often a shift of more than one shrunken standard deviation. We are attempting to avoid this in the future by not averaging in data from conference reports or preprints unless the authors specifically write us that the errors they have quoted are not likely to be enlarged before the paper is published in its final form. \\ \hfill -- \citet{rosenfeld1968data}
+    \end{quote}
+  }
+  \end{enumerate} \hfill -- Abbreviated from \citet[Section 5.1]{navas2024review}
+\end{quote}
+
+So, all measurements in our \texttt{pdg2025} dataset should be peer-reviewed, independent, not double-counted, and have passed the PDG's expert review.
+
+Since the PDG only gives an average when there are multiple measurements, our \texttt{pdg2025} dataset will be biased towards particles which are more well-established and particle properties which are more well-studied. For this reason, the dataset may not be representative of ``the distribution of particle physics experiments,'' whatever that may be.
+
+Each point in this dataset is one measurement of a particle property. Using the PDG's notation, at its simplest, a point may be a value like $x\pm\delta x$. According to the PDG, this is treated as a $68.3\%$ confidence interval for the measured particle property---and the error is treated as Gaussian \citep[sec.~5.2.1]{navas2024review}. This treatment of the error is something we will examine in this work.
+
+Many experiments quote two different errors: statistical and systematic---the PDG has reported both since 1988. Since at least 1986, the PDG treats statistical and systematic errors as independent and adds them in quadrature to obtain the combined error. Since at least the 1964 edition, the PDG also includes an asymmetric error $(\delta x)^+$ and $(\delta x)^-$ for many experiments. So at the extreme, we may have four errors reported, as in one result for $\Gamma(f_2(1270)^0K^+)/\Gamma_{\rm{total}}$:
+\[0.89^{+0.38\,+0.01}_{-0.33\,-0.03}\]
+
+
+\subsubsection{Old PDG dataset}
+
+The modern PDG dataset will get us pretty far, but there are some things we can't do with it, such as measuring common systematic biases (e.g.~if all studies share the same bias, we can't see this by just looking at those studies.) To do more, we need a ground-truth, so that we can compare measurements to the ground truth.
+
+Although we don't have real ``ground truths'' for various properties of fundamental particles, the estimates offered by \citet{navas2024review} in many cases have uncertainties which, when compared to the experimental state-of-the-art in the mid-twentieth century, let them serve as an effective ground truth. We therefore compile some datasets from PDG's August 1970 edition \citet{roos1970review}. We chose this edition arbitrarily as a middle ground between older editions which are based on fewer available experimental results and newer editions which do not state older experimental results. We compile datasets according to these criteria:
+\begin{itemize}
+  \item Several experimental results available.
+  \item Modern uncertainty much lower than the range of the results.
+\end{itemize}
+And apply the following processing steps:
+\begin{itemize}
+  \item Exclude any experiments not used in the average by \citet{roos1970review}.
+  \item For experiments with two-sided errors, take the average of the two and round up.
+  \item Exclude any experiments which are used in the modern average by \citet{navas2024review}.
+\end{itemize}
+This dataset with ground truths is shown Figure \ref{fig:particle}.
+
+As this dataset is relatively small compared to the full scope of the PDG, we also have several versions of PDG data without ground truths. As of the 2025 update, there are 1269 particle properties for which PDG provides an estimate (or ``average'') using their aggregation method which have at least three underlying measurements. Together, these use 6239 underlying measurements. Because there are so many, we can use this dataset to try to get a handle on the distribution of estimates in particle physics. Comparison of this dataset of newer PDG results and the older dataset described above will also help us see whether the results from the latter in Section \ref{sec:realworld} may generalize to modern PDG data.
+
+Note that PDG separately reports ``statistical'' and ``systematic'' error.\footnote{This was not the case in 1970.} In our \texttt{stat} dataset we consider only statistical error, and in our \texttt{stat+syst} dataset we consider the combination of statistical and systematic errors. When combining these errors, we follow the PDG in adding them in quadrature \citep[sec.~5.2.1]{navas2024review}. We consider the \texttt{stat+syst} dataset more useful, as it is not uncommon in PDG data to have a statistical error that is effectively zero or miniscule compared to systematic error. These situations reveal the fact that, in modern high-energy physics, some measurements can be repeated enough to reduce ``statistical'' error to an arbitrarily small value (e.g.~by observing enough events), but large ``systematic'' errors may still enter in the reduction of the data via error in auxiliary values (which may themselves have ``statistical'' error). Thus, we do not consider it reasonable to split error into ``statistical'' and ``systematic'' and discard the systematic component.\footnote{In this we break from \citet[sec.~3.3]{baker2013meta}, who offer several reasons to only consider statistical error, including that (a) it is highly correlated with systematic error, (b) some systematic errors seem too high when there is low heterogeneity, and (c) including systematic errors does not improve fit to data. We do not dispute these results, and see a similar result in our dataset in the first two rows of Table \ref{tab:noground-loglike}, which show that including systematic errors does not improve model fit. Nonetheless, the practical consideration of almost-zero statistical errors suggests that ignoring the given systematic errors is nonsensical if used as a general rule, and we therefore choose to include them.}
+
+\subsection{Systematic error}
+
+\subsection{The form and degree of unaccounted-for error}\label{sec:unaccounted}
+
+\subsection{Between-study correlation}\label{sec:correlation}
+
+We will now examine the degree of correlation between results reported in studies. 
+
+\subsection{Blinding}
+
+At some point, physicists noted this issue of between-study correlation: as they conceptualized it, new measurements were biased towards previous measurements. As discussed above, between-study correlation can arise for a number of reasons, such as common systematic biases, shared parameters (with their own errors) in the calculation, or researcher bias.
+
+Starting in the 1990's, high-energy physicists started performing blind analyses, and these have now become common \citep{klein2005blind}. Blind analysis is designed to prevent researcher bias, which can cause researchers to influence results through:
+\begin{itemize}
+  \item Selecting which data to include or exclude (``cuts'') based on preconceptions about the result.
+  \item Making other judgment calls during the analysis which are expected to push the final result towards the preferred value.
+  \item Choosing to stop collecting or analyzing data just when the preferred result is reached (because, if the result is way off, one might think something was unaccounted for or it is noise.)
+\end{itemize}
+To address these, during the blinded phase of a blind analysis, the data analysis team cannot see all of the data: some of the collected data or auxiliary parameters used in the calculation may be altered or hidden, or the initial analysis may be performed on a only small subset of the data. This way, it is harder to deduce the effect of analysis choices on the final result, and it is thus difficult for researchers to work towards their desired result. At the end of the blinded phase, the analytical choices and judgment calls are set in place, and everything is revealed so that the final result can be calculated.
+
+All else being equal, how does moving to a world where blinding is done change the statistics of results? If researcher bias towards prior results or commonly-held preconceptions about the true value plays a large role, we should see a reduction in between-study correlation and an associated increase in the (normalized) differences between studies. We can search for this in PDG data.
+
+The simplest thing we can do is consider all pairs of studies measuring the same quantity in the \texttt{pdg2025} dataset, compute the $|z_{ij}|$ statistics as we did in Section \ref{sec:unaccounted}, and break them down by the years of the measurements. In particular, each pair has a year corresponding to the earlier measurement and a year corresponding to the later measurement (if the measurements were from the same year, these years are equal). We will use these years to bin the pairs of measurements in some ways, and calculate some statistics like:
+\begin{itemize}
+  \item The weighted average of $|z_{ij}|$ within a bin. Expectation of $\sqrt{2/\pi}$ if $Y_i\simind\mathcal{N}(\theta,\sigma_i^2)$.
+  \item The weighted average of $z_{ij}^2$ within a bin. Expectation of $1$ if $Y_i\simind\mathcal{N}(\theta,\sigma_i^2)$.
+  \item The ``weighted proportion'' of $|z_{ij}|>1$ within a bin (i.e.~a weighted average of indicators). Expectation of $2\Phi(-1)\approx0.3173$ if $Y_i\simind\mathcal{N}(\theta,\sigma_i^2)$.
+  \item Same as the above, but for $|z_{ij}|>2$. Expectation of $2\Phi(-2)\approx0.0455$ if $Y_i\simind\mathcal{N}(\theta,\sigma_i^2)$.
+\end{itemize}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{../figs/blinding/yearbin2d.pdf}
+  \caption{Red indicates that the observed average is larger than the expectation and blue indicates it is smaller.}
+  \label{fig:blinding-yearbin2d}
+\end{figure}
+
+Figure \ref{fig:blinding-yearbin2d} shows the first two statistics on a grid of the first year and second year. We see a cluster of more recent pairs which are fairly far apart. Unfortunately, in many parts of this grid, there are few or zero pairs of measurements, so results are noisy.
+
+Let's do some coarser aggregations. First, we can consider binning only along the year of the later measurement. Figure \ref{fig:blinding-yearbin1d} shows all three of the above-described statistics binned this way. The results are still quite noisy, but there seem to be some trends: increasing average $z_{ij}^2$ and $|z_{ij}|$, and an increasing fraction $|z_{ij}|>1$. In this figure we also show the expected value of each statistic, and we see these trends happening right around the expected value.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{../figs/blinding/yearbin1d.pdf}
+  \caption{}
+  \label{fig:blinding-yearbin1d}
+\end{figure}
+
+Now, let's do an even coarser aggregation. Figure \ref{fig:blinding-yearbin2d} has some suggestive lines which break the figure into quadrants. The bottom-left quadrant corresponds to pairs of studies from before when blinding was used, and the top-right quadrant corresponds to pairs of studies from after. We will consider any pairs where both have a publication year $<1990$ as pre-blinding, and any pairs $\geq1990$ as post-blinding. We also only include pairs measuring quantities which have a pair in both groups, so that changes in which quantities are measured do not affect the analysis.
+
+The results are shown in Table \ref{tab:blinding-quadrants}. Every statistic measured shows a significant difference when comparing its value post-blinding to pre-blinding. Figure \ref{fig:blinding-beforeafterdist} shows the empirical tail distribution of the $|z_{ij}|$ statistics in the two groups. From the table and the figure, we see that (a) pairs from before 1990 appear over-conservative in the fraction $|z_{ij}|>1$ and (b) pairs from after 1990 appear under-conservative in all statistics except the fraction $|z_{ij}|>1$. From the differences, we see that studies became less conservative over time. Differences between pairs can appear over-conservative simply due to positive correlation between studies (so that, when compared to the true value, they are not actually conservative), and we saw in Section \ref{sec:correlation} that studies pre-1970 were indeed positively correlated. So, given these observations, there are a few possibilities for what has changed over time:
+\begin{itemize}
+  \item Due to the introduction of blinding, studies now are no longer as positively correlated as before.
+  \item Due to other reasons, such as fewer shared systematics, studies now are no longer as positively correlated as before.
+  \item Physicists have become less conservative in their uncertainty quantification, so that they are now well-calibrated at the 1 standard deviation level, and underconservative further in the tail.
+\end{itemize}
+It is difficult to differentiate between these possibilities and attribute the observed changes to a specific cause.
+
+\begin{figure}
+  \centering
+
+  \captionof{table}{Values of the statistics in entirely pre-1990 (exclusive) and entirely post-1990 (inclusive) pairs, only considering quantities which have a pair in both groups. Expectation calculated assuming individual measurements are $Y_i\simind \mathcal{N}(\theta,\sigma_i^2)$. Errors are given for 95\% bootstrap confidence intervals, where the unit we are sampling is quantities.}\label{tab:blinding-quadrants}
+  \begin{tabular}{l|rrr|r}
+    \hline
+    Statistic & Expectation & $<1990$ & $\geq 1990$ & Difference \\\hline
+    Average $|z_{ij}|$ & 0.798 & $0.719^{+0.071}_{-0.077}$ & $0.878^{+0.083}_{-0.088}$ & $0.159^{+0.098}_{-0.099}$ \\
+    Average $z_{ij}^2$ & 1 & $0.901^{+0.168}_{-0.194}$ & $1.305^{+0.234}_{-0.264}$ & $0.404^{+0.265}_{-0.284}$ \\
+    Fraction $|z_{ij}| > 1$ & 0.3173 & $0.245^{+0.046}_{-0.049}$ & $0.330^{+0.052}_{-0.056}$ & $0.085\pm{0.071}$ \\
+    Fraction $|z_{ij}| > 2$ & 0.0455 & $0.044^{+0.021}_{-0.026}$ & $0.085^{+0.029}_{-0.034}$ & $0.042^{+0.036}_{-0.040}$ \\
+    \hline
+  \end{tabular}
+
+  \centering
+  \captionof{figure}{Distribution of $|z_{ij}|$ in entirely pre-1990 (exclusive) and entirely post-1990 (inclusive) pairs, only considering quantities which have a pair in both groups. Pairs $|z_{ij}|$ are weighted so that each quantity has equal weight.}\label{fig:blinding-beforeafterdist}
+  \includegraphics[width=\textwidth]{../figs/blinding/beforeafterdist.pdf}
+\end{figure}
+\iffalse
+So far, we have found some hints of changes in the distribution of the residuals between measurements: in particular, the spread between measurements seems to increase. Supposing that this is a real effect and not just noise, what could cause this? One possibility is that physicists are becoming less conservative in their UQ. We would hope this is not the case as, looking at the post-1990 column of Table \ref{tab:blinding-quadrants}, it seems physicists may be under-conservative post-1990 whereas they were not before (thus, the calibration of their UQ would have worsened). Another possibility is that systematic errors are less correlated now than in the past. While the PDG aims to select independent measurements, there may still be some small correlations pre-1990 and fewer now, so this is a real possibility. The final possibility is that the implementation of blind analysis has had an impact in reducing non-physical between-study correlation (i.e.~that due to researcher bias).\fi
+
+\FloatBarrier
+
+\section{PDG methods}
+
+\subsection{The scale factor method}
+
+The PDG started doing this scaling in the 1967 edition. As they write:
+\begin{quote}
+  Instead of rejecting one culprit, we can assume that all experimentalists underestimated their errors by the same factor (which is, of course, $[\chi^2/(N-1)]\equiv \text{\sc{scale}}$. If this were true, then we could correct the calculated error of the mean simply by multiplying each of the reported errors by {\sc scale}, and then recalculating the error of $\bar{x}$. Multiplying the original $\delta(\bar{x})$ by {\sc scale} would obviously also give the same final result. In fact, this is exactly \emph{what we have done}. (This is a {\sc new convention}, started August 1966). In the older editions we listed the {\sc scale} factor but did not enlarge the errors. We made this change because we discovered that few people paid any attention to {\sc scale}.) This scaling approach is already common practice in bubble-chamber experiments, where track distortion is not fully understood. For bubble-chamber data it can be justified. For this compilation, it has all of the disadvantages of penalizing a whole class of students because of one naughtly child, but (like the schoolmaster) we sometimes know of no other simple solution.
+\end{quote}
+
+\subsection{Asymmetric errors}
+
+\subsection{Multiparameter fits and correlations}
+
+\subsection{A likelihood-based alternative}
+
+\subsection{Empirical and simulated performance}
+
+\bibliography{../tex/references}
+
+\end{document}

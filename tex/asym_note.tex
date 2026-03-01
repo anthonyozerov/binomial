@@ -1,0 +1,247 @@
+\documentclass[12pt]{article}
+% 1in margins
+% \usepackage[margin=1in]{geometry}
+\usepackage{parskip}
+\usepackage[hidelinks]{hyperref}
+\usepackage{microtype}
+\usepackage{libertine}
+% make caption text smaller
+\usepackage[font={footnotesize},labelfont={bf,it},textfont={it}]{caption}
+
+\usepackage{natbib}
+\bibliographystyle{plainnat}
+
+\title{\vspace{-4em}Note on PDG methods}
+\author{Anthony Ozerov}
+
+\usepackage{amsmath}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\usepackage{graphicx}
+\usepackage{placeins}
+\usepackage{enumitem}
+
+\begin{document}
+\maketitle
+\section{Asymmetric errors}
+\subsection{Current PDG method: unconstrained average}
+In an unconstrained average, the PDG gives an average and standard error via the following formula:
+\begin{equation}\label{eq:wavg}
+    \bar{x}\pm\delta\bar{x}=\frac{\sum_iw_ix_i}{\sum_iw_i}\pm\left(\sum_i w_i\right)^{-1/2}
+\end{equation}
+with weights set to:
+\[w_i=\frac{1}{(\delta x_i)^2}\]
+This all makes sense when errors are symmetric. But when errors are asymmetric, a point $x_i$ doesn't just have a $\delta x_i$, but a $(\delta x_i)^-$ and a $(\delta x_i)^+$. Sec 5.2.2~of the 2024 \textit{RPP} states that, when the weighted average is less than $x_i-(\delta x_i)^-$, $(\delta x_i)^-$ is used as the error (and therefore for the weight) of point $i$. When the weighted average is greater than $x_i+(\delta x)^+$, $(\delta x_i)^+$ is used as $\delta x_i$. And when the weighted average is in between, a linear function is used. Specifically, that function is:
+\begin{equation}\label{eq:error-interp}
+    \delta x_i = \frac{2(\delta x_i)^-(\delta x_i)^++(\bar{x}-x_i)\left((\delta x_i)^+-(\delta x_i)^-\right)}{(\delta x_i)^-+(\delta x_i)^+}
+\end{equation}
+This function is shown in Figure \ref{fig:pdg-asym-error}.
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.5\textwidth]{../figs/pdg_asym_error.pdf}
+    \caption{PDG calculation of $\delta x_i$ (red line). The point with error bars corresponds to ${x_i}^{+(\delta x_i)^+}_{-(\delta x_i)^-}$. $x_i=0$, $(\delta x_i)^-=1$, and $(\delta x_i)^+=0.5$.}
+    \label{fig:pdg-asym-error}
+\end{figure}
+
+Because calculating the $(\delta x_i)$'s using the weighted average will also change the weighted average, this is iterated (specifically, until 100 steps have been made or the resulting $\chi^2$ value changed by less then 0.01 between iterations). To initialize the first step, the $(\delta x_i)$'s are calculated as $2(\delta x_i)^-(\delta x_i)^+/((\delta x_i)^-+(\delta x_i)^+)$, and the weighted average is taken accordingly.
+
+One question this raises is: if we initialize with a different weighted average, does the algorithm converge to the same point? It turns out there is no such guarantee, as shown in Figure \ref{fig:pdg-divergence}. PDG's choice of initialization also does not necessarily resolve this, as we could consider adding a third, highly imprecise point halfway between the two points. Moving this third point slightly closer to one of the other points will change the PDG initialization sufficiently to cause a large change in the final value.
+
+However, the example given in Figure \ref{fig:pdg-divergence} is quite extreme. It turns out that, in all of the ``averages'' reported in the PDG dataset, if we try initializing the algorithm with either the minimum or the maximum of the $x_i$'s, we don't see any such divergences.
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.3\textwidth]{../figs/pdg_divergence.pdf}
+    \caption{Initializing the PDG iterative algorithm at different weighted averages leads to different results. The points being averaged are in black. $x_1$: $0^{+1}_{-0.1}$, $x_2$: $1^{+0.1}_{-1}$. The weighted averages obtained with different initializations are in red.}\label{fig:pdg-divergence}
+\end{figure}
+
+The next question to consider is the uncertainty quantification when errors are asymmetric. In Equation \ref{eq:wavg}, the standard deviation given is correct under a Normal model where $x_i\sim\mathcal{N}(\theta,\sigma_i^2)$. For asymmetric errors, the PDG adapts the previous formula in a simple way:
+\begin{align}\label{eq:asym-errs}
+\begin{split}
+(\delta\bar{x})^+ &= \left(\sum_i \frac{1}{((\delta x_i)^+)^2}\right)^{-1/2}\\
+(\delta\bar{x})^- &= \left(\sum_i \frac{1}{((\delta x_i)^-)^2}\right)^{-1/2}
+\end{split}
+\end{align}
+This formula does not seem quite right. The first sign that something is amiss is that this formula comes in the symmetric case from setting weights $w_i=\frac{1}{(\delta x_i)^2}$, then taking a weighted average with those weights:
+\begin{align*}
+\mathrm{Var}\left(\frac{\sum_i w_i x_i}{\sum_i w_i}\right)&=\frac{1}{(\sum_i w_i)^2}\sum_i w_i^2\mathrm{Var}(x_i)\\
+&=\frac{1}{(\sum_i w_i)^2}\sum_i w_i^2(\delta x_i)^2\\
+&=\frac{1}{(\sum_i w_i)^2}\sum_i w_i^2\frac{1}{w_i}\\
+&=\frac{1}{(\sum_i w_i)^2}=\frac{1}{\sum_i w_i}=\left(\sum_i w_i\right)^{-1}
+\end{align*}
+But, in the iterative procedure, the final ``weights'' won't actually be all $w_i=\frac{1}{((\delta x_i)^+)^2}$ or all $w_i=\frac{1}{((\delta x_i)^-)^2}$. So, it is not clear how to justify the formulas used by PDG to calculate the asymmetric errors on the weighted average. As shown in Figure \ref{fig:pdg-asym-counterexamples}, we can construct examples where the resulting interval given by PDG seems too narrow or too wide.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.6\textwidth]{../figs/pdg_asym_counterexamples.pdf}
+    \caption{Constructed examples where the PDG's formula for asymmetric uncertainties that doesn't seem quite right. Datapoints are in black, and the PDG's interval is in grey. On the left, we see how the small positive and negative errors on the points lead to a small error on the weighted mean, even though the weighted mean is in the region where both points have a large error. The example on the right is somewhat more subtle and debatable: the lower error on the weighted mean is only slightly smaller than the lower error on the top data point, because the bottom point has a very large lower error. But, we might guess the truth is likely in a small region to the right of the bottom point, so the lower error should not be so large.%the error bar on the weighted mean shrinks at a rate of $1/\sqrt{n}$ (halving in size from the points' error bars), but the right tail should maybe shrink a little more, because when you're closer to the point the error should be interpolated with the very small left-tail error (based on Equation \ref{eq:error-interp}).
+    }\label{fig:pdg-asym-counterexamples}
+\end{figure}
+
+
+\subsection{Current PDG method: multiparameter fit}
+
+The PDG uses a different, perturbation-based method for asymmetric errors when performing a multiparameter fit. Here we will consider its application for an unconstrained average. The idea is to iteratively shift each input data point by $(\delta \bar{x})^-$ and $(\delta \bar{x})^+$, see how much it shifts the fitted value, and the final asymmetric errors on the fitted value are the sums (in quadrature) of the shifts in each direction. In other words:
+\begin{itemize}
+    \item Let $\tilde{\mathbf{x}}^{i+}$ be the dataset $(x_1,\ldots,x_i+(\delta \bar{x})^+,\ldots,x_n)$, and let $\tilde{\mathbf{x}}^{i-}$ similarly be $(x_1,\ldots,x_i-(\delta \bar{x})^-,\ldots,x_n)$.
+    \item If the function $f$ computes our fitted value, let $\Delta_i^{(1)}=f(\tilde{\mathbf{x}}^{i+})-f(\mathbf{x})$, and $\Delta_i^{(2)}=f(\tilde{\mathbf{x}}^{i-})-f(\mathbf{x})$
+    \item Finally, calculate:
+    \begin{align*}
+        (\delta \bar{x})^+&=\sqrt{\sum_{i,k:\Delta_i^{(k)}>0}(\Delta_i^{(k)})^2}\\
+        (\delta \bar{x})^-&=\sqrt{\sum_{i,k:\Delta_i^{(k)}<0}(\Delta_i^{(k)})^2}
+    \end{align*}
+\end{itemize}
+It is easy to show that, for an unconstrained average with symmetric errors, this procedure gives the same result as Equation \ref{eq:asym-errs}. But for asymmetric errors, it will give something different.
+
+The PDG also has a ``quick'' method which only performs one shift per point and is designed to approximate the above procedure.
+
+\begin{itemize}
+    \item Let $\delta \bar{x}$ be the error on $f(\mathbf{x})$ calculated under symmetric errors.
+    \item Let $\delta x_i=\frac{(\delta x_i)^++(\delta x_i)^-}{2}$.
+    \item Let $\tilde{\mathbf{x}}^i$ be the data $\mathbf{x}$ with the point $x_i$ shifted by the larger of $(\delta x_i)^+$ and $(\delta x_i)^-$, in the corresponding direction. Then, let $\Delta_i=f(\tilde{\mathbf{x}}^i)-f(\mathbf{x})$.
+    \item Let $a_i=\left(\frac{\max((\delta x_i)^+,(\delta x_i)^-)}{\delta x_i}\right)^2-1$. We will have $a_i\geq0$. $a_i$ is supposed to represent the proportion of extra variance of the larger asymmetric error on $x_i$ compared to its average error. Similarly, let $b_i=1-\left(\frac{\min((\delta x_i)^+,(\delta x_i)^-)}{\delta x_i}\right)^2$. We will have $b_i\geq0$. $b_i$ represents the reduction in variance of the smaller asymmetric error compared to the average error.
+    \item Finally, calculate:
+    \begin{align*}
+        (\delta \bar{x})^+&=\sqrt{(\delta \bar{x})^2 + \sum_{i:\Delta_i>0}a_i\Delta_i^2-\sum_{i:\Delta_i<0}b_i\Delta_i^2}\\
+        (\delta \bar{x})^-&=\sqrt{(\delta \bar{x})^2 + \sum_{i:\Delta_i<0}a_i\Delta_i^2-\sum_{i:\Delta_i>0}b_i\Delta_i^2}
+    \end{align*}
+\end{itemize}
+Note that, for an $x_i$ with symmetric errors, we will have $a_i=b_i=0$, so shifting it will not contribute to the final asymmetric error calculation; we can skip it. Thus we can see that, when all errors are symmetric, this method will just preserve the original symmetric error calculation.
+
+In Figures \ref{fig:ll-interval-narrower} and \ref{fig:ll-interval-wider}, we can see various examples where these two ``shift'' methods give very different errors from each other and when compared with PDG. One drastic example is in M185M in Figure \ref{fig:ll-interval-wider}, where the shift method gives asymmetry in the opposite direction of the unconstrained-average PDG method.
+
+
+\subsection{Likelihood-based method}
+What is the alternative to the current method to obtain the final asymmetric errors? The idea is to use the asymmetric errors on points to define asymmetric versions of the Normal likelihood. The weighted mean can then be the MLE, and we can obtain a 68.27\% interval on $\theta$ via likelihood ratios. This is what is proposed by \citet[sec.~3]{barlow2024asymmetric}. In this note we will consider two different likelihood functions: one which is implied by the PDG's error symmetrization, and a simpler one.
+
+Let's define the likelihood function for a point when the truth is $\theta$:
+\[L(x_i;\theta)\propto \exp\left(-\frac{1}{2}\cdot\frac{(x_i-\theta)^2}{(\sigma(x_i,\theta))^2}\right)\]
+This is just the Normal likelihood, but we've replaced $\sigma_i$ (same thing as $\delta x_i$) with a function $\sigma(x_i,\theta)$. What is this function? Our first option is the equivalent of Equation \ref{eq:error-interp}:
+\[\sigma(x_i,\theta)=\frac{2(\delta x_i)^-(\delta x_i)^++(\theta-x_i)\left((\delta x_i)^+-(\delta x_i)^-\right)}{(\delta x_i)^-+(\delta x_i)^+}
+\]
+Plugging this into the likelihood function, we effectively turn Equation \ref{eq:error-interp} into an explicit model for the likelihood of $x_i$ given $\theta$. We will call the resulting likelihood the ``PDG'' likelihood, as it is directly suggested by the PDG's linear interpolation method. Our other option is a simpler one:
+\[\sigma(x_i,\theta)=\begin{cases}
+(\delta x_i)^+ & x>\theta\\
+(\delta x_i)^- & x<\theta
+\end{cases}\]
+In this option, we do no interpolation, and just use the positive or negative error when $x$ falls above or below $\theta$. We will call the resulting likelihood function the ``dimidiated'' likelihood, following \citet{barlow2024asymmetric}. We plot the resulting likelihoods in Figure \ref{fig:pdg-asym-likes}.
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.5\textwidth]{../figs/pdg_asym_likes.pdf}
+    \caption{The two different likelihood functions considered. With a datapoint $0^{+1}_{-0.2}$, we plot the assumed likelihood $L(x;\theta)$. The PDG likelihood formula might seem \textit{a priori} more sensible, as it nicely interpolates the left and right errors when close to the point. But the resulting likelihood function is oddly jagged.}\label{fig:pdg-asym-likes}
+\end{figure}
+
+Now that we have defined the likelihood function, how can we do inference on $\theta$?
+
+First, for the point estimate, rather than following PDG's iterated weighted mean procedure, we can simply take the MLE:
+\begin{equation}\label{eq:mle}
+\hat\theta = \argmax_{\theta} L(\mathbf{x};\theta)=\argmax_{\theta}\prod_{i=1}^n L(x_i;\theta)
+\end{equation}
+This can be computed numerically.
+
+For the asymmetric errors, rather than using Equation \ref{eq:asym-errs}, we can find the upper and lower endpoints of a likelihood-based confidence interval:
+\begin{align}\label{eq:ll-conf}
+\begin{split}
+\theta^+ &= \max\{\theta: \log(L(\mathbf{x};\hat\theta))-\log(L(\mathbf{x};\theta))=0.5\}\\
+\theta^- &= \min\{\theta: \log(L(\mathbf{x};\hat\theta))-\log(L(\mathbf{x};\theta))=0.5\}
+\end{split}
+\end{align}
+Our final estimate will then be $\hat\theta^{+(\theta^+-\hat\theta)}_{-(\hat\theta-\theta^{-})}$. Figure \ref{fig:pdg-asym-ll-int} illustrates this likelihood-based procedure---it repeats Figure \ref{fig:pdg-asym-likes} but plots the log-likelihoods, and also repeats the two ``counterexamples'' from Figure \ref{fig:pdg-asym-counterexamples}.
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{../figs/pdg_asym_ll_int.pdf}
+    \caption{Inference using the two different likelihood functions considered. Datapoints are shown in black, dimidiated LL in blue, and the PDG LL in red. Dashed vertical lines are the MLE corresponding to the likelihood function, and dotted vartical lines are the upper and lower endpoints of the 68.27\% likelihood ratio confidence interval. In the topmost figure, inference is the same under either likelihood function. On the bottom-left, the PDG likelihood induces a bimodel likelihood function $L(\mathbf{x};\theta)$, while the dimidiated log-likelihood is unimodal. On the bottom-right, the two likelihood functions give about the same result. The bottom two figures use the same data points as in Figure \ref{fig:pdg-asym-counterexamples}.}\label{fig:pdg-asym-ll-int}
+\end{figure}
+
+The likelihood-based procedure has a few nice properties:
+\begin{itemize}
+    \item With just one data point, either of the likelihood functions yields the same result as the PDG's method.
+    \item With symmetric errors, either of the likelihood functions just becomes a symmetric Normal likelihood. The likelihood ratio confidence interval for a Normal distribution is exact and yields the same result as the PDG's (unscaled) method.
+    \item We don't need to rely on an iterative procedure with unknown properties.
+\end{itemize}
+Aside from these nice features, what is the justification for this likelihood-based method? The idea is that each of the underlying results ${x_i}^{+(\delta x_i)^+}_{-(\delta x_i)^-}$ roughly tells us the shape of the likelihood $L(x_i;\theta)$: the maximum is at $x_i$, and the upper and lower errors are the points where the log-likelihood dips by $0.5$ from the peak. If ${x_i}^{+(\delta x_i)^+}_{-(\delta x_i)^-}$ represents an equal-tailed confidence interval for $\theta$, this may roughly be the case (as often such a confidence interval is computed directly from the likelihood via something similar to Equation \ref{eq:ll-conf}).
+
+It is of course not necessarily true that ${x_i}^{+(\delta x_i)^+}_{-(\delta x_i)^-}$ is a representation of $L(x_i;\theta)$. Especially when the reported errors include systematic errors, it is not obvious how ${x_i}^{+(\delta x_i)^+}_{-(\delta x_i)^-}$ relates to the likelihood $L(x_i;\theta)$, or what the point $x_i$ and its asymmetric errors even represent. This is an issue that requires some more attention when applying any method to combine results with asymmetric errors.
+
+Anyway, let's take a look at how the likelihood-based method changes the results on real PDG data. In this discussion we will not apply any scale factors for any of the methods compared.
+
+Figure \ref{fig:pdg-asym-widths} shows the relative confidence interval widths of the likelihood-based method as compared to the current (unscaled) PDG method. The two likelihood-based methods, which we will call PDG-LL and Dimidiated-LL, give similar widths to each other, but sometimes much wider (up to $1.6\times$) or much narrower (up to $0.7\times$) confidence intervals than those given by PDG. But, the vast majority of intervals don't change by much.
+
+Figure \ref{fig:pdg-asym-wm-diff} shows how much the point estimates change when using the new method. In the vast majority of cases, the change is minimal.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.4\textwidth]{../figs/pdg_asym_widths.pdf}\includegraphics[width=0.6\textwidth]{../figs/pdg_asym_widths_hist.pdf}
+    \caption{Width comparison of PDG-LL, Dimidiated-LL, and PDG}\label{fig:pdg-asym-widths}
+\end{figure}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.6\textwidth]{../figs/pdg_asym_wm_diff.pdf}
+    \caption{Change in the final point estimate when using the likelihood-based methods vs the current PDG method. Change given in standard deviations given by the current PDG method.}\label{fig:pdg-asym-wm-diff}
+\end{figure}
+
+Figure \ref{fig:ll-interval-wider} shows the most extreme examples where the PDG-LL interval is wider than the PDG interval. We see several examples similar to the left plot of Figure \ref{fig:pdg-asym-counterexamples}, where a value with extremely asymmetric errors has its smaller error contributing to a narrow interval for the combined value, even though the combined value lies on larger-error side. Figure \ref{fig:ll-interval-narrower} shows the most extreme examples where the PDG-LL interval is narrower---they are similar to the right plot of Figure \ref{fig:pdg-asym-counterexamples}, where we take a larger error even though we lie to the side of the point where errors are smaller.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{../figs/ll_interval_wider.pdf}
+    \caption{}\label{fig:ll-interval-wider}
+\end{figure}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{../figs/ll_interval_narrower.pdf}
+    \caption{}\label{fig:ll-interval-narrower}
+\end{figure}
+
+In the examples shown in Figure \ref{fig:ll-interval-wider} where PDG-LL yields a wider interval, it is easy to see that the current PDG method is doing something wrong and that PDG-LL fixes it. The examples in Figure \ref{fig:ll-interval-narrower} where PDG-LL yields a narrower interval are more debateable.
+
+To summarize, the current PDG method for calculating the weighted mean and error in the presence of asymmetric errors does not have a clear mathematical justification. Treating given asymmetric errors as approximations of likelihood functions lets us use a likelihood-based method to more rigorously combine the values. Either of the likelihood functions presented fixes the (rare) issues found with the PDG's method, but generally doesn't change confidence intervals by much.
+
+\FloatBarrier
+\subsection{Scaling factor for likelihood-based method}
+
+If we want to use a scale factor $c$ with the likelihood-based method, we have at least four options:
+\begin{enumerate}[label=(\alph*)]
+    \item Calculate the scale factor as usual (just using the MLE $\hat\theta$ as the weighted mean) and use it to scale the upper and lower errors of the final result. This is closest in spirit to PDG's current method.
+    \item Since the scale factor will change the shape of the PDG likelihood, we can iteratively calculate the scale factor, rescale the points' errors, and recalculate the MLE and final errors using the points' rescaled errors. This may lead to a different point estimate, which is undesirable, but in principle is not so different from the re-fitting after scaling which is currently used when multiple parameters are fit simultaneously.
+    \item Having already calculated the MLE $\hat\theta$ with no scale factor $c$, we can calculate the MLE of $c$ with fixed $\hat\theta$ by evaluating the likelihood for different values of $c$ and picking the value yielding the highest likelihood.
+    \item Jointly evaluate the MLE of $(\theta,c)$, which may yield a different $\hat\theta$.
+\end{enumerate}
+
+\FloatBarrier
+\section{Confidence interval for the scale factor}
+
+The PDG uses a scale factor to rescale the uncertainties. But, with a small number of studies entering an average, how noisy is the scale factor? When there seems to be heterogeneity between a set of studies, how do we know it is not just random chance?
+
+[Note: in this section we will only consider symmetric errors.]
+
+Suppose that:
+\begin{equation}\label{eq:birgemodel}
+X_i\overset{\mathrm{ind}}\sim \mathcal{N}(\theta,c^2\sigma_i^2)
+\end{equation}
+Then if we take a weighted mean $\bar{X}$ according to Equation \ref{eq:wavg}, we have that:
+\[\sum_{i=1}^n\frac{(X_i-\bar{X})^2}{c^2\sigma_i^2} \sim \chi^2_{n-1}\]
+From this, letting the quantile function of a $\chi^2_{n-1}$ random variable be $F^{-1}_{\chi^2_{n-1}}$, we can calculate:
+\begin{align*}
+P\left(\sum_{i=1}^n\frac{(X_i-\bar{X})^2}{c^2\sigma_i^2}\leq F^{-1}_{\chi^2_{n-1}}(q)\right)&=q\\
+P\left(\sqrt{\frac{\sum_{i=1}^n\frac{(X_i-\bar{X})^2}{\sigma_i^2}}{F^{-1}_{\chi^2_{n-1}}(q)}}\leq c\right)&=q
+\end{align*}
+This gives an upper bound for an exact one-sided confidence interval on $c$. We can similarly get a lower bound:
+\[P\left(\sqrt{\frac{\sum_{i=1}^n\frac{(X_i-\bar{X})^2}{\sigma_i^2}}{F^{-1}_{\chi^2_{n-1}}(1-q)}}\geq c\right)=q\]
+Putting these together and plugging in $q=1-\alpha/2$, we can get a $(1-\alpha)$-level two-sided confidence interval for $c$:
+\[P\left(\sqrt{\frac{\sum_{i=1}^n\frac{(X_i-\bar{X})^2}{\sigma_i^2}}{F^{-1}_{\chi^2_{n-1}}(1-\alpha/2)}}\leq c\leq \sqrt{\frac{\sum_{i=1}^n\frac{(X_i-\bar{X})^2}{\sigma_i^2}}{F^{-1}_{\chi^2_{n-1}}(\alpha/2)}}\right)=1-\alpha\]
+We see that, at a given confidence level, the confidence interval depends on two factors: the observed Birge Ratio (numerator) and the number of studies $n$.
+
+Might such a confidence interval be useful? Figure \ref{fig:pdg-scale-conf} shows some randomly sampled examples from the 2025 PDG dataset of scale factors---computed using the current PDG procedure but not clipped at 1---and their confidence intervals. It seems helpful in getting a grasp on how well the data constrain the scale factor $c$.
+
+So, should PDG consider reporting confidence intervals on the scale factor, for the benefit of users?
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{../figs/pdg_scale_conf.pdf}
+    \caption{Quantities randomly sampled from the 2025 PDG dataset, with their scale factors and confidence intervals on the scale factors. Confidence intervals are made with coverage level $0.6827$ $(1\sigma)$. Intervals of $[0,\infty]$ occur when the imprecise-measurement cutoff excludes all but one measurement. In M005W, we see that the large number of studies constrain the scale factor enough to suggest that there is real heterogeneity with $c>1$. In M070R8, we see an inferred $c>1$, but the confidence interval includes 1, so we can't be so sure that there is between-study heterogeneity.}\label{fig:pdg-scale-conf}
+\end{figure}
+\FloatBarrier
+\iffalse
+\section{Excluding ``weak'' measurements}\fi
+
+\bibliography{references}
+\end{document}
