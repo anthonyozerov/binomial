@@ -2,7 +2,7 @@
 # $\mathrm{[MeV]}$
 # RPP 2024 "ground truth" value: 186
 # 1sigma: 14
-# PDG ID: M023M
+# PDG ID: M023W
 # RPP aug. 1970 pg. 82
 year,author,value,error_p,error_n
 1967,JOBES,60.0,20.0

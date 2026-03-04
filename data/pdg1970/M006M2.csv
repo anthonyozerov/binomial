@@ -2,7 +2,7 @@
 # $\mathrm{[MeV]}$
 # RPP 2024 "ground truth" value: 1428.4
 # 1sigma: 1.4
-# PDG ID: M006M
+# PDG ID: M006M2
 # RPP aug. 1970 pg. 65
 # note it was called E(1422) in RPP 1970
 year,author,value,error_p,error_n

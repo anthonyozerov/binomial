@@ -2,7 +2,7 @@
 # $\mathrm{[MeV]}$
 # RPP 2024 "ground truth" value: 4.249
 # 1sigma: 0.013
-# PDG ID: M004M
+# PDG ID: M004W
 # RPP aug. 1970 pg. 52
 year,author,value,error_p,error_n
 1963,ARMENTERO,3.4,1.7
