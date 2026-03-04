@@ -4,7 +4,7 @@
 # 1sigma: 0.004
 # PDG ID: S018MM
 # RPP aug. 1970 pg: 36
-year,author,value,uncertainty
+year,author,value,error_p,error_n
 1962,COOL,-1.5,0.5
 1963,KERNAN,0.0,0.6
 1964,ANDERSON,-1.39,0.72

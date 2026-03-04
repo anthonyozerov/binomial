@@ -4,7 +4,7 @@
 # 1sigma: 2.0
 # PDG ID: B037W1
 # RPP aug. 1970 pg. 103
-year,author,value,uncertainty
+year,author,value,error_p,error_n
 1965,MUSGRAVE,60.0,20.0
 # 1965,ENGLER,89.0,20.0
 1966,BIRMINGHA,50.0,10.0

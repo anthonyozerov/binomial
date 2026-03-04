@@ -1,10 +1,10 @@
 # $\eta$ $\pi^+\pi^-\pi^0 lr asym.~param.
-#
+# $[10^{-2}]$
 # RPP 2024 "ground truth" value: 0.09
 # 1sigma: 0.12
 # PDG ID: S014A1
 # RPP aug. 1970 pg: 34
-year,author,value,uncertainty
+year,author,value,error_p,error_n
 1966,BALTAY,7.2,2.8
 1966,LARRIBE,-6.1,4.0
 1966,CNOPS,0.3,1.0

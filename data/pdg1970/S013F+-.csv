@@ -5,7 +5,7 @@
 # PDG ID: S013F+-
 # RPP aug. 1970 pg: 32
 # PDG USES FIT
-year,author,value,uncertainty
+year,author,value,error_p,error_n
 1965,FITCH,45.0,50.0
 1966,FIRESTONE,30.0,45.0
 1967,BOTT-BODE,70.0,21.0

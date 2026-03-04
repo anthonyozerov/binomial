@@ -4,7 +4,7 @@
 # 1sigma: 0.00034
 # PDG ID: S004DEL
 # RPP aug. 1970 pg: 22
-year,author,value,uncertainty
+year,author,value,error_p,error_n
 1960,PLANO,0.78,0.05
 1961,KRUGER,0.782,0.031
 1968,FRYBERGER,0.752,0.009

@@ -5,7 +5,7 @@
 # PDG ID: S010R19
 # RPP aug. 1970 pg: 24
 # PDG USES CONSTRAINED FIT
-year,author,value,uncertainty
+year,author,value,error_p,error_n
 1965,BISI,0.632,0.035
 1965,YOUNG,0.90,0.16
 1968,EICHTEN,0.510,0.017

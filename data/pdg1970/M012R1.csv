@@ -5,9 +5,9 @@
 # PDG ID: M012R1
 # RPP aug. 1970 pg. 64
 # PDG USES CONSTRAINED FIT
-year,author,value,uncertainty
+year,author,value,error_p,error_n
 # 1964,BEUSCH,0.13,0.03
-1968,ASCOLI,0.09,0.08
+1968,ASCOLI,0.09,0.06,0.09
 1968,BOESEBECK,0.022,0.008
 # 1968,CHUNG,0.054,0.022
 1968,DONALD,0.03,0.012

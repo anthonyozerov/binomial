@@ -5,7 +5,7 @@
 # PDG ID: S018M
 # RPP aug. 1970 pg: 36
 # PDG USES FIT
-year,author,value,uncertainty
+year,author,value,error_p,error_n
 1963,BHOWMIK,1115.44,0.12
 # 1965,BALTAY,1115.86,0.09
 1965,SCHMIDT,1115.63,0.07

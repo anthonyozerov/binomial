@@ -5,7 +5,7 @@
 # PDG ID: S008M
 # RPP aug. 1970 pg: 22
 # NOTE THAT PDG USES A CONSTR. FIT
-year,author,value,uncertainty
+year,author,value,error_p,error_n
 1954,CROWE,139.37,0.20
 1956,BARKAS,139.68,0.15
 1967,SHAFER,139.577,0.013

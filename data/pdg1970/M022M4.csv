@@ -4,7 +4,7 @@
 # 1sigma: 1.3
 # PDG ID: M022M4
 # RPP aug. 1970 pg. 79
-year,author,value,uncertainty
+year,author,value,error_p,error_n
 1967,DAHL,1466.0,7.9
 1968,KANG,1425.0,15.0
 1968,SCHWEINGR,1405.0,18.0

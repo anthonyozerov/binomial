@@ -5,7 +5,7 @@
 # PDG ID: S018R2
 # RPP aug. 1970 pg: 37
 # PDG USES CONSTRAINED FIT
-year,author,value,uncertainty
+year,author,value,error_p,error_n
 1957,EISLER,0.23,0.09
 1959,CRAWFORD,0.43,0.14
 1960,BAGLIN,0.28,0.08

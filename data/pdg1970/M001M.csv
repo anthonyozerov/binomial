@@ -4,7 +4,7 @@
 # 1sigma: 0.13
 # PDG ID: M001M
 # RPP aug. 1970 pg. 45
-year,author,value,uncertainty
+year,author,value,error_p,error_n
 1962,ALFF,782.0,1.0
 1962,ARMENTERO,779.4,1.4
 1963,ARMENTERO,784.0,1.0

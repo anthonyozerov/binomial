@@ -4,7 +4,7 @@
 # 1sigma: 0.0005
 # PDG ID: S009D
 # RPP aug. 1970 pg: 23
-year,author,value,uncertainty
+year,author,value,error_p,error_n
 # 1951,PANOFSKY,5.37,1.0
 1954,CHINOWSKY,4.50,0.31
 1959,HADDOCK,4.62,0.05

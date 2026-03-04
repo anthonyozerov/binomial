@@ -5,7 +5,7 @@
 # PDG ID: M005M
 # RPP aug. 1970 pg. 59
 # PDG USES FIT
-year,author,value,uncertainty
+year,author,value,error_p,error_n
 1962,SELOVE,100.0,25.0
 # 1964,LEE,130.0,20.0
 1966,ACCENSI,102.0,46.0

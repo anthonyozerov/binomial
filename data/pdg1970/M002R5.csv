@@ -5,7 +5,7 @@
 # PDG ID: M002R5
 # RPP aug. 1970 pg. 48
 # RPP 2025 USES CONSTRAINED FIT
-year,author,value,uncertainty
+year,author,value,error_p,error_n
 # 1964,KALBFLEIS,0.25,0.05
 1965,BADIER,0.24,0.17
 1966,LONDON,0.3,0.1

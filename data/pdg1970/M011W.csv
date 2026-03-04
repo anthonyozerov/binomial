@@ -4,7 +4,7 @@
 # 1sigma: 9
 # PDG ID: M011W
 # RPP aug. 1970 pg. 58
-year,author,value,uncertainty
+year,author,value,error_p,error_n
 1963,ABOLINS,100.0,20.0
 1967,BALTAY,100,30
 1968,BOESEBECK,203,75

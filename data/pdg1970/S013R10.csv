@@ -5,7 +5,7 @@
 # PDG ID: S013R10
 # RPP aug. 1970 pg: 30
 # PDG USES CONSTRAINED FIT
-year,author,value,uncertainty
+year,author,value,error_p,error_n
 1964,ADAIR,0.81,0.19
 1967,DEBOUARD,0.82,0.10
 1967,HAWKINS,0.7,0.2

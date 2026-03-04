@@ -4,7 +4,7 @@
 # 1sigma: 5
 # PDG ID: M022W4
 # RPP aug. 1970 pg. 80
-year,author,value,uncertainty
+year,author,value,error_p,error_n
 1967,DAHL,61.0,24.0
 1968,KANG,116.0,17.0
 1969,BASSOMPIE,110,21

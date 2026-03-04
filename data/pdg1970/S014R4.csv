@@ -5,7 +5,7 @@
 # PDG ID: S014R4
 # RPP aug. 1970 pg: 34
 # PDG USES CONSTRAINED FIT
-year,author,value,uncertainty
+year,author,value,error_p,error_n
 1964,FOELSCHE,0.14,0.08
 1964,PAULI,0.73,0.25
 1966,CRAWFORD,0.30,0.06

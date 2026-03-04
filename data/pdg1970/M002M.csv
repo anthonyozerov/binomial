@@ -4,7 +4,7 @@
 # 1sigma: 0.06
 # PDG ID: M002M
 # RPP aug. 1970 pg. 47
-year,author,value,uncertainty
+year,author,value,error_p,error_n
 # 1964,KALBFLEIS,958.0,1.0
 1965,BADIER,957.0,3.0
 1965,TRILLING,960.0,2.0

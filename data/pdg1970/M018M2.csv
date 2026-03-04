@@ -4,7 +4,7 @@
 # 1sigma: 0.20
 # PDG ID: M018M2
 # RPP aug. 1970 pg. 73
-year,author,value,uncertainty
+year,author,value,error_p,error_n
 1962,COLLEY,897.0,10.0
 1963,KRAEMER,892.0,2.0
 # 1963,SMITH,885.0,

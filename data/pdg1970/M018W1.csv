@@ -1,10 +1,10 @@
-# $K^\star(892)$ (charged) mass
+# $K^\star(892)$ (charged) width
 # $\mathrm{[MeV]}$
 # RPP 2024 "ground truth" value: 51.4
 # 1sigma: 0.8
-# PDG ID: M018M2
+# PDG ID: M018W1
 # RPP aug. 1970 pg. 73
-year,author,value,uncertainty
+year,author,value,error_p,error_n
 1963,CHADWICK,46.0,8.0
 # 1964,WOJCICKI,46.0,3.0
 1964,ADELMAN,51.0,3.0
@@ -26,7 +26,7 @@ year,author,value,uncertainty
 1968,FICENEC,57.0,13.0
 1968,FICENEC,48.0,9.0
 1968,KANG,52.0,8.0
-1969,ERWIN,27.0,7.0
+# 1969,ERWIN,27.0,8.0,6.0
 1969,FRIEDMAN,53,3
 1969,FRIEDMAN,49,4
 1969,FRIEDMAN,46,2

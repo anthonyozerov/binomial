@@ -4,7 +4,7 @@
 # 1sigma: 0.0012
 # PDG ID: S004XI
 # RPP aug. 1970 pg: 22
-year,author,value,uncertainty
+year,author,value,error_p,error_n
 1959,BARDON,0.97,0.05
 1960,PLANO,0.93,0.06
 # 1961,ALI-ZADE,0.903,0.027

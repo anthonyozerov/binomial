@@ -5,7 +5,7 @@
 # PDG ID: S011DM
 # RPP aug. 1970 pg: 27
 # PDG USES CONSTRAINED FIT
-year,author,value,uncertainty
+year,author,value,error_p,error_n
 1959,ROSENFELD,3.9,0.6
 1959,CRAWFORD,5.4,1.1
 1965,BURNSTEIN,3.90,0.25

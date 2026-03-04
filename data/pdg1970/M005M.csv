@@ -4,7 +4,7 @@
 # 1sigma: 0.8
 # PDG ID: M005M
 # RPP aug. 1970 pg. 59
-year,author,value,uncertainty
+year,author,value,error_p,error_n
 1962,SELOVE,1250.0,25.0
 1963,VEILLET,1260.0,35.0
 1966,ACCENSI,1240.0,20.0

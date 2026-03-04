@@ -5,7 +5,7 @@
 # PDG ID: S013R19
 # RPP aug. 1970 pg: 30
 # PDG USES CONSTRAINED FIT
-year,author,value,uncertainty
+year,author,value,error_p,error_n
 # 1967,CRONIN,1.89,0.31
 # 1967,CRONIN,1.36,0.18
 1968,BANNER,0.46,0.11

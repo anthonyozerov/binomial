@@ -1,0 +1,15 @@
+# $\eta$ BR $\pi_02\gamma/(\text{neutrals})$
+# [10^{-3}]
+# RPP 2024 "ground truth" value: 0.335
+# 1sigma: 0.031
+# PDG ID: S014R3
+# RPP aug. 1970 pg: 34
+# PDG USES CONSTRAINED FIT
+# Note OOM difference between 1970 and 2024
+# Note this node has no other info other than the value.
+year,author,value,error_p,error_n
+# 1966,DIGIUGNO,3.75,0.72
+1966,GRUNHAUS,2.7,1.0
+# 1967,FEDLMAN,2.44,0.5
+1967,BUNIATOV,0.28,0.44
+1970,COX,1.22,0.52,0.44

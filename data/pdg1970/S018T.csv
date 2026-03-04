@@ -4,13 +4,13 @@
 # 1sigma: 0.010
 # PDG ID: S018T
 # RPP aug. 1970 pg: 36
-year,author,value,uncertainty
-1958,Boldt,2.63,0.21
-1959,Crawford,2.72,0.16
-1960,Bowen,2.72,0.28
-1962,Chang,2.60,0.24
-1962,Humphrey,2.69,0.11
-1963,Block,2.36,0.06
+year,author,value,error_p,error_n
+1958,Boldt,2.63,0.21,0.21
+1959,Crawford,2.72,0.16,0.16
+1960,Bowen,2.72,0.29,0.27
+1962,Chang,2.60,0.28,0.20
+1962,Humphrey,2.69,0.11,0.11
+1963,Block,2.36,0.06,0.06
 1963,Chretien,2.76,0.20
 1964,Hubbard,2.59,0.09
 1964,Kreisler,2.31,0.10
@@ -20,8 +20,8 @@ year,author,value,uncertainty
 1966,Buran,2.35,0.09
 # 1966,Chien,2.50,0.14
 # 1966,Chien,2.70,0.20
-1966,Engelmann,2.452,0.055
-1967,Auerbach,2.68,0.12
+1966,Engelmann,2.452,0.056,0.054
+1967,Auerbach,2.68,0.13,0.11
 1967,Badier,2.44,0.15
 1967,Badier,2.55,0.15
 # 1968,Grimm,2.535,0.035

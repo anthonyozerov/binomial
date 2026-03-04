@@ -4,7 +4,7 @@
 # 1sigma: 0.033
 # PDG ID: M004R16
 # RPP aug. 1970 pg. 52
-year,author,value,uncertainty
+year,author,value,error_p,error_n
 1968,ASTVACATU,6.6,3.6
 1968,BINNIE,7.2,3.9
 1968,BOLLINI,6.1,2.6

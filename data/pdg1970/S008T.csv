@@ -5,10 +5,10 @@
 # PDG ID: S008T
 # RPP aug. 1970 pg: 22
 # note difference in magnitude used between 1970 (-9) and 2024 (-8)
-year,author,value,uncertainty
-1957,CROWE,25.6,0.5
-1960,ANDERSON,25.6,0.8
-1960,ASHKIN,25.46,0.32
+year,author,value,error_p,error_n
+1957,CROWE,25.6,0.5,0.5
+1960,ANDERSON,25.6,0.8,0.8
+1960,ASHKIN,25.46,0.32,0.32
 # 1962,MERRISON,
 # 1965,ECKHAUSE,26.02,0.04
 1966,BARDON,25.6,0.3

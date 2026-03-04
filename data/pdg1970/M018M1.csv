@@ -2,9 +2,9 @@
 # $\mathrm{[MeV]}$
 # RPP 2024 "ground truth" value: 891.67
 # 1sigma: 0.26
-# PDG ID: M018M2
+# PDG ID: M018M1
 # RPP aug. 1970 pg. 73
-year,author,value,uncertainty
+year,author,value,error_p,error_n
 1963,CHADWICK,898.0,5.0
 # 1964,WOJCICKI,891.0,1.0
 1964,ADELMAN,889.5,2.5

@@ -5,7 +5,7 @@
 # PDG ID: S022M
 # RPP aug. 1970 pg: 40
 # PDG USES FIT
-year,author,value,uncertainty
+year,author,value,error_p,error_n
 # 1961,WANG,1317.0,2.2
 # 1961,FOWLER,1317.9,1.9
 # 1962,BROWN,1322.0,1.3

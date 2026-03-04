@@ -4,7 +4,7 @@
 # 1sigma: 0.016
 # PDG ID: M004M
 # RPP aug. 1970 pg. 51
-year,author,value,uncertainty
+year,author,value,error_p,error_n
 1963,ARMENTERO,1017.0,2.0
 1963,SCHLEIN,1019.0,2.0
 1965,MILLER D,1018.6,0.5
@@ -13,4 +13,4 @@ year,author,value,uncertainty
 1967,BARLOW,1019,3
 1967,DAHL,1021.0,4.0
 1968,MOSTEK,1022,1.5
-1970,HYAMS,1018,0.5
+1970,HYAMS,1018,0.5,0.35

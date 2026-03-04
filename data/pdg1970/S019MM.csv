@@ -4,7 +4,7 @@
 # 1sigma: 0.010
 # PDG ID: S019MM
 # RPP aug. 1970 pg: 38
-year,author,value,uncertainty
+year,author,value,error_p,error_n
 1966,COOK,1.5,1.1
 1967,KOTELCHUC,3.5,1.5
 1967,SULLIVAN,3.0,1.2

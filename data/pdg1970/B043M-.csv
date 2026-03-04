@@ -4,7 +4,7 @@
 # 1sigma: 0.5
 # PDG ID: B043M-
 # RPP aug. 1970 pg. 112
-year,author,value,uncertainty
+year,author,value,error_p,error_n
 1961,DAHL,1382.0,3.0
 1961,ELY,1376.0,4.4
 1964,COOPER,1392.0,6.2

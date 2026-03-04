@@ -4,7 +4,7 @@
 # 1sigma: 0.0000022
 # PDG ID: S004T
 # RPP aug. 1970 pg: 21
-year,author,value,uncertainty
+year,author,value,error_p,error_n
 1962,FARLEY,2.198,0.001
 1962,LUNDY,2.203,0.004
 1963,ECKHAUSE,2.202,0.003

@@ -1,10 +1,10 @@
-# $\Sigma(1385)^-$ mass
+# $\Sigma(1385)^-$ width
 # $\mathrm{[MeV]}$
 # RPP 2024 "ground truth" value: 39.4
 # 1sigma: 2.1
-# PDG ID: B043M-
+# PDG ID: B043W-
 # RPP aug. 1970 pg. 112
-year,author,value,uncertainty
+year,author,value,error_p,error_n
 1961,DAHL,66.0,10.0
 1961,ELY,88.0,10.0
 1964,COOPER,62.0,7.0

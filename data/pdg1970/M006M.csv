@@ -5,7 +5,7 @@
 # PDG ID: M006M
 # RPP aug. 1970 pg. 65
 # note it was called E(1422) in RPP 1970
-year,author,value,uncertainty
+year,author,value,error_p,error_n
 1967,BAILLON,1425,7
 # 1967,DAHL,1420.0,20.0
 1967,FRENCH,1423,10
