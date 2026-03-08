@@ -1,4 +1,5 @@
 import os
+import re
 import pandas as pd
 import numpy as np
 from pdg_data import load_pdg_data
@@ -243,56 +244,106 @@ def load_particle_data():
     Returns:
         tuple: (datasets, truths, nice_names, units, particle_keys, particle_group_map)
     """
+    import sqlite3
     # Get particle keys
     particle_keys = sorted(
         [f.split(".")[0] for f in os.listdir("../data/pdg1970") if f.endswith(".csv")]
     )
+
+    QUERY = """
+    SELECT
+        pdgdata.pdgid,
+        pdgdata.value,
+        pdgdata.error_positive, 
+        pdgdata.error_negative,
+        pdgid.data_type,
+        pdgdoc.description,
+        pdgid.description,
+        pdgdata.unit_text
+    FROM pdgdata
+    JOIN pdgid on pdgdata.pdgid = pdgid.pdgid
+    JOIN pdgdoc on pdgdoc.value = pdgid.data_type
+    WHERE
+        pdgdata.pdgid = ?
+        AND pdgdata.edition = 2025
+        AND pdgdoc.table_name = 'PDGID' AND pdgdoc.column_name = 'DATA_TYPE'
+        AND (pdgdata.comment IS NULL OR pdgdata.comment NOT LIKE 'Assuming%') -- do not use fits with assumptions, e.g. CPT
+    ORDER BY (pdgdata.value_type = 'FC' or pdgdata.value_type = 'DR') DESC -- prefer fits (FC and DR) over averages
+    LIMIT 1;
+    """
     
+    
+    particle_keys = sorted(
+            [f.split(".")[0] for f in os.listdir("../data/pdg1970") if f.endswith(".csv")]
+        )
+        
     # Load datasets, truths, nice_names, and units
     datasets = {}
     truths = {}
     nice_names = {}
     units = {}
-    
+    # particle_group_keys = {}
+    particle_group_map = {}
+
     for p in particle_keys:
         path = f"../data/pdg1970/{p}.csv"
-        datasets[p] = pd.read_csv(path, comment="#")
+        df = pd.read_csv(path, comment="#")
+
+        # for measurements with no asymmetric error reported, make the
+        # two errors equal
+        no_asym = df['error_n'].isna()
+        df.loc[no_asym,'error_n'] = df.loc[no_asym,'error_p']
+        df['uncertainty'] = (df['error_n'] + df['error_p'])/2
+
+        datasets[p] = df
         with open(path, "r") as f:
             lines = f.readlines()
+
+            pdgid = lines[4].split(":")[1].strip()
+            assert pdgid == p, f"written pdgid {pdgid} does not match filename {p}.csv"
+
             nice_names[p] = lines[0].strip("# ").strip("\n")
-            units[p] = lines[1].strip("# ").strip("\n")
+            unit = lines[1].strip("# ").strip("\n")
+
+            # search for a power in the unit section
+            units[p] = unit
+            power = 0
+            match = re.search(r"10\^\{(-?\d+)\}", unit)
+            if match:
+                power = int(match.group(1))
+            
+            df['value'] *= 10**power
+            df['uncertainty'] *= 10**power
+            df['error_p'] *= 10**power
+            df['error_n'] *= 10**power
+
             value = float(lines[2].split(":")[1].strip())
             sigma = float(lines[3].split(":")[1].strip())
-            truths[p] = (value, sigma)
+            truths[p] = (value, sigma, sigma) # error_n, error_p
+
+            con = sqlite3.connect("../data/pdgall-2025-v0.2.1.sqlite")
+            cur = con.cursor()
+            res = cur.execute(QUERY, [p])
+            data = res.fetchall()
+            assert len(data) <= 1 # check that only one entry was returned
+            if len(data) == 0:
+                print(f"{p} not found in PDG API; truth will be taken from {p}.csv")
+            
+            # fill in truth, name, group, and unit from PDG API
+            if len(data)>0:
+
+                row = data[0]
+
+                truths[p] = (row[1], row[3], row[2])
+
+
+                nice_names[p] = row[6]
+                particle_group_map[p] = row[5]
+                units[p] = row[7]
     
-    # Create particle group map
-    particle_group_keys = {
-        "T": "Lifetime",
-        "MM": "Mag.~moment",
-        "M": "Mass",
-        "M-": "Mass",
-        "DEL": "Decay param",
-        "D": "Mass diff",
-        "WR": "Branching rate",
-        "W": "Width",
-        "R": "Branching ratio",
-        "L+E": "Decay param",
-        "A": "Decay param",
-        "F+-": "Decay param",
-        "XI": "Decay param",
-    }
-    particle_group_map = {}
-    remaining = set(particle_keys)
+    particle_group_map['S014R3'] = 'branching ratio'
+    units['S014R3'] = 'MeV'
     
-    for k, v in particle_group_keys.items():
-        for p in list(remaining):
-            if k in p[1:]:
-                particle_group_map[p] = v
-                remaining.remove(p)
-    
-    assert len(remaining) == 0, f"Unmapped particles: {remaining}"
-    
-    # Add group names to nice_names
-    nice_names.update({v: v for v in particle_group_keys.values()})
+    nice_names.update({v: v for v in particle_group_map.values()})
     
     return datasets, truths, nice_names, units, particle_keys, particle_group_map
