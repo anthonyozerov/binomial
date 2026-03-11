@@ -41,7 +41,7 @@ def measurement_dist(
         * h_i' = |y_i - ybar| / sqrt(σ_i² * (1 - 1/(σ_i² * S))² + (S - 1/σ_i²) / S²)
           (this is the correct normalization)
         * h_i* = |y_i - theta| / sqrt(σ_i² + σ_theta²)
-    - Measurement error handling: 
+    - Measurement error handling:
         * If symmetric errors, use the `uncertainty` column from `df`.
         * If asymmetric errors, use the specified columns in `asym_error`. For a given comparison
           (e.g. y_i-y_j, or y_i-ybar), the error on y_i is calculated via pdg_methods.symmetrize_error.
@@ -80,15 +80,16 @@ def measurement_dist(
     # will be used to bootstrap
     quantity_idxs_pair = []
     quantity_idxs = []
-    
-    zs = []
-    pair_weights = [] # the unnormalized weights which will be applied to the zs
-    pair_years = [] # the years of the two studies in the pair
 
-    hs = [] # Roos et al statistic
-    hprimes = [] # corrected Roos et al statistic
-    hstars = [] # Differences from ground truth
-    weights = [] # the unnormalized weights which will be applied to the hs, hprimes, and hstars
+    zs = []
+    pair_weights = []  # the unnormalized weights which will be applied to the zs
+    pair_years = []  # the years of the two studies in the pair
+    pair_techniques = []
+
+    hs = []  # Roos et al statistic
+    hprimes = []  # corrected Roos et al statistic
+    hstars = []  # Differences from ground truth
+    weights = []  # the unnormalized weights which will be applied to the hs, hprimes, and hstars
 
     for quantity_idx, df in enumerate(dfs):
         df_sub = df.copy()
@@ -101,7 +102,7 @@ def measurement_dist(
         if n_recent is not None:
             # get the n most recent measurements according to year
             df_sub = df_sub.sort_values(by="year", ascending=False).head(n_recent)
-        
+
         n = len(df_sub)
         if n <= 1:
             if skip:
@@ -118,13 +119,19 @@ def measurement_dist(
         elif weight == "measurement":
             pair_weights += list([1 / (n - 1)] * n_pairs)
             weights += list([1] * n)
-        
+
         # store the index of this quantity
         quantity_idxs += list([quantity_idx] * n)
         quantity_idxs_pair += list([quantity_idx] * n_pairs)
 
         values = np.array(df_sub["value"])
-        years = np.array(df_sub["year"])
+
+        cols = df_sub.columns
+        years = np.array(df_sub["year"]) if "year" in cols else np.full(n, np.nan)
+        techniques = (
+            np.array(df_sub["technique"]) if "technique" in cols else np.full(n, np.nan)
+        )
+
         if asym_error is None:
             assert "uncertainty" in df_sub.columns, "uncertainty column not found"
             error_n = np.array(df_sub["uncertainty"])
@@ -136,7 +143,9 @@ def measurement_dist(
             error_n = np.array(df_sub[asym_error[0]])
             error_p = np.array(df_sub[asym_error[1]])
 
-        assert len(values) == len(error_n) == len(error_p) == n, f"len(values)={len(values)}, len(error_n)={len(error_n)}, len(error_p)={len(error_p)}, n={n}"
+        assert (
+            len(values) == len(error_n) == len(error_p) == n
+        ), f"len(values)={len(values)}, len(error_n)={len(error_n)}, len(error_p)={len(error_p)}, n={n}"
         # calculate h and hprime: the standardized differences from the weighted mean
 
         # calculate weighted mean
@@ -168,10 +177,18 @@ def measurement_dist(
 
         # calculate the z statistic for each pair of measurements
         val_list = [
-            {"value": v, "error_n": error_n, "error_p": error_p, "year": y}
-            for v, error_n, error_p, y in zip(values, error_n, error_p, years)
+            {
+                "value": v,
+                "error_n": error_n,
+                "error_p": error_p,
+                "year": y,
+                "technique": t,
+            }
+            for v, error_n, error_p, y, t in zip(
+                values, error_n, error_p, years, techniques
+            )
         ]
-    
+
         pairs = list(combinations(val_list, 2))
         assert len(pairs) == n_pairs, f"len(pairs) {len(pairs)} != n_pairs {n_pairs}"
         for pair in pairs:
@@ -192,9 +209,12 @@ def measurement_dist(
             # calculate the z statistic
             z = np.abs(diff) / np.sqrt(np.sum(errors**2))
             zs.append(z)
-            earlieryear = min(pair[0]['year'], pair[1]['year'])
-            lateryear = max(pair[0]['year'], pair[1]['year'])
-            pair_years.append((earlieryear, lateryear))
+            earlier = np.argmin([pair[0]["year"], pair[1]["year"]])
+            later = (earlier + 1) % 2
+            pair_years.append((pair[earlier]["year"], pair[later]["year"]))
+            pair_techniques.append(
+                (pair[earlier]["technique"], pair[later]["technique"])
+            )
     assert len(zs) == len(quantity_idxs_pair) == len(pair_weights)
     assert len(hs) == len(quantity_idxs) == len(weights)
     assert len(hprimes) == len(quantity_idxs) == len(weights)
@@ -231,7 +251,7 @@ def measurement_dist(
         output["hprime"].append(np.sum((hprimes > z) * weights) / denom)
         if thetas is not None:
             output["hstar"].append(np.sum((hstars > z) * weights) / denom)
-    
+
     # add a folded standard normal distribution to the output for convenience
     output["norm"] = norm.cdf(-zspace) * 2
 
@@ -248,6 +268,7 @@ def measurement_dist(
         output["quantity_idxs"] = quantity_idxs
         output["quantity_idxs_pair"] = quantity_idxs_pair
         output["pair_years"] = pair_years
+        output["pair_techniques"] = pair_techniques
 
     # This section creates a bootstrap confidence interval for the empirical tail probability
     # at the different 'sig' sigma levels
@@ -257,9 +278,9 @@ def measurement_dist(
         metric_map = {"pair": zs, "h": hs, "hprime": hprimes}
         if "hstar" in metrics:
             metric_map["hstar"] = hstars
-        
+
         # calculate non-bootstrapped tail probabilities for each metric at each sigma level
-        tail_probs = defaultdict(dict) 
+        tail_probs = defaultdict(dict)
         for metric in metrics:
             if metric == "pair":
                 w = pair_weights / np.sum(pair_weights)
@@ -272,9 +293,10 @@ def measurement_dist(
         sample_tail_probs = defaultdict(lambda: defaultdict(list))
         np.random.seed(0)
         for b in tqdm(range(200)):
-
             # sample of quantities
-            quantity_idxs_sample = np.random.choice(quantities, size=len(quantities), replace=True)
+            quantity_idxs_sample = np.random.choice(
+                quantities, size=len(quantities), replace=True
+            )
             # count how many times each quantity appears
             unique, counts = np.unique(quantity_idxs_sample, return_counts=True)
             # map the quantity indices to the counts
@@ -284,17 +306,25 @@ def measurement_dist(
 
             # set weights to original weights multiplied by the count corresponding to the quantity
             # here we are taking advantage of the equivalence between bootstrapping and reweighting
-            pair_weights_sample = pair_weights * np.array([quantity_idx_to_count[idx] for idx in quantity_idxs_pair])
-            weights_sample = weights * np.array([quantity_idx_to_count[idx] for idx in quantity_idxs])
+            pair_weights_sample = pair_weights * np.array(
+                [quantity_idx_to_count[idx] for idx in quantity_idxs_pair]
+            )
+            weights_sample = weights * np.array(
+                [quantity_idx_to_count[idx] for idx in quantity_idxs]
+            )
 
             # calculate tail probabilities in the bootstrap sample for each metric at each sigma level
             for metric in metrics:
-                weights_metric_sample = pair_weights_sample if metric == "pair" else weights_sample
+                weights_metric_sample = (
+                    pair_weights_sample if metric == "pair" else weights_sample
+                )
                 norm_weights = weights_metric_sample / np.sum(weights_metric_sample)
 
                 for sig in sigs:
-                    sample_tail_probs[metric][sig].append(np.sum((metric_map[metric] > sig) * norm_weights))
-        
+                    sample_tail_probs[metric][sig].append(
+                        np.sum((metric_map[metric] > sig) * norm_weights)
+                    )
+
         # calculate bootstrap confidence intervals for the tail probabilities for each metric at each sigma level
         for metric in metrics:
             for sig in sigs:

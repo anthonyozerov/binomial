@@ -1,6 +1,7 @@
 import sqlite3
 import pandas as pd
 import numpy as np
+from collections import defaultdict
 
 PDG_QUERY = """
 SELECT pdgid.description, pdgmeasurement.pdgid, pdgmeasurement_values.column_name, pdgdata.value_type, pdgmeasurement.technique, pdgreference.publication_year, pdgid.data_type, pdgdata.in_summary_table, pdgdata.value, pdgdata.error_negative, pdgdata.error_positive, pdgmeasurement_values.value, pdgmeasurement_values.error_positive, pdgmeasurement_values.error_negative, pdgmeasurement_values.stat_error_positive, pdgmeasurement_values.stat_error_negative, prev.value, prev.error_negative, prev.error_positive, prev.edition
@@ -121,3 +122,20 @@ def load_pdg_data(used_in_average=True):
         pdg2025_stat_quantities,
         pdg2025_both_quantities,
     )
+
+
+def pdgid_type_map():
+    con = sqlite3.connect("../data/pdgall-2025-v0.2.1.sqlite")
+    cur = con.cursor()
+    DATA_TYPE_QUERY = """
+    SELECT pdgid.pdgid, pdgid.data_type, pdgdoc.description
+    FROM pdgid
+    JOIN pdgdoc ON pdgid.data_type = pdgdoc.value
+    WHERE pdgdoc.table_name = 'PDGID' AND pdgdoc.column_name = 'DATA_TYPE'
+    """
+    res = cur.execute(DATA_TYPE_QUERY)
+    data = res.fetchall()
+    type_map = defaultdict(lambda: "Other")
+    for row in data:
+        type_map[row[0]] = row[2]
+    return type_map
